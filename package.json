@@ -14,6 +14,7 @@
   },
   "dependencies": {
     "morphdom": "^2.7.4",
+    "snabbdom": "^3.6.2",
     "virtua": "git@github.com:aabccd021/virtua.git#9fc083e2a2e09fc3b8b70d753c903301f57d108d"
   }
 }

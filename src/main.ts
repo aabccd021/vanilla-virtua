@@ -4,6 +4,12 @@ import viteLogo from "/vite.svg";
 import { setupCounter } from "./counter.ts";
 import * as virtua from "virtua/core";
 import morphdom from "morphdom";
+import {  h, init, propsModule, styleModule } from "snabbdom";
+
+const patch = init([
+  propsModule,
+  styleModule,
+])
 
 const app = document.querySelector<HTMLDivElement>("#app");
 
@@ -45,33 +51,31 @@ interface ListResizer {
   _dispose(): void;
 }
 
-const childrenEls = rand.map((height, i) => {
-  const el = document.createElement("div");
-  el.textContent = `Item ${i + 1}`;
-  el.style.border = "1px solid #ccc";
-  el.style.height = `${height}px`;
-  return el;
+const childrenEls: string[] = rand.map((height, i) => {
+  return `<div style="border: 1px solid #ccc; height: ${height}px;">Item ${i + 1}</div>`;
 });
-
-let unsubscribe: () => void = () => {};
-let v: HTMLElement | undefined;
 
 let store: virtua.VirtualStore | undefined;
 let resizer: ListResizer | undefined;
 let scroller: virtua.Scroller | undefined;
+let jumpCount: number | undefined;
 
-const virtualizedView = (children: HTMLElement[]): [HTMLElement, () => void] => {
+const virtualizedView = (
+  children: HTMLElement[],
+): [HTMLElement, () => void] => {
   const getElement = (i: number) => children[i];
   const count = children.length;
 
-  const localstore = store ?? virtua.createVirtualStore(
-    count,
-    undefined,
-    undefined,
-    undefined,
-    undefined,
-    true,
-  );
+  const localstore =
+    store ??
+    virtua.createVirtualStore(
+      count,
+      undefined,
+      undefined,
+      undefined,
+      undefined,
+      true,
+    );
   store = localstore;
 
   const localresizer = resizer ?? virtua.createResizer(localstore, false);
@@ -80,8 +84,22 @@ const virtualizedView = (children: HTMLElement[]): [HTMLElement, () => void] => 
   const localscroller = scroller ?? virtua.createScroller(localstore, false);
   scroller = localscroller;
 
+  const newJumpCount = localstore._getJumpCount();
+  if (jumpCount !== newJumpCount) {
+    console.log("fixing scroll jump")
+    localscroller._fixScrollJump();
+  }
+  jumpCount = jumpCount ?? newJumpCount;
+
+
   if (count !== localstore._getItemsLength()) {
     localstore._update(virtua.ACTION_ITEMS_LENGTH_CHANGE, [count, false]);
+  }
+
+  const unsubscribeList = new Array<() => void>(count);
+
+  function unsubscribe() {
+    unsubscribeList.forEach((unsub) => unsub());
   }
 
   const getListItem = (index: number) => {
@@ -89,15 +107,32 @@ const virtualizedView = (children: HTMLElement[]): [HTMLElement, () => void] => 
 
     const hide = localstore._isUnmeasuredItem(index);
 
-    const el = document.createElement("div");
-    el.style.position = hide ? "" : "absolute";
-    el.style.visibility = hide ? "hidden" : "visible"
-    el.style.width = "100%";
-    el.style.left = "0";
-    el.style.top = `${localstore._getItemOffset(index).toString()}px`;
-    el.appendChild(e);
+    // const el = document.createElement("div");
+    // el.style.position = hide ? "" : "absolute";
+    // el.style.visibility = hide ? "hidden" : "visible";
+    // el.style.width = "100%";
+    // el.style.left = "0";
+    // el.style.top = `${localstore._getItemOffset(index).toString()}px`;
+    // el.setAttribute("data-id", e.textContent!);
+    // el.appendChild(e);
+    const el = h("div", {
+      style: {
+        position: hide ? "" : "absolute",
+        visibility: hide ? "hidden" : "visible",
+        width: "100%",
+        left: "0",
+        top: `${localstore._getItemOffset(index).toString()}px`,
+      },
+      attrs: {
+        "data-id": e.textContent!,
+      },
+      props: {
+        innerHTML: e.outerHTML,
+      }
+    });
 
-    localresizer._observeItem(el, index);
+    const unobserve = localresizer._observeItem(el, index);
+    unsubscribeList.push(unobserve);
 
     return el;
   };
@@ -112,36 +147,36 @@ const virtualizedView = (children: HTMLElement[]): [HTMLElement, () => void] => 
   virtualizer.style.overflowAnchor = "none";
   virtualizer.style.flex = "none";
   virtualizer.style.position = "relative";
-  virtualizer.style.visibility = "hidden"
+  virtualizer.style.visibility = "hidden";
   virtualizer.style.width = "100%";
   virtualizer.style.height = `${localstore._getTotalSize()}px`;
   items.forEach((item) => virtualizer.appendChild(item));
 
-  const vlist = document.createElement("div");
-  vlist.style.display = "block";
-  vlist.style.overflowY = "auto";
-  vlist.style.contain = "strict"
-  vlist.style.width = "100%";
-  vlist.style.height = "200px";
-  vlist.appendChild(virtualizer);
-
-  return [vlist, unsubscribe];
-}
+  return [virtualizer, unsubscribe];
+};
 
 console.log("Hello Vite + TypeScript!");
 
+const vlist = document.createElement("div");
+vlist.style.display = "block";
+vlist.style.overflowY = "auto";
+vlist.style.contain = "strict";
+vlist.style.width = "100%";
+vlist.style.height = "500px";
+app.appendChild(vlist);
+
+
+const virtualizer = document.createElement("div");
+vlist.appendChild(virtualizer);
+
+let unsubscribe: () => void = () => {};
+
 const render = () => {
-  console.log("render");
-  // unsubscribe();
+  unsubscribe();
   const [vNew, unsub] = virtualizedView(childrenEls);
   unsubscribe = unsub;
-  if (v === undefined) {
-    app.appendChild(vNew);
-    v = vNew;
-  } else {
-    morphdom(v, vNew);
+    patch(virtualizer, vNew)
   }
-
 };
 
 render();
@@ -149,18 +184,13 @@ render();
 console.log("rendered");
 console.log("store", store);
 
-const unsubscribeStore = store?._subscribe(
-  virtua.UPDATE_VIRTUAL_STATE,
-  () => {
-    render();
-  },
-);
-
-if (v === undefined) {
-  throw new Error("No v");
+if (store === undefined) {
+  throw new Error("No store");
 }
 
-resizer?._observeRoot(v);
-scroller?._observe(v!);
+store._subscribe(virtua.UPDATE_VIRTUAL_STATE, (sync) => {
+  render();
+});
 
-
+resizer?._observeRoot(vlist);
+scroller?._observe(vlist);
