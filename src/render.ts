@@ -139,7 +139,7 @@ const _render = (context: Context) => {
   const [startIdx, endIdx] = store._getRange();
   const newChildrenData: ChildData[] = [];
   for (let newIdx = startIdx, j = endIdx; newIdx <= j; newIdx++) {
-    const oldChildDataMaybe = state.childrenData[0];
+    const oldChildDataMaybe: ChildData | undefined = state.childrenData[0];
     const hide = store._isUnmeasuredItem(newIdx);
     const top = `${store._getItemOffset(newIdx)}px`;
     const createChild = () =>
