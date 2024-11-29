@@ -20,10 +20,10 @@ interface Context {
   scroller: virtua.Scroller;
   virtualizer: HTMLElement;
   children: HTMLElement[];
-  virtualizerHeight: string;
+  virtualizerHeight?: string; 
+  jumpCount?: number;
 }
 
-let jumpCount: number;
 let childrenData: ChildrenData[] = [];
 
 export const setChildren = (context: Context, newChildren: HTMLElement[]) => {
@@ -103,7 +103,6 @@ export const init = (newChildren: HTMLElement[]): InitResult => {
     store,
     resizer,
     scroller,
-    virtualizerHeight: "",
   };
 
   store._subscribe(virtua.UPDATE_VIRTUAL_STATE, (_sync) => {
@@ -124,9 +123,9 @@ export const render = (context: Context) => {
 
 const _render = (context: Context) => {
   const newJumpCount = context.store._getJumpCount();
-  if (jumpCount !== newJumpCount) {
+  if (context.jumpCount !== newJumpCount) {
     context.scroller._fixScrollJump();
-    jumpCount = newJumpCount;
+    context.jumpCount = newJumpCount;
     return;
   }
 
