@@ -15,15 +15,15 @@ interface ChildData {
 }
 
 interface State {
-  childrenEls: HTMLElement[];
+  children: HTMLElement[];
   childrenData: ChildData[];
   containerHeight?: string;
   jumpCount?: number;
 }
 
 interface Context {
-  readonly rootEl: HTMLElement;
-  readonly containerEl: HTMLElement;
+  readonly root: HTMLElement;
+  readonly container: HTMLElement;
   readonly store: virtua.VirtualStore;
   readonly resizer: ListResizer;
   readonly scroller: virtua.Scroller;
@@ -31,9 +31,9 @@ interface Context {
 }
 
 export const setChildren = (context: Context, newChildren: HTMLElement[]) => {
-  context.state.childrenEls = newChildren;
+  context.state.children = newChildren;
   context.store._update(virtua.ACTION_ITEMS_LENGTH_CHANGE, [
-    context.state.childrenEls.length,
+    context.state.children.length,
     false,
   ]);
   render(context);
@@ -46,7 +46,7 @@ const createListItem = (
   top: string,
   newChild: ChildData[],
 ) => {
-  const child = context.state.childrenEls[idx]!;
+  const child = context.state.children[idx]!;
   const listItemEl = document.createElement("div");
   listItemEl.style.position = hide ? "" : "absolute";
   listItemEl.style.visibility = hide ? "hidden" : "visible";
@@ -97,14 +97,14 @@ export const init = (newChildren: HTMLElement[]): Context => {
   scroller._observe(rootEl);
 
   const context: Context = {
-    rootEl: rootEl,
-    containerEl: containerEl,
+    root: rootEl,
+    container: containerEl,
     store,
     resizer,
     scroller,
     state: {
       childrenData: [],
-      childrenEls: newChildren,
+      children: newChildren,
     },
   };
 
@@ -122,7 +122,7 @@ export const render = (context: Context) => {
 };
 
 const _render = (context: Context) => {
-  const { store, scroller, state, containerEl: container } = context;
+  const { store, scroller, state, container: container } = context;
   const newJumpCount = store._getJumpCount();
   if (state.jumpCount !== newJumpCount) {
     scroller._fixScrollJump();
