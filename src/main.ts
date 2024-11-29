@@ -26,9 +26,9 @@ function createChildren(height: number, index: number): HTMLElement {
 
 const childrenEls = createChildren(20, 0);
 
-const { vlist, store } = init([childrenEls]);
+const { vlist, context } = init([childrenEls]);
 app.appendChild(vlist);
-render()
+render(context)
 
 let count = 0;
 
@@ -39,7 +39,7 @@ const addChildren = () => {
     return;
   }
   const newChildren = rand.slice(0, count).map(createChildren);
-  setChildren(store, newChildren);
+  setChildren(context, newChildren);
   setTimeout(() => {
     addChildren();
   }, 1000);
