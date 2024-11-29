@@ -11,7 +11,7 @@ interface ChildrenData {
   hide: boolean;
   top: string;
   element: HTMLElement;
-  unsubscribe: () => void;
+  unobserve: () => void;
 }
 
 let children: HTMLElement[];
@@ -47,7 +47,7 @@ const createListItem = (
     hide,
     top,
     element,
-    unsubscribe: resizer._observeItem(element, newIndex),
+    unobserve: resizer._observeItem(element, newIndex),
   });
 
   return element;
@@ -146,7 +146,7 @@ export const rerender = () => {
     while (newIndex > oldChild.index) {
 
       oldChild.element.remove();
-      oldChild.unsubscribe();
+      oldChild.unobserve();
       childrenData.shift();
       const nextOldChild = childrenData[0];
 
@@ -188,7 +188,7 @@ export const rerender = () => {
 
   for (const oldChild of childrenData) {
     oldChild.element.remove();
-    oldChild.unsubscribe();
+    oldChild.unobserve();
   }
 
   childrenData = newChildrenData;
