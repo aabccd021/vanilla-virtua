@@ -18,10 +18,10 @@ interface Context {
   store: virtua.VirtualStore;
   resizer: ListResizer;
   scroller: virtua.Scroller;
+  virtualizer: HTMLElement;
   children: HTMLElement[];
 }
 
-let virtualizer: HTMLElement;
 let virtualizerHeight: string;
 let jumpCount: number;
 let childrenData: ChildrenData[] = [];
@@ -73,7 +73,7 @@ export const init = (newChildren: HTMLElement[]): InitResult  => {
     true,
   );
 
-  virtualizer = document.createElement("div");
+  const virtualizer = document.createElement("div");
   virtualizer.style.overflowAnchor = "none";
   virtualizer.style.flex = "none";
   virtualizer.style.position = "relative";
@@ -96,6 +96,7 @@ export const init = (newChildren: HTMLElement[]): InitResult  => {
 
   const context: Context = {
     children: newChildren,
+    virtualizer,
     store,
     resizer,
     scroller
@@ -127,7 +128,7 @@ const _render = (context: Context) => {
 
   const newVirtualizerHeight = `${context.store._getTotalSize()}px`;
   if (virtualizerHeight !== newVirtualizerHeight) {
-    virtualizer.style.height = newVirtualizerHeight;
+    context.virtualizer.style.height = newVirtualizerHeight;
     virtualizerHeight = newVirtualizerHeight;
   }
 
@@ -140,7 +141,7 @@ const _render = (context: Context) => {
 
     if (oldChildMaybe === undefined) {
       const element = createListItem(context, newIndex, hide, top, newChildrenData);
-      virtualizer.appendChild(element);
+      context.virtualizer.appendChild(element);
       childrenData.shift();
       continue;
     }
@@ -155,7 +156,7 @@ const _render = (context: Context) => {
       const nextOldChild = childrenData[0];
       if (nextOldChild === undefined) {
         const element = createListItem(context, newIndex, hide, top, newChildrenData);
-        virtualizer.appendChild(element);
+        context.virtualizer.appendChild(element);
         childrenData.shift();
         continue;
       }
@@ -165,7 +166,7 @@ const _render = (context: Context) => {
 
     if (newIndex < oldChild.index) {
       const element = createListItem(context, newIndex, hide, top, newChildrenData);
-      virtualizer.insertBefore(element, oldChild.element);
+      context.virtualizer.insertBefore(element, oldChild.element);
       continue;
     }
 
