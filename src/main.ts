@@ -178,6 +178,3 @@ const render = () => {
 }
 
 render();
-
-console.log("rendered");
-console.log("store", store);
