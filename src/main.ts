@@ -4,12 +4,6 @@ import viteLogo from "/vite.svg";
 import { setupCounter } from "./counter.ts";
 import * as virtua from "virtua/core";
 import morphdom from "morphdom";
-import {  h, init, propsModule, styleModule } from "snabbdom";
-
-const patch = init([
-  propsModule,
-  styleModule,
-])
 
 const app = document.querySelector<HTMLDivElement>("#app");
 
@@ -51,8 +45,19 @@ interface ListResizer {
   _dispose(): void;
 }
 
-const childrenEls: string[] = rand.map((height, i) => {
-  return `<div style="border: 1px solid #ccc; height: ${height}px;">Item ${i + 1}</div>`;
+const vlist = document.createElement("div");
+vlist.style.display = "block";
+vlist.style.overflowY = "auto";
+vlist.style.contain = "strict";
+vlist.style.width = "100%";
+vlist.style.height = "500px";
+
+const childrenEls = rand.map((height, i) => {
+  const el = document.createElement("div");
+  el.textContent = `Item ${i + 1}`;
+  el.style.border = "1px solid #ccc";
+  el.style.height = `${height}px`;
+  return el;
 });
 
 let store: virtua.VirtualStore | undefined;
@@ -76,13 +81,26 @@ const virtualizedView = (
       undefined,
       true,
     );
-  store = localstore;
+
+  if (store === undefined) {
+    localstore._subscribe(virtua.UPDATE_VIRTUAL_STATE, (sync) => {
+      render();
+    });
+    store = localstore;
+  }
+
 
   const localresizer = resizer ?? virtua.createResizer(localstore, false);
-  resizer = localresizer;
+  if (resizer === undefined) {
+    localresizer._observeRoot(vlist);
+    resizer = localresizer;
+  }
 
   const localscroller = scroller ?? virtua.createScroller(localstore, false);
-  scroller = localscroller;
+  if (scroller === undefined) {
+    localscroller._observe(vlist);
+    scroller = localscroller;
+  }
 
   const newJumpCount = localstore._getJumpCount();
   if (jumpCount !== newJumpCount) {
@@ -107,29 +125,13 @@ const virtualizedView = (
 
     const hide = localstore._isUnmeasuredItem(index);
 
-    // const el = document.createElement("div");
-    // el.style.position = hide ? "" : "absolute";
-    // el.style.visibility = hide ? "hidden" : "visible";
-    // el.style.width = "100%";
-    // el.style.left = "0";
-    // el.style.top = `${localstore._getItemOffset(index).toString()}px`;
-    // el.setAttribute("data-id", e.textContent!);
-    // el.appendChild(e);
-    const el = h("div", {
-      style: {
-        position: hide ? "" : "absolute",
-        visibility: hide ? "hidden" : "visible",
-        width: "100%",
-        left: "0",
-        top: `${localstore._getItemOffset(index).toString()}px`,
-      },
-      attrs: {
-        "data-id": e.textContent!,
-      },
-      props: {
-        innerHTML: e.outerHTML,
-      }
-    });
+    const el = document.createElement("div");
+    el.style.position = hide ? "" : "absolute";
+    el.style.visibility = hide ? "hidden" : "visible";
+    el.style.width = "100%";
+    el.style.left = "0";
+    el.style.top = `${localstore._getItemOffset(index).toString()}px`;
+    el.appendChild(e);
 
     const unobserve = localresizer._observeItem(el, index);
     unsubscribeList.push(unobserve);
@@ -157,12 +159,6 @@ const virtualizedView = (
 
 console.log("Hello Vite + TypeScript!");
 
-const vlist = document.createElement("div");
-vlist.style.display = "block";
-vlist.style.overflowY = "auto";
-vlist.style.contain = "strict";
-vlist.style.width = "100%";
-vlist.style.height = "500px";
 app.appendChild(vlist);
 
 
@@ -172,25 +168,16 @@ vlist.appendChild(virtualizer);
 let unsubscribe: () => void = () => {};
 
 const render = () => {
-  unsubscribe();
-  const [vNew, unsub] = virtualizedView(childrenEls);
-  unsubscribe = unsub;
-    patch(virtualizer, vNew)
-  }
-};
+  requestAnimationFrame(() => {
+    console.log("render");
+    unsubscribe();
+    const [vNew, unsub] = virtualizedView(childrenEls);
+    unsubscribe = unsub;
+    morphdom(virtualizer, vNew);
+  })
+}
 
 render();
 
 console.log("rendered");
 console.log("store", store);
-
-if (store === undefined) {
-  throw new Error("No store");
-}
-
-store._subscribe(virtua.UPDATE_VIRTUAL_STATE, (sync) => {
-  render();
-});
-
-resizer?._observeRoot(vlist);
-scroller?._observe(vlist);
