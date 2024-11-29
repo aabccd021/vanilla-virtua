@@ -128,32 +128,33 @@ export const render = (context: Context) => {
 };
 
 const _render = (context: Context) => {
-  const newJumpCount = context.store._getJumpCount();
-  if (context.state.jumpCount !== newJumpCount) {
-    context.scroller._fixScrollJump();
-    context.state.jumpCount = newJumpCount;
+  const { store, scroller, state, container } = context;
+  const newJumpCount = store._getJumpCount();
+  if (state.jumpCount !== newJumpCount) {
+    scroller._fixScrollJump();
+    state.jumpCount = newJumpCount;
     return;
   }
 
-  const newVirtualizerHeight = `${context.store._getTotalSize()}px`;
-  if (context.state.containerHeight !== newVirtualizerHeight) {
-    context.container.style.height = newVirtualizerHeight;
-    context.state.containerHeight = newVirtualizerHeight;
+  const newVirtualizerHeight = `${store._getTotalSize()}px`;
+  if (state.containerHeight !== newVirtualizerHeight) {
+    container.style.height = newVirtualizerHeight;
+    state.containerHeight = newVirtualizerHeight;
   }
 
-  const [startIdx, endIdx] = context.store._getRange();
+  const [startIdx, endIdx] = store._getRange();
   const newChild: ChildData[] = [];
   for (let newIdx = startIdx, j = endIdx; newIdx <= j; newIdx++) {
-    const oldChildMaybe = context.state.childData[0];
-    const hide = context.store._isUnmeasuredItem(newIdx);
-    const top = `${context.store._getItemOffset(newIdx)}px`;
+    const oldChildMaybe = state.childData[0];
+    const hide = store._isUnmeasuredItem(newIdx);
+    const top = `${store._getItemOffset(newIdx)}px`;
     const createNewListItem = () =>
       createListItem(context, newIdx, hide, top, newChild);
 
     if (oldChildMaybe === undefined) {
       const newChild = createNewListItem();
-      context.container.appendChild(newChild);
-      context.state.childData.shift();
+      container.appendChild(newChild);
+      state.childData.shift();
       continue;
     }
 
@@ -161,13 +162,13 @@ const _render = (context: Context) => {
     while (newIdx > oldChild.idx) {
       oldChild.element.remove();
       oldChild.unobserve();
-      context.state.childData.shift();
+      state.childData.shift();
 
-      const nextOldChild = context.state.childData[0];
+      const nextOldChild = state.childData[0];
       if (nextOldChild === undefined) {
         const newChild = createNewListItem();
-        context.container.appendChild(newChild);
-        context.state.childData.shift();
+        container.appendChild(newChild);
+        state.childData.shift();
         continue;
       }
 
@@ -176,7 +177,7 @@ const _render = (context: Context) => {
 
     if (newIdx < oldChild.idx) {
       const newChild = createNewListItem();
-      context.container.insertBefore(newChild, oldChild.element);
+      container.insertBefore(newChild, oldChild.element);
       continue;
     }
 
@@ -193,15 +194,15 @@ const _render = (context: Context) => {
         oldChild.top = top;
       }
       newChild.push(oldChild);
-      context.state.childData.shift();
+      state.childData.shift();
       continue;
     }
   }
 
-  for (const oldChild of context.state.childData) {
+  for (const oldChild of state.childData) {
     oldChild.element.remove();
     oldChild.unobserve();
   }
 
-  context.state.childData = newChild;
+  state.childData = newChild;
 };
