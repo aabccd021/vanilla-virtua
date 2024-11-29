@@ -125,9 +125,15 @@ export const init = (newChildren: HTMLElement[]): [Context, () => void] => {
   return [context, dispose];
 };
 
+let isRendering = false;
 export const render = (context: Context) => {
   requestAnimationFrame(() => {
+    if (isRendering) {
+      return;
+    }
+    isRendering = true;
     _render(context);
+    isRendering = false;
   });
 };
 
@@ -160,8 +166,7 @@ const _render = (context: Context) => {
       _createChildEl(context, newChildIdx, hide, top, newChildrenData);
 
     if (oldChildDataMaybe === undefined) {
-      const newChildData = createChildEl();
-      container.appendChild(newChildData);
+      container.appendChild(createChildEl());
       state.childrenData.shift();
       continue;
     }
@@ -174,8 +179,7 @@ const _render = (context: Context) => {
 
       const nextOldChild = state.childrenData[0];
       if (nextOldChild === undefined) {
-        const newChildData = createChildEl();
-        container.appendChild(newChildData);
+        container.appendChild(createChildEl());
         state.childrenData.shift();
         continue;
       }
@@ -184,8 +188,7 @@ const _render = (context: Context) => {
     }
 
     if (newChildIdx < oldChildData.idx) {
-      const newChildData = createChildEl();
-      container.insertBefore(newChildData, oldChildData.element);
+      container.insertBefore(createChildEl(), oldChildData.element);
       continue;
     }
 

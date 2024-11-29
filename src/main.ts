@@ -24,7 +24,10 @@ render(context)
 
 
 const addChildren = () => {
-  childrenEls.push(createChild());
+  for (let i = 0; i < 100; i++) {
+    childrenEls.push(createChild());
+  }
+  console.warn("Children length", childrenEls.length)
   setChildren(context, childrenEls);
   setTimeout(() => {
     addChildren();
