@@ -125,27 +125,25 @@ const _render = () => {
   const [startIndex, endIndex] = store._getRange();
   const newChildrenData: ChildrenData[] = [];
   for (let newIndex = startIndex, j = endIndex; newIndex <= j; newIndex++) {
-    const oldChildUnd = childrenData[0];
+    const oldChildMaybe = childrenData[0];
     const hide = store._isUnmeasuredItem(newIndex);
-    const offset = store._getItemOffset(newIndex);
-    const top = `${offset}px`;
+    const top = `${store._getItemOffset(newIndex)}px`;
 
-    if (oldChildUnd === undefined) {
+    if (oldChildMaybe === undefined) {
       const element = createListItem(newIndex, hide, top, newChildrenData);
       virtualizer.appendChild(element);
       childrenData.shift();
       continue;
     }
 
-    let oldChild = oldChildUnd;
+    let oldChild = oldChildMaybe;
     while (newIndex > oldChild.index) {
 
       oldChild.element.remove();
       oldChild.unobserve();
       childrenData.shift();
-      const nextOldChild = childrenData[0];
 
-      // no more old children
+      const nextOldChild = childrenData[0];
       if (nextOldChild === undefined) {
         const element = createListItem(newIndex, hide, top, newChildrenData);
         virtualizer.appendChild(element);
