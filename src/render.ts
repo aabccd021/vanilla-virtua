@@ -15,8 +15,8 @@ interface ChildData {
 }
 
 interface State {
-  childElements: HTMLElement[];
-  childData: ChildData[];
+  childrenElements: HTMLElement[];
+  childrenData: ChildData[];
   containerHeight?: string;
   jumpCount?: number;
 }
@@ -31,9 +31,9 @@ interface Context {
 }
 
 export const setChildren = (context: Context, newChildren: HTMLElement[]) => {
-  context.state.childElements = newChildren;
+  context.state.childrenElements = newChildren;
   context.store._update(virtua.ACTION_ITEMS_LENGTH_CHANGE, [
-    context.state.childElements.length,
+    context.state.childrenElements.length,
     false,
   ]);
   render(context);
@@ -46,7 +46,7 @@ const createListItem = (
   top: string,
   newChild: ChildData[],
 ) => {
-  const child = context.state.childElements[idx]!;
+  const child = context.state.childrenElements[idx]!;
   const listItemElement = document.createElement("div");
   listItemElement.style.position = hide ? "" : "absolute";
   listItemElement.style.visibility = hide ? "hidden" : "visible";
@@ -103,8 +103,8 @@ export const init = (newChildren: HTMLElement[]): Context => {
     resizer,
     scroller,
     state: {
-      childData: [],
-      childElements: newChildren,
+      childrenData: [],
+      childrenElements: newChildren,
     },
   };
 
@@ -139,7 +139,7 @@ const _render = (context: Context) => {
   const [startIdx, endIdx] = store._getRange();
   const newChildrenData: ChildData[] = [];
   for (let newIdx = startIdx, j = endIdx; newIdx <= j; newIdx++) {
-    const oldChildDataMaybe = state.childData[0];
+    const oldChildDataMaybe = state.childrenData[0];
     const hide = store._isUnmeasuredItem(newIdx);
     const top = `${store._getItemOffset(newIdx)}px`;
     const createChild = () =>
@@ -148,7 +148,7 @@ const _render = (context: Context) => {
     if (oldChildDataMaybe === undefined) {
       const newChildData = createChild();
       container.appendChild(newChildData);
-      state.childData.shift();
+      state.childrenData.shift();
       continue;
     }
 
@@ -156,13 +156,13 @@ const _render = (context: Context) => {
     while (newIdx > oldChildData.idx) {
       oldChildData.element.remove();
       oldChildData.unobserve();
-      state.childData.shift();
+      state.childrenData.shift();
 
-      const nextOldChild = state.childData[0];
+      const nextOldChild = state.childrenData[0];
       if (nextOldChild === undefined) {
         const newChildData = createChild();
         container.appendChild(newChildData);
-        state.childData.shift();
+        state.childrenData.shift();
         continue;
       }
 
@@ -190,15 +190,15 @@ const _render = (context: Context) => {
       }
 
       newChildrenData.push(oldChildData);
-      state.childData.shift();
+      state.childrenData.shift();
       continue;
     }
   }
 
-  for (const oldChild of state.childData) {
+  for (const oldChild of state.childrenData) {
     oldChild.element.remove();
     oldChild.unobserve();
   }
 
-  state.childData = newChildrenData;
+  state.childrenData = newChildrenData;
 };
