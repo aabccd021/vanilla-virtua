@@ -16,11 +16,11 @@ interface ChildrenData {
 
 interface Context {
   store: virtua.VirtualStore;
+  resizer: ListResizer;
+  scroller: virtua.Scroller;
 }
 
 let children: HTMLElement[];
-let resizer: ListResizer;
-let scroller: virtua.Scroller;
 let virtualizer: HTMLElement;
 let virtualizerHeight: string;
 let jumpCount: number;
@@ -33,6 +33,7 @@ export const setChildren = (context: Context, newChildren: HTMLElement[]) => {
 };
 
 const createListItem = (
+  context: Context,
   newIndex: number,
   hide: boolean,
   top: string,
@@ -51,7 +52,7 @@ const createListItem = (
     hide,
     top,
     element,
-    unobserve: resizer._observeItem(element, newIndex),
+    unobserve: context.resizer._observeItem(element, newIndex),
   });
 
   return element;
@@ -89,14 +90,16 @@ export const init = (newChildren: HTMLElement[]): InitResult  => {
   vlist.style.height = "100%";
   vlist.appendChild(virtualizer);
 
-  resizer = virtua.createResizer(store, false);
+  const resizer = virtua.createResizer(store, false);
   resizer._observeRoot(vlist);
 
-  scroller = virtua.createScroller(store, false);
+  const scroller = virtua.createScroller(store, false);
   scroller._observe(vlist);
 
   const context: Context = {
     store,
+    resizer,
+    scroller
   };
 
   store._subscribe(virtua.UPDATE_VIRTUAL_STATE, (_sync) => {
@@ -118,7 +121,7 @@ export const render = (context: Context) => {
 const _render = (context: Context) => {
   const newJumpCount = context.store._getJumpCount();
   if (jumpCount !== newJumpCount) {
-    scroller._fixScrollJump();
+    context.scroller._fixScrollJump();
     jumpCount = newJumpCount;
     return;
   }
@@ -137,7 +140,7 @@ const _render = (context: Context) => {
     const top = `${context.store._getItemOffset(newIndex)}px`;
 
     if (oldChildMaybe === undefined) {
-      const element = createListItem(newIndex, hide, top, newChildrenData);
+      const element = createListItem(context, newIndex, hide, top, newChildrenData);
       virtualizer.appendChild(element);
       childrenData.shift();
       continue;
@@ -152,7 +155,7 @@ const _render = (context: Context) => {
 
       const nextOldChild = childrenData[0];
       if (nextOldChild === undefined) {
-        const element = createListItem(newIndex, hide, top, newChildrenData);
+        const element = createListItem(context, newIndex, hide, top, newChildrenData);
         virtualizer.appendChild(element);
         childrenData.shift();
         continue;
@@ -162,7 +165,7 @@ const _render = (context: Context) => {
     }
 
     if (newIndex < oldChild.index) {
-      const element = createListItem(newIndex, hide, top, newChildrenData);
+      const element = createListItem(context, newIndex, hide, top, newChildrenData);
       virtualizer.insertBefore(element, oldChild.element);
       continue;
     }
