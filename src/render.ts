@@ -23,8 +23,9 @@ let virtualizerHeight: string;
 let jumpCount: number;
 let childrenData: ChildrenData[] = [];
 
-export const setChildren = (newChildren: HTMLElement[]) => {
+export const setChildren = (store: virtua.VirtualStore, newChildren: HTMLElement[]) => {
   children = newChildren;
+  store._update(virtua.ACTION_ITEMS_LENGTH_CHANGE, [children.length, false]);
   render();
 };
 
@@ -55,9 +56,12 @@ const createListItem = (
 
 interface InitResult {
   vlist: HTMLElement;
+  store: virtua.VirtualStore;
 }
 
-export const init = (): InitResult  => {
+export const init = (newChildren: HTMLElement[]): InitResult  => {
+  children = newChildren;
+
   store = virtua.createVirtualStore(
     children.length,
     undefined,
@@ -94,6 +98,7 @@ export const init = (): InitResult  => {
 
   return {
     vlist,
+    store
   }
 };
 
@@ -104,11 +109,6 @@ export const render = () => {
 }
 
 const _render = () => {
-  if (children.length !== store._getItemsLength()) {
-    store._update(virtua.ACTION_ITEMS_LENGTH_CHANGE, [children.length, false]);
-    return;
-  }
-
   const newJumpCount = store._getJumpCount();
   if (jumpCount !== newJumpCount) {
     scroller._fixScrollJump();
