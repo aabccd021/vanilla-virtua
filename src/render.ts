@@ -39,7 +39,7 @@ export const setChildren = (context: Context, newChildren: HTMLElement[]) => {
   render(context);
 };
 
-const createListItem = (
+const _createChildEl = (
   context: Context,
   idx: number,
   hide: boolean,
@@ -142,11 +142,11 @@ const _render = (context: Context) => {
     const oldChildDataMaybe: ChildData | undefined = state.childrenData[0];
     const hide = store._isUnmeasuredItem(newIdx);
     const top = `${store._getItemOffset(newIdx)}px`;
-    const createChild = () =>
-      createListItem(context, newIdx, hide, top, newChildrenData);
+    const createChildEl = () =>
+      _createChildEl(context, newIdx, hide, top, newChildrenData);
 
     if (oldChildDataMaybe === undefined) {
-      const newChildData = createChild();
+      const newChildData = createChildEl();
       container.appendChild(newChildData);
       state.childrenData.shift();
       continue;
@@ -160,7 +160,7 @@ const _render = (context: Context) => {
 
       const nextOldChild = state.childrenData[0];
       if (nextOldChild === undefined) {
-        const newChildData = createChild();
+        const newChildData = createChildEl();
         container.appendChild(newChildData);
         state.childrenData.shift();
         continue;
@@ -170,7 +170,7 @@ const _render = (context: Context) => {
     }
 
     if (newIdx < oldChildData.idx) {
-      const newChildData = createChild();
+      const newChildData = createChildEl();
       container.insertBefore(newChildData, oldChildData.el);
       continue;
     }
