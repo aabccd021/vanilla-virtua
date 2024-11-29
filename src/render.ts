@@ -47,22 +47,22 @@ const createListItem = (
   newChild: ChildData[],
 ) => {
   const child = context.state.children[idx]!;
-  const listItemEl = document.createElement("div");
-  listItemEl.style.position = hide ? "" : "absolute";
-  listItemEl.style.visibility = hide ? "hidden" : "visible";
-  listItemEl.style.top = top;
-  listItemEl.style.width = "100%";
-  listItemEl.style.left = "0";
-  listItemEl.appendChild(child);
+  const listItem = document.createElement("div");
+  listItem.style.position = hide ? "" : "absolute";
+  listItem.style.visibility = hide ? "hidden" : "visible";
+  listItem.style.top = top;
+  listItem.style.width = "100%";
+  listItem.style.left = "0";
+  listItem.appendChild(child);
   newChild.push({
     idx,
     hide,
     top,
-    el: listItemEl,
-    unobserve: context.resizer._observeItem(listItemEl, idx),
+    el: listItem,
+    unobserve: context.resizer._observeItem(listItem, idx),
   });
 
-  return listItemEl;
+  return listItem;
 };
 
 export const init = (newChildren: HTMLElement[]): Context => {
