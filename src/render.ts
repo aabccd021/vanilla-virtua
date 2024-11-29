@@ -6,7 +6,7 @@ interface ListResizer {
   _dispose(): void;
 }
 
-interface Child {
+interface ChildData {
   idx: number;
   hide: boolean;
   top: string;
@@ -14,22 +14,25 @@ interface Child {
   unobserve: () => void;
 }
 
+interface State {
+  childElements: HTMLElement[];
+  childData: ChildData[];
+  containerHeight?: string;
+  jumpCount?: number;
+}
+
 interface Context {
   readonly store: virtua.VirtualStore;
   readonly resizer: ListResizer;
   readonly scroller: virtua.Scroller;
   readonly container: HTMLElement;
-  children: HTMLElement[];
-  containerHeight?: string; 
-  jumpCount?: number;
-  child: Child[];
+  readonly state: State;
 }
 
-
 export const setChildren = (context: Context, newChildren: HTMLElement[]) => {
-  context.children = newChildren;
+  context.state.childElements = newChildren;
   context.store._update(virtua.ACTION_ITEMS_LENGTH_CHANGE, [
-    context.children.length,
+    context.state.childElements.length,
     false,
   ]);
   render(context);
@@ -37,28 +40,28 @@ export const setChildren = (context: Context, newChildren: HTMLElement[]) => {
 
 const createListItem = (
   context: Context,
-  newIdx: number,
+  idx: number,
   hide: boolean,
   top: string,
-  newChild: Child[],
+  newChild: ChildData[],
 ) => {
-  const e = context.children[newIdx]!;
-  const element = document.createElement("div");
-  element.style.position = hide ? "" : "absolute";
-  element.style.visibility = hide ? "hidden" : "visible";
-  element.style.top = top;
-  element.style.width = "100%";
-  element.style.left = "0";
-  element.appendChild(e);
+  const child = context.state.childElements[idx]!;
+  const listItemElement = document.createElement("div");
+  listItemElement.style.position = hide ? "" : "absolute";
+  listItemElement.style.visibility = hide ? "hidden" : "visible";
+  listItemElement.style.top = top;
+  listItemElement.style.width = "100%";
+  listItemElement.style.left = "0";
+  listItemElement.appendChild(child);
   newChild.push({
-    idx: newIdx,
+    idx,
     hide,
     top,
-    element,
-    unobserve: context.resizer._observeItem(element, newIdx),
+    element: listItemElement,
+    unobserve: context.resizer._observeItem(listItemElement, idx),
   });
 
-  return element;
+  return listItemElement;
 };
 
 interface InitResult {
@@ -98,12 +101,14 @@ export const init = (newChildren: HTMLElement[]): InitResult => {
   scroller._observe(root);
 
   const context: Context = {
-    children: newChildren,
     container,
     store,
     resizer,
     scroller,
-    child: [],
+    state: {
+      childData: [],
+      childElements: newChildren,
+    },
   };
 
   store._subscribe(virtua.UPDATE_VIRTUAL_STATE, (_sync) => {
@@ -124,50 +129,45 @@ export const render = (context: Context) => {
 
 const _render = (context: Context) => {
   const newJumpCount = context.store._getJumpCount();
-  if (context.jumpCount !== newJumpCount) {
+  if (context.state.jumpCount !== newJumpCount) {
     context.scroller._fixScrollJump();
-    context.jumpCount = newJumpCount;
+    context.state.jumpCount = newJumpCount;
     return;
   }
 
   const newVirtualizerHeight = `${context.store._getTotalSize()}px`;
-  if (context.containerHeight !== newVirtualizerHeight) {
+  if (context.state.containerHeight !== newVirtualizerHeight) {
     context.container.style.height = newVirtualizerHeight;
-    context.containerHeight = newVirtualizerHeight;
+    context.state.containerHeight = newVirtualizerHeight;
   }
 
   const [startIdx, endIdx] = context.store._getRange();
-  const newChild: Child[] = [];
+  const newChild: ChildData[] = [];
   for (let newIdx = startIdx, j = endIdx; newIdx <= j; newIdx++) {
-    const oldChildMaybe = context.child[0];
+    const oldChildMaybe = context.state.childData[0];
     const hide = context.store._isUnmeasuredItem(newIdx);
     const top = `${context.store._getItemOffset(newIdx)}px`;
-    const createNewChild = () => createListItem(
-      context,
-      newIdx,
-      hide,
-      top,
-      newChild,
-    );
+    const createNewListItem = () =>
+      createListItem(context, newIdx, hide, top, newChild);
 
     if (oldChildMaybe === undefined) {
-      const newChild = createNewChild();
+      const newChild = createNewListItem();
       context.container.appendChild(newChild);
-      context.child.shift();
+      context.state.childData.shift();
       continue;
     }
 
-    let oldChild: Child = oldChildMaybe;
+    let oldChild: ChildData = oldChildMaybe;
     while (newIdx > oldChild.idx) {
       oldChild.element.remove();
       oldChild.unobserve();
-      context.child.shift();
+      context.state.childData.shift();
 
-      const nextOldChild = context.child[0];
+      const nextOldChild = context.state.childData[0];
       if (nextOldChild === undefined) {
-        const newChild = createNewChild();
+        const newChild = createNewListItem();
         context.container.appendChild(newChild);
-        context.child.shift();
+        context.state.childData.shift();
         continue;
       }
 
@@ -175,7 +175,7 @@ const _render = (context: Context) => {
     }
 
     if (newIdx < oldChild.idx) {
-      const newChild = createNewChild()
+      const newChild = createNewListItem();
       context.container.insertBefore(newChild, oldChild.element);
       continue;
     }
@@ -193,15 +193,15 @@ const _render = (context: Context) => {
         oldChild.top = top;
       }
       newChild.push(oldChild);
-      context.child.shift();
+      context.state.childData.shift();
       continue;
     }
   }
 
-  for (const oldChild of context.child) {
+  for (const oldChild of context.state.childData) {
     oldChild.element.remove();
     oldChild.unobserve();
   }
 
-  context.child = newChild;
+  context.state.childData = newChild;
 };
