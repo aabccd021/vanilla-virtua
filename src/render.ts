@@ -115,7 +115,14 @@ export const init = (newChildren: HTMLElement[]): [Context, () => void] => {
     },
   );
 
-  return [context, unsubscribeStore];
+  const dispose = () => {
+    unsubscribeStore();
+    for (const childData of context.state.childrenData) {
+      childData.unobserve();
+    }
+  }
+
+  return [context, dispose];
 };
 
 export const render = (context: Context) => {
