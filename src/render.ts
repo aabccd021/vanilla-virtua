@@ -7,7 +7,7 @@ interface ListResizer {
 }
 
 interface ChildrenData {
-  index: number;
+  idx: number;
   hide: boolean;
   top: string;
   element: HTMLElement;
@@ -37,12 +37,12 @@ export const setChildren = (context: Context, newChildren: HTMLElement[]) => {
 
 const createListItem = (
   context: Context,
-  newIndex: number,
+  newIdx: number,
   hide: boolean,
   top: string,
   newChildrenData: ChildrenData[],
 ) => {
-  const e = context.children[newIndex]!;
+  const e = context.children[newIdx]!;
   const element = document.createElement("div");
   element.style.position = hide ? "" : "absolute";
   element.style.visibility = hide ? "hidden" : "visible";
@@ -51,11 +51,11 @@ const createListItem = (
   element.style.left = "0";
   element.appendChild(e);
   newChildrenData.push({
-    index: newIndex,
+    idx: newIdx,
     hide,
     top,
     element,
-    unobserve: context.resizer._observeItem(element, newIndex),
+    unobserve: context.resizer._observeItem(element, newIdx),
   });
 
   return element;
@@ -136,17 +136,17 @@ const _render = (context: Context) => {
     context.virtualizerHeight = newVirtualizerHeight;
   }
 
-  const [startIndex, endIndex] = context.store._getRange();
+  const [startIdx, endIdx] = context.store._getRange();
   const newChildrenData: ChildrenData[] = [];
-  for (let newIndex = startIndex, j = endIndex; newIndex <= j; newIndex++) {
+  for (let newIdx = startIdx, j = endIdx; newIdx <= j; newIdx++) {
     const oldChildMaybe = context.childrenData[0];
-    const hide = context.store._isUnmeasuredItem(newIndex);
-    const top = `${context.store._getItemOffset(newIndex)}px`;
+    const hide = context.store._isUnmeasuredItem(newIdx);
+    const top = `${context.store._getItemOffset(newIdx)}px`;
 
     if (oldChildMaybe === undefined) {
       const element = createListItem(
         context,
-        newIndex,
+        newIdx,
         hide,
         top,
         newChildrenData,
@@ -157,7 +157,7 @@ const _render = (context: Context) => {
     }
 
     let oldChild = oldChildMaybe;
-    while (newIndex > oldChild.index) {
+    while (newIdx > oldChild.idx) {
       oldChild.element.remove();
       oldChild.unobserve();
       context.childrenData.shift();
@@ -166,7 +166,7 @@ const _render = (context: Context) => {
       if (nextOldChild === undefined) {
         const element = createListItem(
           context,
-          newIndex,
+          newIdx,
           hide,
           top,
           newChildrenData,
@@ -179,10 +179,10 @@ const _render = (context: Context) => {
       oldChild = nextOldChild;
     }
 
-    if (newIndex < oldChild.index) {
+    if (newIdx < oldChild.idx) {
       const element = createListItem(
         context,
-        newIndex,
+        newIdx,
         hide,
         top,
         newChildrenData,
@@ -191,7 +191,7 @@ const _render = (context: Context) => {
       continue;
     }
 
-    if (oldChild.index === newIndex) {
+    if (oldChild.idx === newIdx) {
       const prevHide = oldChild.hide;
       if (hide !== prevHide) {
         oldChild.element.style.position = hide ? "" : "absolute";
