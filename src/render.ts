@@ -130,10 +130,10 @@ const _render = (context: Context) => {
     return;
   }
 
-  const newVirtualizerHeight = `${store._getTotalSize()}px`;
-  if (state.containerHeight !== newVirtualizerHeight) {
-    container.style.height = newVirtualizerHeight;
-    state.containerHeight = newVirtualizerHeight;
+  const newContainerHeight = `${store._getTotalSize()}px`;
+  if (state.containerHeight !== newContainerHeight) {
+    container.style.height = newContainerHeight;
+    state.containerHeight = newContainerHeight;
   }
 
   const [startIdx, endIdx] = store._getRange();
