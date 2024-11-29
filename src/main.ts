@@ -18,7 +18,7 @@ function createChild(): HTMLElement {
 
 let childrenEls = [createChild()];
 
-const context = init(childrenEls);
+const [context, _dispose] = init(childrenEls);
 app.appendChild(context.root);
 render(context)
 

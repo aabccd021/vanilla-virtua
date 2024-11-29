@@ -65,16 +65,7 @@ const _createChildEl = (
   return listItem;
 };
 
-export const init = (newChildren: HTMLElement[]): Context => {
-  const store = virtua.createVirtualStore(
-    newChildren.length,
-    undefined,
-    undefined,
-    undefined,
-    undefined,
-    true,
-  );
-
+export const init = (newChildren: HTMLElement[]): [Context, () => void] => {
   const container = document.createElement("div");
   container.style.overflowAnchor = "none";
   container.style.flex = "none";
@@ -89,6 +80,15 @@ export const init = (newChildren: HTMLElement[]): Context => {
   root.style.width = "100%";
   root.style.height = "100%";
   root.appendChild(container);
+
+  const store = virtua.createVirtualStore(
+    newChildren.length,
+    undefined,
+    undefined,
+    undefined,
+    undefined,
+    true,
+  );
 
   const resizer = virtua.createResizer(store, false);
   resizer._observeRoot(root);
@@ -108,11 +108,14 @@ export const init = (newChildren: HTMLElement[]): Context => {
     },
   };
 
-  store._subscribe(virtua.UPDATE_VIRTUAL_STATE, (_sync) => {
-    render(context);
-  });
+  const unsubscribeStore = store._subscribe(
+    virtua.UPDATE_VIRTUAL_STATE,
+    (_sync) => {
+      render(context);
+    },
+  );
 
-  return context;
+  return [context, unsubscribeStore];
 };
 
 export const render = (context: Context) => {
@@ -134,11 +137,16 @@ const _render = (context: Context) => {
   if (state.containerHeight !== newContainerHeight) {
     container.style.height = newContainerHeight;
     state.containerHeight = newContainerHeight;
+    return;
   }
 
   const [startIdx, endIdx] = store._getRange();
   const newChildrenData: ChildData[] = [];
-  for (let newChildIdx = startIdx, j = endIdx; newChildIdx <= j; newChildIdx++) {
+  for (
+    let newChildIdx = startIdx, j = endIdx;
+    newChildIdx <= j;
+    newChildIdx++
+  ) {
     const oldChildDataMaybe: ChildData | undefined = state.childrenData[0];
     const hide = store._isUnmeasuredItem(newChildIdx);
     const top = `${store._getItemOffset(newChildIdx)}px`;
@@ -199,6 +207,7 @@ const _render = (context: Context) => {
     oldChild.element.remove();
     oldChild.unobserve();
   }
+
 
   state.childrenData = newChildrenData;
 };
