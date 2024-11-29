@@ -33,14 +33,13 @@ const createListItem = (
   top: string,
   newChildrenData: ChildrenData[],
 ) => {
-  const e = children[newIndex];
+  const e = children[newIndex]!;
   const element = document.createElement("div");
   element.style.position = hide ? "" : "absolute";
   element.style.visibility = hide ? "hidden" : "visible";
   element.style.top = top;
   element.style.width = "100%";
   element.style.left = "0";
-  element.dataset.index = newIndex.toString();
   element.appendChild(e);
   newChildrenData.push({
     index: newIndex,

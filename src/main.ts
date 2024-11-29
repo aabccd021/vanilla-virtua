@@ -18,7 +18,6 @@ const rand = [
 
 const childrenEls = rand.map((height, i) => {
   const el = document.createElement("p");
-  el.dataset.index = i.toString();
   el.textContent = `Item ${i + 1}`;
   el.style.border = "1px solid #ccc";
   el.style.height = `${height}px`;
