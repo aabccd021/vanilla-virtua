@@ -22,6 +22,7 @@ interface State {
 }
 
 interface Context {
+  readonly root: HTMLElement;
   readonly store: virtua.VirtualStore;
   readonly resizer: ListResizer;
   readonly scroller: virtua.Scroller;
@@ -64,12 +65,7 @@ const createListItem = (
   return listItemElement;
 };
 
-interface InitResult {
-  root: HTMLElement;
-  context: Context;
-}
-
-export const init = (newChildren: HTMLElement[]): InitResult => {
+export const init = (newChildren: HTMLElement[]): Context => {
   const store = virtua.createVirtualStore(
     newChildren.length,
     undefined,
@@ -101,6 +97,7 @@ export const init = (newChildren: HTMLElement[]): InitResult => {
   scroller._observe(root);
 
   const context: Context = {
+    root,
     container,
     store,
     resizer,
@@ -115,10 +112,7 @@ export const init = (newChildren: HTMLElement[]): InitResult => {
     render(context);
   });
 
-  return {
-    root,
-    context,
-  };
+  return context;
 };
 
 export const render = (context: Context) => {
