@@ -31,6 +31,32 @@ export const setChildren = (newChildren: HTMLElement[]) => {
   getElement = (i: number) => children[i];
 };
 
+const createListItem = (
+  newIndex: number,
+  hide: boolean,
+  top: string,
+  newChildrenData: ChildrenData[],
+) => {
+  const e = getElement(newIndex);
+  const element = document.createElement("div");
+  element.style.position = hide ? "" : "absolute";
+  element.style.visibility = hide ? "hidden" : "visible";
+  element.style.top = top;
+  element.style.width = "100%";
+  element.style.left = "0";
+  element.dataset.index = newIndex.toString();
+  element.appendChild(e);
+  newChildrenData.push({
+    index: newIndex,
+    hide,
+    top,
+    element,
+    unsubscribe: resizer._observeItem(element, newIndex),
+  });
+
+  return element;
+}
+
 export const init = (parent: HTMLElement) => {
   store = virtua.createVirtualStore(
     count,
@@ -84,11 +110,13 @@ export const rerender = () => {
     return;
   }
   rendering = true;
+
   if (count !== store._getItemsLength()) {
     store._update(virtua.ACTION_ITEMS_LENGTH_CHANGE, [count, false]);
     rendering = false;
     return;
   }
+
   const newJumpCount = store._getJumpCount();
   if (jumpCount !== newJumpCount) {
     scroller._fixScrollJump();
@@ -96,6 +124,7 @@ export const rerender = () => {
     rendering = false;
     return;
   }
+
   const newVirtualizerHeight = `${store._getTotalSize()}px`;
   if (virtualizerHeight !== newVirtualizerHeight) {
     virtualizer.style.height = newVirtualizerHeight;
@@ -109,86 +138,38 @@ export const rerender = () => {
     const hide = store._isUnmeasuredItem(newIndex);
     const offset = store._getItemOffset(newIndex);
     const top = `${offset}px`;
+
     if (oldChildUnd === undefined) {
-      const e = getElement(newIndex);
-      const element = document.createElement("div");
-      element.style.position = hide ? "" : "absolute";
-      element.style.visibility = hide ? "hidden" : "visible";
-      element.style.top = top;
-      element.style.width = "100%";
-      element.style.left = "0";
-      element.dataset.index = newIndex.toString();
-      element.appendChild(e);
-
+      const element = createListItem(newIndex, hide, top, newChildrenData);
       virtualizer.appendChild(element);
-      newChildrenData.push({
-        index: newIndex,
-        hide,
-        top,
-        element: element,
-        unsubscribe: resizer._observeItem(element, newIndex),
-      });
-
       childrenData.shift();
-
       continue;
     }
+
     let oldChild = oldChildUnd;
     while (newIndex > oldChild.index) {
 
       oldChild.element.remove();
-
       oldChild.unsubscribe();
       childrenData.shift();
       const nextChildData = childrenData[0];
 
       if (nextChildData === undefined) {
-        const e = getElement(newIndex);
-        const element = document.createElement("div");
-        element.style.position = hide ? "" : "absolute";
-        element.style.visibility = hide ? "hidden" : "visible";
-        element.style.top = top;
-        element.style.width = "100%";
-        element.style.left = "0";
-        element.dataset.index = newIndex.toString();
-        element.appendChild(e);
-
+        const element = createListItem(newIndex, hide, top, newChildrenData);
         virtualizer.appendChild(element);
-        newChildrenData.push({
-          index: newIndex,
-          hide,
-          top,
-          element: element,
-          unsubscribe: resizer._observeItem(element, newIndex),
-        });
-
         childrenData.shift();
         continue;
       }
+
       oldChild = nextChildData;
     }
 
     if (newIndex < oldChild.index) {
-      const e = getElement(newIndex);
-      const element = document.createElement("div");
-      element.style.position = hide ? "" : "absolute";
-      element.style.visibility = hide ? "hidden" : "visible";
-      element.style.top = top;
-      element.style.width = "100%";
-      element.style.left = "0";
-      element.dataset.index = newIndex.toString();
-      element.appendChild(e);
-
+      const element = createListItem(newIndex, hide, top, newChildrenData);
       virtualizer.insertBefore(element, oldChild.element);
-      newChildrenData.push({
-        index: newIndex,
-        hide,
-        top,
-        element,
-        unsubscribe: resizer._observeItem(element, newIndex),
-      });
       continue;
     }
+
     if (oldChild.index === newIndex) {
       const prevHide = oldChild.hide;
       if (hide !== prevHide) {
@@ -205,11 +186,14 @@ export const rerender = () => {
       childrenData.shift();
       continue;
     }
+
   }
+
   for (const oldChild of childrenData) {
     oldChild.element.remove();
     oldChild.unsubscribe();
   }
+
   childrenData = newChildrenData;
   rendering = false;
 };
