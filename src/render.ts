@@ -20,15 +20,18 @@ interface Context {
   scroller: virtua.Scroller;
   virtualizer: HTMLElement;
   children: HTMLElement[];
+  virtualizerHeight: string;
 }
 
-let virtualizerHeight: string;
 let jumpCount: number;
 let childrenData: ChildrenData[] = [];
 
 export const setChildren = (context: Context, newChildren: HTMLElement[]) => {
   context.children = newChildren;
-  context.store._update(virtua.ACTION_ITEMS_LENGTH_CHANGE, [context.children.length, false]);
+  context.store._update(virtua.ACTION_ITEMS_LENGTH_CHANGE, [
+    context.children.length,
+    false,
+  ]);
   render(context);
 };
 
@@ -56,14 +59,14 @@ const createListItem = (
   });
 
   return element;
-}
+};
 
 interface InitResult {
   vlist: HTMLElement;
   context: Context;
 }
 
-export const init = (newChildren: HTMLElement[]): InitResult  => {
+export const init = (newChildren: HTMLElement[]): InitResult => {
   const store = virtua.createVirtualStore(
     newChildren.length,
     undefined,
@@ -99,7 +102,8 @@ export const init = (newChildren: HTMLElement[]): InitResult  => {
     virtualizer,
     store,
     resizer,
-    scroller
+    scroller,
+    virtualizerHeight: "",
   };
 
   store._subscribe(virtua.UPDATE_VIRTUAL_STATE, (_sync) => {
@@ -109,14 +113,14 @@ export const init = (newChildren: HTMLElement[]): InitResult  => {
   return {
     vlist,
     context,
-  }
+  };
 };
 
 export const render = (context: Context) => {
   requestAnimationFrame(() => {
     _render(context);
   });
-}
+};
 
 const _render = (context: Context) => {
   const newJumpCount = context.store._getJumpCount();
@@ -127,9 +131,9 @@ const _render = (context: Context) => {
   }
 
   const newVirtualizerHeight = `${context.store._getTotalSize()}px`;
-  if (virtualizerHeight !== newVirtualizerHeight) {
+  if (context.virtualizerHeight !== newVirtualizerHeight) {
     context.virtualizer.style.height = newVirtualizerHeight;
-    virtualizerHeight = newVirtualizerHeight;
+    context.virtualizerHeight = newVirtualizerHeight;
   }
 
   const [startIndex, endIndex] = context.store._getRange();
@@ -140,7 +144,13 @@ const _render = (context: Context) => {
     const top = `${context.store._getItemOffset(newIndex)}px`;
 
     if (oldChildMaybe === undefined) {
-      const element = createListItem(context, newIndex, hide, top, newChildrenData);
+      const element = createListItem(
+        context,
+        newIndex,
+        hide,
+        top,
+        newChildrenData,
+      );
       context.virtualizer.appendChild(element);
       childrenData.shift();
       continue;
@@ -148,14 +158,19 @@ const _render = (context: Context) => {
 
     let oldChild = oldChildMaybe;
     while (newIndex > oldChild.index) {
-
       oldChild.element.remove();
       oldChild.unobserve();
       childrenData.shift();
 
       const nextOldChild = childrenData[0];
       if (nextOldChild === undefined) {
-        const element = createListItem(context, newIndex, hide, top, newChildrenData);
+        const element = createListItem(
+          context,
+          newIndex,
+          hide,
+          top,
+          newChildrenData,
+        );
         context.virtualizer.appendChild(element);
         childrenData.shift();
         continue;
@@ -165,7 +180,13 @@ const _render = (context: Context) => {
     }
 
     if (newIndex < oldChild.index) {
-      const element = createListItem(context, newIndex, hide, top, newChildrenData);
+      const element = createListItem(
+        context,
+        newIndex,
+        hide,
+        top,
+        newChildrenData,
+      );
       context.virtualizer.insertBefore(element, oldChild.element);
       continue;
     }
@@ -186,7 +207,6 @@ const _render = (context: Context) => {
       childrenData.shift();
       continue;
     }
-
   }
 
   for (const oldChild of childrenData) {
