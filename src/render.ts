@@ -103,26 +103,15 @@ export const rerender = () => {
   }
 
   const [startIndex, endIndex] = store._getRange();
-  console.log("");
-  console.log("");
-  console.warn(
-    `(old) start: ${childrenData[0]?.index}, end: ${childrenData.at(-1)?.index}`,
-  );
-  console.warn(`(new) start: ${startIndex}, end: ${endIndex}`);
-  const oldIndices = childrenData.map((c) => c.index);
-  console.warn("oldIndices", oldIndices);
   const newChildrenData: ChildrenData[] = [];
   for (let newIndex = startIndex, j = endIndex; newIndex <= j; newIndex++) {
     const oldChildUnd = childrenData[0];
-    console.log("");
-    console.log(`new: ${newIndex}, old: ${oldChildUnd?.index}`);
     const hide = store._isUnmeasuredItem(newIndex);
     const offset = store._getItemOffset(newIndex);
     const top = `${offset}px`;
     if (oldChildUnd === undefined) {
       const e = getElement(newIndex);
       const element = document.createElement("div");
-      console.log(`created foo ${newIndex}`)
       element.style.position = hide ? "" : "absolute";
       element.style.visibility = hide ? "hidden" : "visible";
       element.style.top = top;
@@ -139,40 +128,16 @@ export const rerender = () => {
         element: element,
         unsubscribe: resizer._observeItem(element, newIndex),
       });
-      const before = virtualizer.querySelectorAll(`div[data-index="${newIndex}"]`);
-      if (before.length > 1) {
-        console.error("before length", before.length);
-        console.error("before", before[0]);
-        throw new Error("before.length > 1");
-      }
 
       childrenData.shift();
-      console.log('shifted foo, old: ', childrenData[0]?.index)
 
       continue;
     }
     let oldChild = oldChildUnd;
     while (newIndex > oldChild.index) {
-      // console.log(`index (${index}) > oldChild.index (${oldChild.index})`)
-      console.log(`nest new: ${newIndex}, old: ${oldChild?.index}`);
-      const before = virtualizer.querySelectorAll(
-        `div[data-index="${oldChild.index}"]`,
-      );
-      if (before.length > 1) {
-        console.error("before length", before.length);
-        console.error("before", before[0]);
-        throw new Error("before.length > 1");
-      }
+
       oldChild.element.remove();
-      console.log(`removed ${oldChild.index}`);
-      const shouldBeNull = virtualizer.querySelectorAll(
-        `div[data-index="${oldChild.index}"]`,
-      );
-      if (shouldBeNull.length !== 0) {
-        console.error("shouldBeNull length", shouldBeNull.length);
-        console.error("shouldBeNull", shouldBeNull[0]);
-        throw new Error("shouldBeNull !== null");
-      }
+
       oldChild.unsubscribe();
       childrenData.shift();
       const nextChildData = childrenData[0];
@@ -180,7 +145,6 @@ export const rerender = () => {
       if (nextChildData === undefined) {
         const e = getElement(newIndex);
         const element = document.createElement("div");
-        console.log(`created bar ${newIndex}`)
         element.style.position = hide ? "" : "absolute";
         element.style.visibility = hide ? "hidden" : "visible";
         element.style.top = top;
@@ -197,27 +161,16 @@ export const rerender = () => {
           element: element,
           unsubscribe: resizer._observeItem(element, newIndex),
         });
-        const before = virtualizer.querySelectorAll(
-          `div[data-index="${newIndex}"]`,
-        );
-        if (before.length > 1) {
-          console.error("before length", before.length);
-          console.error("before", before[0]);
-          throw new Error("before.length > 1");
-        }
 
         childrenData.shift();
-        console.log('shifted baz, old: ', childrenData[0]?.index)
         continue;
       }
-      console.log(`assigning ${nextChildData.index}`);
       oldChild = nextChildData;
     }
 
     if (newIndex < oldChild.index) {
       const e = getElement(newIndex);
       const element = document.createElement("div");
-      console.log(`created baz ${newIndex}`)
       element.style.position = hide ? "" : "absolute";
       element.style.visibility = hide ? "hidden" : "visible";
       element.style.top = top;
@@ -235,11 +188,6 @@ export const rerender = () => {
         unsubscribe: resizer._observeItem(element, newIndex),
       });
       const before = virtualizer.querySelectorAll(`div[data-index="${newIndex}"]`);
-      if (before.length > 1) {
-        console.error("before length", before.length);
-        console.error("before", before[0]);
-        throw new Error("before.length > 1");
-      }
 
       continue;
     }
@@ -256,30 +204,14 @@ export const rerender = () => {
         oldChild.top = top;
       }
       newChildrenData.push(oldChild);
-      console.log(`updated ${newIndex}`);
       childrenData.shift();
-      console.log('shifted qux, old: ', childrenData[0]?.index)
       continue;
     }
   }
   for (const oldChild of childrenData) {
-    console.log(`cleaned ${oldChild.index}`);
-    // virtualizer.removeChild(oldChild.element);
-    // oldChild.element.parentNode?.removeChild(oldChild.element);
     oldChild.element.remove();
     oldChild.unsubscribe();
   }
-  // if (childrenData.length > 0) {
-  //   console.log("after")
-  //   console.log("length", childrenData.length)
-  //   console.log("first",  childrenData[0])
-  //   console.log("last",   childrenData.at(-1))
-  //   throw new Error("childrenData.length > 0");
-  // }
-  // console.log({
-  //   childrenData,
-  //   newChildrenData,
-  // })
   childrenData = newChildrenData;
   rendering = false;
 };
