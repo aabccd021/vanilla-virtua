@@ -1,7 +1,7 @@
 import * as virtua from "virtua/core";
 
 interface ListResizer {
-  _observeRoot(viewportElement: HTMLElement): void;
+  _observeRoot(viewportEl: HTMLElement): void;
   _observeItem: virtua.ItemResizeObserver;
   _dispose(): void;
 }
@@ -10,20 +10,20 @@ interface ChildData {
   idx: number;
   hide: boolean;
   top: string;
-  element: HTMLElement;
+  el: HTMLElement;
   unobserve: () => void;
 }
 
 interface State {
-  childrenElements: HTMLElement[];
+  childrenEls: HTMLElement[];
   childrenData: ChildData[];
   containerHeight?: string;
   jumpCount?: number;
 }
 
 interface Context {
-  readonly rootElement: HTMLElement;
-  readonly containerElement: HTMLElement;
+  readonly rootEl: HTMLElement;
+  readonly containerEl: HTMLElement;
   readonly store: virtua.VirtualStore;
   readonly resizer: ListResizer;
   readonly scroller: virtua.Scroller;
@@ -31,9 +31,9 @@ interface Context {
 }
 
 export const setChildren = (context: Context, newChildren: HTMLElement[]) => {
-  context.state.childrenElements = newChildren;
+  context.state.childrenEls = newChildren;
   context.store._update(virtua.ACTION_ITEMS_LENGTH_CHANGE, [
-    context.state.childrenElements.length,
+    context.state.childrenEls.length,
     false,
   ]);
   render(context);
@@ -46,23 +46,23 @@ const createListItem = (
   top: string,
   newChild: ChildData[],
 ) => {
-  const child = context.state.childrenElements[idx]!;
-  const listItemElement = document.createElement("div");
-  listItemElement.style.position = hide ? "" : "absolute";
-  listItemElement.style.visibility = hide ? "hidden" : "visible";
-  listItemElement.style.top = top;
-  listItemElement.style.width = "100%";
-  listItemElement.style.left = "0";
-  listItemElement.appendChild(child);
+  const child = context.state.childrenEls[idx]!;
+  const listItemEl = document.createElement("div");
+  listItemEl.style.position = hide ? "" : "absolute";
+  listItemEl.style.visibility = hide ? "hidden" : "visible";
+  listItemEl.style.top = top;
+  listItemEl.style.width = "100%";
+  listItemEl.style.left = "0";
+  listItemEl.appendChild(child);
   newChild.push({
     idx,
     hide,
     top,
-    element: listItemElement,
-    unobserve: context.resizer._observeItem(listItemElement, idx),
+    el: listItemEl,
+    unobserve: context.resizer._observeItem(listItemEl, idx),
   });
 
-  return listItemElement;
+  return listItemEl;
 };
 
 export const init = (newChildren: HTMLElement[]): Context => {
@@ -75,36 +75,36 @@ export const init = (newChildren: HTMLElement[]): Context => {
     true,
   );
 
-  const container = document.createElement("div");
-  container.style.overflowAnchor = "none";
-  container.style.flex = "none";
-  container.style.position = "relative";
-  container.style.visibility = "hidden";
-  container.style.width = "100%";
+  const containerEl = document.createElement("div");
+  containerEl.style.overflowAnchor = "none";
+  containerEl.style.flex = "none";
+  containerEl.style.position = "relative";
+  containerEl.style.visibility = "hidden";
+  containerEl.style.width = "100%";
 
-  const root = document.createElement("div");
-  root.style.display = "block";
-  root.style.overflowY = "auto";
-  root.style.contain = "strict";
-  root.style.width = "100%";
-  root.style.height = "100%";
-  root.appendChild(container);
+  const rootEl = document.createElement("div");
+  rootEl.style.display = "block";
+  rootEl.style.overflowY = "auto";
+  rootEl.style.contain = "strict";
+  rootEl.style.width = "100%";
+  rootEl.style.height = "100%";
+  rootEl.appendChild(containerEl);
 
   const resizer = virtua.createResizer(store, false);
-  resizer._observeRoot(root);
+  resizer._observeRoot(rootEl);
 
   const scroller = virtua.createScroller(store, false);
-  scroller._observe(root);
+  scroller._observe(rootEl);
 
   const context: Context = {
-    rootElement: root,
-    containerElement: container,
+    rootEl: rootEl,
+    containerEl: containerEl,
     store,
     resizer,
     scroller,
     state: {
       childrenData: [],
-      childrenElements: newChildren,
+      childrenEls: newChildren,
     },
   };
 
@@ -122,7 +122,7 @@ export const render = (context: Context) => {
 };
 
 const _render = (context: Context) => {
-  const { store, scroller, state, containerElement: container } = context;
+  const { store, scroller, state, containerEl: container } = context;
   const newJumpCount = store._getJumpCount();
   if (state.jumpCount !== newJumpCount) {
     scroller._fixScrollJump();
@@ -154,7 +154,7 @@ const _render = (context: Context) => {
 
     let oldChildData: ChildData = oldChildDataMaybe;
     while (newIdx > oldChildData.idx) {
-      oldChildData.element.remove();
+      oldChildData.el.remove();
       oldChildData.unobserve();
       state.childrenData.shift();
 
@@ -171,21 +171,21 @@ const _render = (context: Context) => {
 
     if (newIdx < oldChildData.idx) {
       const newChildData = createChild();
-      container.insertBefore(newChildData, oldChildData.element);
+      container.insertBefore(newChildData, oldChildData.el);
       continue;
     }
 
     if (oldChildData.idx === newIdx) {
       const prevHide = oldChildData.hide;
       if (hide !== prevHide) {
-        oldChildData.element.style.position = hide ? "" : "absolute";
-        oldChildData.element.style.visibility = hide ? "hidden" : "visible";
+        oldChildData.el.style.position = hide ? "" : "absolute";
+        oldChildData.el.style.visibility = hide ? "hidden" : "visible";
         oldChildData.hide = hide;
       }
 
       const prevTop = oldChildData.top;
       if (top !== prevTop) {
-        oldChildData.element.style.top = top;
+        oldChildData.el.style.top = top;
         oldChildData.top = top;
       }
 
@@ -196,7 +196,7 @@ const _render = (context: Context) => {
   }
 
   for (const oldChild of state.childrenData) {
-    oldChild.element.remove();
+    oldChild.el.remove();
     oldChild.unobserve();
   }
 
