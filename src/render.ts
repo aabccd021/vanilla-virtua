@@ -75,30 +75,30 @@ export const init = (newChildren: HTMLElement[]): Context => {
     true,
   );
 
-  const containerEl = document.createElement("div");
-  containerEl.style.overflowAnchor = "none";
-  containerEl.style.flex = "none";
-  containerEl.style.position = "relative";
-  containerEl.style.visibility = "hidden";
-  containerEl.style.width = "100%";
+  const container = document.createElement("div");
+  container.style.overflowAnchor = "none";
+  container.style.flex = "none";
+  container.style.position = "relative";
+  container.style.visibility = "hidden";
+  container.style.width = "100%";
 
-  const rootEl = document.createElement("div");
-  rootEl.style.display = "block";
-  rootEl.style.overflowY = "auto";
-  rootEl.style.contain = "strict";
-  rootEl.style.width = "100%";
-  rootEl.style.height = "100%";
-  rootEl.appendChild(containerEl);
+  const root = document.createElement("div");
+  root.style.display = "block";
+  root.style.overflowY = "auto";
+  root.style.contain = "strict";
+  root.style.width = "100%";
+  root.style.height = "100%";
+  root.appendChild(container);
 
   const resizer = virtua.createResizer(store, false);
-  resizer._observeRoot(rootEl);
+  resizer._observeRoot(root);
 
   const scroller = virtua.createScroller(store, false);
-  scroller._observe(rootEl);
+  scroller._observe(root);
 
   const context: Context = {
-    root: rootEl,
-    container: containerEl,
+    root: root,
+    container: container,
     store,
     resizer,
     scroller,
