@@ -84,7 +84,7 @@ export const init = (parent: HTMLElement) => {
 
   parent.appendChild(vlist);
 
-  store._subscribe(virtua.UPDATE_VIRTUAL_STATE, (sync) => {
+  store._subscribe(virtua.UPDATE_VIRTUAL_STATE, (_sync) => {
     // if(!sync) {
     // rerender();
     // return
@@ -152,16 +152,17 @@ export const rerender = () => {
       oldChild.element.remove();
       oldChild.unsubscribe();
       childrenData.shift();
-      const nextChildData = childrenData[0];
+      const nextOldChild = childrenData[0];
 
-      if (nextChildData === undefined) {
+      // no more old children
+      if (nextOldChild === undefined) {
         const element = createListItem(newIndex, hide, top, newChildrenData);
         virtualizer.appendChild(element);
         childrenData.shift();
         continue;
       }
 
-      oldChild = nextChildData;
+      oldChild = nextOldChild;
     }
 
     if (newIndex < oldChild.index) {

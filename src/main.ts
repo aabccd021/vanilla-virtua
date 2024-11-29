@@ -1,9 +1,4 @@
 import "./style.css";
-import typescriptLogo from "./typescript.svg";
-import viteLogo from "/vite.svg";
-import { setupCounter } from "./counter.ts";
-import * as virtua from "virtua/core";
-import morphdom from "morphdom";
 import { init, setChildren } from "./render.ts";
 
 const app = document.querySelector<HTMLDivElement>("#app");
