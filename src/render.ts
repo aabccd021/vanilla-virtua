@@ -22,11 +22,11 @@ interface State {
 }
 
 interface Context {
-  readonly root: HTMLElement;
+  readonly rootElement: HTMLElement;
+  readonly containerElement: HTMLElement;
   readonly store: virtua.VirtualStore;
   readonly resizer: ListResizer;
   readonly scroller: virtua.Scroller;
-  readonly container: HTMLElement;
   readonly state: State;
 }
 
@@ -97,8 +97,8 @@ export const init = (newChildren: HTMLElement[]): Context => {
   scroller._observe(root);
 
   const context: Context = {
-    root,
-    container,
+    rootElement: root,
+    containerElement: container,
     store,
     resizer,
     scroller,
@@ -122,7 +122,7 @@ export const render = (context: Context) => {
 };
 
 const _render = (context: Context) => {
-  const { store, scroller, state, container } = context;
+  const { store, scroller, state, containerElement: container } = context;
   const newJumpCount = store._getJumpCount();
   if (state.jumpCount !== newJumpCount) {
     scroller._fixScrollJump();
@@ -137,57 +137,59 @@ const _render = (context: Context) => {
   }
 
   const [startIdx, endIdx] = store._getRange();
-  const newChild: ChildData[] = [];
+  const newChildrenData: ChildData[] = [];
   for (let newIdx = startIdx, j = endIdx; newIdx <= j; newIdx++) {
-    const oldChildMaybe = state.childData[0];
+    const oldChildDataMaybe = state.childData[0];
     const hide = store._isUnmeasuredItem(newIdx);
     const top = `${store._getItemOffset(newIdx)}px`;
-    const createNewListItem = () =>
-      createListItem(context, newIdx, hide, top, newChild);
+    const createChild = () =>
+      createListItem(context, newIdx, hide, top, newChildrenData);
 
-    if (oldChildMaybe === undefined) {
-      const newChild = createNewListItem();
-      container.appendChild(newChild);
+    if (oldChildDataMaybe === undefined) {
+      const newChildData = createChild();
+      container.appendChild(newChildData);
       state.childData.shift();
       continue;
     }
 
-    let oldChild: ChildData = oldChildMaybe;
-    while (newIdx > oldChild.idx) {
-      oldChild.element.remove();
-      oldChild.unobserve();
+    let oldChildData: ChildData = oldChildDataMaybe;
+    while (newIdx > oldChildData.idx) {
+      oldChildData.element.remove();
+      oldChildData.unobserve();
       state.childData.shift();
 
       const nextOldChild = state.childData[0];
       if (nextOldChild === undefined) {
-        const newChild = createNewListItem();
-        container.appendChild(newChild);
+        const newChildData = createChild();
+        container.appendChild(newChildData);
         state.childData.shift();
         continue;
       }
 
-      oldChild = nextOldChild;
+      oldChildData = nextOldChild;
     }
 
-    if (newIdx < oldChild.idx) {
-      const newChild = createNewListItem();
-      container.insertBefore(newChild, oldChild.element);
+    if (newIdx < oldChildData.idx) {
+      const newChildData = createChild();
+      container.insertBefore(newChildData, oldChildData.element);
       continue;
     }
 
-    if (oldChild.idx === newIdx) {
-      const prevHide = oldChild.hide;
+    if (oldChildData.idx === newIdx) {
+      const prevHide = oldChildData.hide;
       if (hide !== prevHide) {
-        oldChild.element.style.position = hide ? "" : "absolute";
-        oldChild.element.style.visibility = hide ? "hidden" : "visible";
-        oldChild.hide = hide;
+        oldChildData.element.style.position = hide ? "" : "absolute";
+        oldChildData.element.style.visibility = hide ? "hidden" : "visible";
+        oldChildData.hide = hide;
       }
-      const prevTop = oldChild.top;
+
+      const prevTop = oldChildData.top;
       if (top !== prevTop) {
-        oldChild.element.style.top = top;
-        oldChild.top = top;
+        oldChildData.element.style.top = top;
+        oldChildData.top = top;
       }
-      newChild.push(oldChild);
+
+      newChildrenData.push(oldChildData);
       state.childData.shift();
       continue;
     }
@@ -198,5 +200,5 @@ const _render = (context: Context) => {
     oldChild.unobserve();
   }
 
-  state.childData = newChild;
+  state.childData = newChildrenData;
 };

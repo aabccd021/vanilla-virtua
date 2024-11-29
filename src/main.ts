@@ -27,7 +27,7 @@ function createChildren(height: number, index: number): HTMLElement {
 const childrenEls = createChildren(20, 0);
 
 const context = init([childrenEls]);
-app.appendChild(context.root);
+app.appendChild(context.rootElement);
 render(context)
 
 let count = 0;
