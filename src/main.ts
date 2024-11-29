@@ -3,7 +3,7 @@ import { init, render, setChildren } from "./render.ts";
 
 const app = document.querySelector<HTMLDivElement>("#app");
 
-if (!app) {
+if (app === null) {
   throw new Error("No #app found");
 }
 
