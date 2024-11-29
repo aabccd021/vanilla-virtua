@@ -137,7 +137,6 @@ const _render = (context: Context) => {
   if (state.containerHeight !== newContainerHeight) {
     container.style.height = newContainerHeight;
     state.containerHeight = newContainerHeight;
-    return;
   }
 
   const [startIdx, endIdx] = store._getRange();
