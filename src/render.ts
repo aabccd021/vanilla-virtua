@@ -18,17 +18,17 @@ interface Context {
   store: virtua.VirtualStore;
   resizer: ListResizer;
   scroller: virtua.Scroller;
+  children: HTMLElement[];
 }
 
-let children: HTMLElement[];
 let virtualizer: HTMLElement;
 let virtualizerHeight: string;
 let jumpCount: number;
 let childrenData: ChildrenData[] = [];
 
 export const setChildren = (context: Context, newChildren: HTMLElement[]) => {
-  children = newChildren;
-  context.store._update(virtua.ACTION_ITEMS_LENGTH_CHANGE, [children.length, false]);
+  context.children = newChildren;
+  context.store._update(virtua.ACTION_ITEMS_LENGTH_CHANGE, [context.children.length, false]);
   render(context);
 };
 
@@ -39,7 +39,7 @@ const createListItem = (
   top: string,
   newChildrenData: ChildrenData[],
 ) => {
-  const e = children[newIndex]!;
+  const e = context.children[newIndex]!;
   const element = document.createElement("div");
   element.style.position = hide ? "" : "absolute";
   element.style.visibility = hide ? "hidden" : "visible";
@@ -64,10 +64,8 @@ interface InitResult {
 }
 
 export const init = (newChildren: HTMLElement[]): InitResult  => {
-  children = newChildren;
-
   const store = virtua.createVirtualStore(
-    children.length,
+    newChildren.length,
     undefined,
     undefined,
     undefined,
@@ -97,6 +95,7 @@ export const init = (newChildren: HTMLElement[]): InitResult  => {
   scroller._observe(vlist);
 
   const context: Context = {
+    children: newChildren,
     store,
     resizer,
     scroller
