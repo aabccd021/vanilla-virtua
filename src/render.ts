@@ -6,7 +6,7 @@ interface ListResizer {
   _dispose(): void;
 }
 
-interface ChildrenData {
+interface Child {
   idx: number;
   hide: boolean;
   top: string;
@@ -22,7 +22,7 @@ interface Context {
   children: HTMLElement[];
   containerHeight?: string; 
   jumpCount?: number;
-  childrenData: ChildrenData[];
+  child: Child[];
 }
 
 
@@ -40,7 +40,7 @@ const createListItem = (
   newIdx: number,
   hide: boolean,
   top: string,
-  newChildrenData: ChildrenData[],
+  newChild: Child[],
 ) => {
   const e = context.children[newIdx]!;
   const element = document.createElement("div");
@@ -50,7 +50,7 @@ const createListItem = (
   element.style.width = "100%";
   element.style.left = "0";
   element.appendChild(e);
-  newChildrenData.push({
+  newChild.push({
     idx: newIdx,
     hide,
     top,
@@ -103,7 +103,7 @@ export const init = (newChildren: HTMLElement[]): InitResult => {
     store,
     resizer,
     scroller,
-    childrenData: [],
+    child: [],
   };
 
   store._subscribe(virtua.UPDATE_VIRTUAL_STATE, (_sync) => {
@@ -137,9 +137,9 @@ const _render = (context: Context) => {
   }
 
   const [startIdx, endIdx] = context.store._getRange();
-  const newChildrenData: ChildrenData[] = [];
+  const newChild: Child[] = [];
   for (let newIdx = startIdx, j = endIdx; newIdx <= j; newIdx++) {
-    const oldChildMaybe = context.childrenData[0];
+    const oldChildMaybe = context.child[0];
     const hide = context.store._isUnmeasuredItem(newIdx);
     const top = `${context.store._getItemOffset(newIdx)}px`;
     const createNewChild = () => createListItem(
@@ -147,27 +147,27 @@ const _render = (context: Context) => {
       newIdx,
       hide,
       top,
-      newChildrenData,
+      newChild,
     );
 
     if (oldChildMaybe === undefined) {
       const newChild = createNewChild();
       context.container.appendChild(newChild);
-      context.childrenData.shift();
+      context.child.shift();
       continue;
     }
 
-    let oldChild = oldChildMaybe;
+    let oldChild: Child = oldChildMaybe;
     while (newIdx > oldChild.idx) {
       oldChild.element.remove();
       oldChild.unobserve();
-      context.childrenData.shift();
+      context.child.shift();
 
-      const nextOldChild = context.childrenData[0];
+      const nextOldChild = context.child[0];
       if (nextOldChild === undefined) {
         const newChild = createNewChild();
         context.container.appendChild(newChild);
-        context.childrenData.shift();
+        context.child.shift();
         continue;
       }
 
@@ -192,16 +192,16 @@ const _render = (context: Context) => {
         oldChild.element.style.top = top;
         oldChild.top = top;
       }
-      newChildrenData.push(oldChild);
-      context.childrenData.shift();
+      newChild.push(oldChild);
+      context.child.shift();
       continue;
     }
   }
 
-  for (const oldChild of context.childrenData) {
+  for (const oldChild of context.child) {
     oldChild.element.remove();
     oldChild.unobserve();
   }
 
-  context.childrenData = newChildrenData;
+  context.child = newChild;
 };
