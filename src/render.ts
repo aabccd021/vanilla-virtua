@@ -15,10 +15,10 @@ interface ChildrenData {
 }
 
 interface Context {
-  store: virtua.VirtualStore;
-  resizer: ListResizer;
-  scroller: virtua.Scroller;
-  container: HTMLElement;
+  readonly store: virtua.VirtualStore;
+  readonly resizer: ListResizer;
+  readonly scroller: virtua.Scroller;
+  readonly container: HTMLElement;
   children: HTMLElement[];
   containerHeight?: string; 
   jumpCount?: number;
