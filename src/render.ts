@@ -22,9 +22,9 @@ interface Context {
   children: HTMLElement[];
   virtualizerHeight?: string; 
   jumpCount?: number;
+  childrenData: ChildrenData[];
 }
 
-let childrenData: ChildrenData[] = [];
 
 export const setChildren = (context: Context, newChildren: HTMLElement[]) => {
   context.children = newChildren;
@@ -103,6 +103,7 @@ export const init = (newChildren: HTMLElement[]): InitResult => {
     store,
     resizer,
     scroller,
+    childrenData: [],
   };
 
   store._subscribe(virtua.UPDATE_VIRTUAL_STATE, (_sync) => {
@@ -138,7 +139,7 @@ const _render = (context: Context) => {
   const [startIndex, endIndex] = context.store._getRange();
   const newChildrenData: ChildrenData[] = [];
   for (let newIndex = startIndex, j = endIndex; newIndex <= j; newIndex++) {
-    const oldChildMaybe = childrenData[0];
+    const oldChildMaybe = context.childrenData[0];
     const hide = context.store._isUnmeasuredItem(newIndex);
     const top = `${context.store._getItemOffset(newIndex)}px`;
 
@@ -151,7 +152,7 @@ const _render = (context: Context) => {
         newChildrenData,
       );
       context.virtualizer.appendChild(element);
-      childrenData.shift();
+      context.childrenData.shift();
       continue;
     }
 
@@ -159,9 +160,9 @@ const _render = (context: Context) => {
     while (newIndex > oldChild.index) {
       oldChild.element.remove();
       oldChild.unobserve();
-      childrenData.shift();
+      context.childrenData.shift();
 
-      const nextOldChild = childrenData[0];
+      const nextOldChild = context.childrenData[0];
       if (nextOldChild === undefined) {
         const element = createListItem(
           context,
@@ -171,7 +172,7 @@ const _render = (context: Context) => {
           newChildrenData,
         );
         context.virtualizer.appendChild(element);
-        childrenData.shift();
+        context.childrenData.shift();
         continue;
       }
 
@@ -203,15 +204,15 @@ const _render = (context: Context) => {
         oldChild.top = top;
       }
       newChildrenData.push(oldChild);
-      childrenData.shift();
+      context.childrenData.shift();
       continue;
     }
   }
 
-  for (const oldChild of childrenData) {
+  for (const oldChild of context.childrenData) {
     oldChild.element.remove();
     oldChild.unobserve();
   }
 
-  childrenData = newChildrenData;
+  context.childrenData = newChildrenData;
 };
