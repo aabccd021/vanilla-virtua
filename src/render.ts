@@ -142,16 +142,17 @@ const _render = (context: Context) => {
     const oldChildMaybe = context.childrenData[0];
     const hide = context.store._isUnmeasuredItem(newIdx);
     const top = `${context.store._getItemOffset(newIdx)}px`;
+    const createNewChild = () => createListItem(
+      context,
+      newIdx,
+      hide,
+      top,
+      newChildrenData,
+    );
 
     if (oldChildMaybe === undefined) {
-      const element = createListItem(
-        context,
-        newIdx,
-        hide,
-        top,
-        newChildrenData,
-      );
-      context.virtualizer.appendChild(element);
+      const newChild = createNewChild();
+      context.virtualizer.appendChild(newChild);
       context.childrenData.shift();
       continue;
     }
@@ -164,14 +165,8 @@ const _render = (context: Context) => {
 
       const nextOldChild = context.childrenData[0];
       if (nextOldChild === undefined) {
-        const element = createListItem(
-          context,
-          newIdx,
-          hide,
-          top,
-          newChildrenData,
-        );
-        context.virtualizer.appendChild(element);
+        const newChild = createNewChild();
+        context.virtualizer.appendChild(newChild);
         context.childrenData.shift();
         continue;
       }
@@ -180,14 +175,8 @@ const _render = (context: Context) => {
     }
 
     if (newIdx < oldChild.idx) {
-      const element = createListItem(
-        context,
-        newIdx,
-        hide,
-        top,
-        newChildrenData,
-      );
-      context.virtualizer.insertBefore(element, oldChild.element);
+      const newChild = createNewChild()
+      context.virtualizer.insertBefore(newChild, oldChild.element);
       continue;
     }
 
