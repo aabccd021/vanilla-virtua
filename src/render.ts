@@ -10,7 +10,7 @@ interface ChildData {
   idx: number;
   hide: boolean;
   top: string;
-  el: HTMLElement;
+  element: HTMLElement;
   unobserve: () => void;
 }
 
@@ -58,7 +58,7 @@ const _createChildEl = (
     idx,
     hide,
     top,
-    el: listItem,
+    element: listItem,
     unobserve: context.resizer._observeItem(listItem, idx),
   });
 
@@ -154,7 +154,7 @@ const _render = (context: Context) => {
 
     let oldChildData: ChildData = oldChildDataMaybe;
     while (newChildIdx > oldChildData.idx) {
-      oldChildData.el.remove();
+      oldChildData.element.remove();
       oldChildData.unobserve();
       state.childrenData.shift();
 
@@ -171,21 +171,21 @@ const _render = (context: Context) => {
 
     if (newChildIdx < oldChildData.idx) {
       const newChildData = createChildEl();
-      container.insertBefore(newChildData, oldChildData.el);
+      container.insertBefore(newChildData, oldChildData.element);
       continue;
     }
 
     if (oldChildData.idx === newChildIdx) {
       const prevHide = oldChildData.hide;
       if (hide !== prevHide) {
-        oldChildData.el.style.position = hide ? "" : "absolute";
-        oldChildData.el.style.visibility = hide ? "hidden" : "visible";
+        oldChildData.element.style.position = hide ? "" : "absolute";
+        oldChildData.element.style.visibility = hide ? "hidden" : "visible";
         oldChildData.hide = hide;
       }
 
       const prevTop = oldChildData.top;
       if (top !== prevTop) {
-        oldChildData.el.style.top = top;
+        oldChildData.element.style.top = top;
         oldChildData.top = top;
       }
 
@@ -196,7 +196,7 @@ const _render = (context: Context) => {
   }
 
   for (const oldChild of state.childrenData) {
-    oldChild.el.remove();
+    oldChild.element.remove();
     oldChild.unobserve();
   }
 
