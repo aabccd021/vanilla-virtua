@@ -172,7 +172,9 @@ const _render = (context: Context) => {
     }
 
     let oldChildData: ChildData = oldChildDataMaybe;
+    let shouldContinue = false;
     while (newChildIdx > oldChildData.idx) {
+      shouldContinue = true;
       oldChildData.element.remove();
       oldChildData.unobserve();
       state.childrenData.shift();
@@ -181,10 +183,13 @@ const _render = (context: Context) => {
       if (nextOldChild === undefined) {
         container.appendChild(createChildEl());
         state.childrenData.shift();
-        continue;
+        break;
       }
 
       oldChildData = nextOldChild;
+    }
+    if (shouldContinue) {
+      continue;
     }
 
     if (newChildIdx < oldChildData.idx) {
