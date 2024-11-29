@@ -187,8 +187,6 @@ export const rerender = () => {
         element,
         unsubscribe: resizer._observeItem(element, newIndex),
       });
-      const before = virtualizer.querySelectorAll(`div[data-index="${newIndex}"]`);
-
       continue;
     }
     if (oldChild.index === newIndex) {
