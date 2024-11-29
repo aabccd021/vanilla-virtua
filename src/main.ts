@@ -1,5 +1,5 @@
 import "./style.css";
-import { init, setChildren } from "./render.ts";
+import { init, render, setChildren } from "./render.ts";
 
 const app = document.querySelector<HTMLDivElement>("#app");
 
@@ -26,4 +26,5 @@ const childrenEls = rand.map((height, i) => {
 
 setChildren(childrenEls);
 init(app);
+render()
 

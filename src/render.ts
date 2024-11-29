@@ -79,28 +79,25 @@ export const init = (parent: HTMLElement) => {
 
   parent.appendChild(vlist);
 
-  store._subscribe(virtua.UPDATE_VIRTUAL_STATE, (_sync) => {
-    // if(!sync) {
-    // rerender();
-    // return
-    // }
-    requestAnimationFrame(() => {
-      rerender();
-    });
-  });
   resizer = virtua.createResizer(store, false);
   resizer._observeRoot(vlist);
 
   scroller = virtua.createScroller(store, false);
   scroller._observe(vlist);
 
-  requestAnimationFrame(() => {
-    rerender();
+  store._subscribe(virtua.UPDATE_VIRTUAL_STATE, (_sync) => {
+    render()
   });
 };
 
+export const render = () => {
+  requestAnimationFrame(() => {
+    _render();
+  });
+}
+
 let rendering = false;
-export const rerender = () => {
+const _render = () => {
   if (rendering) {
     return;
   }
