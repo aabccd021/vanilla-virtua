@@ -15,8 +15,6 @@ interface ChildrenData {
 }
 
 let children: HTMLElement[];
-let getElement: (i: number) => HTMLElement;
-let count: number;
 let store: virtua.VirtualStore;
 let resizer: ListResizer;
 let scroller: virtua.Scroller;
@@ -27,8 +25,6 @@ let childrenData: ChildrenData[] = [];
 
 export const setChildren = (newChildren: HTMLElement[]) => {
   children = newChildren;
-  count = children.length;
-  getElement = (i: number) => children[i];
 };
 
 const createListItem = (
@@ -37,7 +33,7 @@ const createListItem = (
   top: string,
   newChildrenData: ChildrenData[],
 ) => {
-  const e = getElement(newIndex);
+  const e = children[newIndex];
   const element = document.createElement("div");
   element.style.position = hide ? "" : "absolute";
   element.style.visibility = hide ? "hidden" : "visible";
@@ -59,7 +55,7 @@ const createListItem = (
 
 export const init = (parent: HTMLElement) => {
   store = virtua.createVirtualStore(
-    count,
+    children.length,
     undefined,
     undefined,
     undefined,
@@ -111,8 +107,8 @@ export const rerender = () => {
   }
   rendering = true;
 
-  if (count !== store._getItemsLength()) {
-    store._update(virtua.ACTION_ITEMS_LENGTH_CHANGE, [count, false]);
+  if (children.length !== store._getItemsLength()) {
+    store._update(virtua.ACTION_ITEMS_LENGTH_CHANGE, [children.length, false]);
     rendering = false;
     return;
   }
