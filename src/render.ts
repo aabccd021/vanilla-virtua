@@ -138,12 +138,12 @@ const _render = (context: Context) => {
 
   const [startIdx, endIdx] = store._getRange();
   const newChildrenData: ChildData[] = [];
-  for (let newIdx = startIdx, j = endIdx; newIdx <= j; newIdx++) {
+  for (let newChildIdx = startIdx, j = endIdx; newChildIdx <= j; newChildIdx++) {
     const oldChildDataMaybe: ChildData | undefined = state.childrenData[0];
-    const hide = store._isUnmeasuredItem(newIdx);
-    const top = `${store._getItemOffset(newIdx)}px`;
+    const hide = store._isUnmeasuredItem(newChildIdx);
+    const top = `${store._getItemOffset(newChildIdx)}px`;
     const createChildEl = () =>
-      _createChildEl(context, newIdx, hide, top, newChildrenData);
+      _createChildEl(context, newChildIdx, hide, top, newChildrenData);
 
     if (oldChildDataMaybe === undefined) {
       const newChildData = createChildEl();
@@ -153,7 +153,7 @@ const _render = (context: Context) => {
     }
 
     let oldChildData: ChildData = oldChildDataMaybe;
-    while (newIdx > oldChildData.idx) {
+    while (newChildIdx > oldChildData.idx) {
       oldChildData.el.remove();
       oldChildData.unobserve();
       state.childrenData.shift();
@@ -169,13 +169,13 @@ const _render = (context: Context) => {
       oldChildData = nextOldChild;
     }
 
-    if (newIdx < oldChildData.idx) {
+    if (newChildIdx < oldChildData.idx) {
       const newChildData = createChildEl();
       container.insertBefore(newChildData, oldChildData.el);
       continue;
     }
 
-    if (oldChildData.idx === newIdx) {
+    if (oldChildData.idx === newChildIdx) {
       const prevHide = oldChildData.hide;
       if (hide !== prevHide) {
         oldChildData.el.style.position = hide ? "" : "absolute";
