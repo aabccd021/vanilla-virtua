@@ -27,7 +27,8 @@ function createChildren(height: number, index: number): HTMLElement {
 const childrenEls = createChildren(20, 0);
 
 setChildren([childrenEls]);
-init(app);
+const { vlist } = init();
+app.appendChild(vlist);
 render()
 
 let count = 1;

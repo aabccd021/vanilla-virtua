@@ -53,7 +53,11 @@ const createListItem = (
   return element;
 }
 
-export const init = (parent: HTMLElement) => {
+interface InitResult {
+  vlist: HTMLElement;
+}
+
+export const init = (): InitResult  => {
   store = virtua.createVirtualStore(
     children.length,
     undefined,
@@ -78,8 +82,6 @@ export const init = (parent: HTMLElement) => {
   vlist.style.height = "100%";
   vlist.appendChild(virtualizer);
 
-  parent.appendChild(vlist);
-
   resizer = virtua.createResizer(store, false);
   resizer._observeRoot(vlist);
 
@@ -89,6 +91,10 @@ export const init = (parent: HTMLElement) => {
   store._subscribe(virtua.UPDATE_VIRTUAL_STATE, (_sync) => {
     render()
   });
+
+  return {
+    vlist,
+  }
 };
 
 export const render = () => {
