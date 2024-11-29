@@ -84,7 +84,13 @@ const virtualizedView = (
 
   if (store === undefined) {
     localstore._subscribe(virtua.UPDATE_VIRTUAL_STATE, (sync) => {
-      render();
+      if (sync) {
+        requestAnimationFrame(() => {
+          render();
+        })
+      } else {
+        render();
+      }
     });
     store = localstore;
   }
@@ -168,13 +174,11 @@ vlist.appendChild(virtualizer);
 let unsubscribe: () => void = () => {};
 
 const render = () => {
-  requestAnimationFrame(() => {
-    console.log("render");
-    unsubscribe();
-    const [vNew, unsub] = virtualizedView(childrenEls);
-    unsubscribe = unsub;
-    morphdom(virtualizer, vNew);
-  })
+  console.log("render");
+  unsubscribe();
+  const [vNew, unsub] = virtualizedView(childrenEls);
+  unsubscribe = unsub;
+  morphdom(virtualizer, vNew);
 }
 
 render();
