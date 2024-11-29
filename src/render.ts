@@ -18,9 +18,9 @@ interface Context {
   store: virtua.VirtualStore;
   resizer: ListResizer;
   scroller: virtua.Scroller;
-  virtualizer: HTMLElement;
+  container: HTMLElement;
   children: HTMLElement[];
-  virtualizerHeight?: string; 
+  containerHeight?: string; 
   jumpCount?: number;
   childrenData: ChildrenData[];
 }
@@ -62,7 +62,7 @@ const createListItem = (
 };
 
 interface InitResult {
-  vlist: HTMLElement;
+  root: HTMLElement;
   context: Context;
 }
 
@@ -76,30 +76,30 @@ export const init = (newChildren: HTMLElement[]): InitResult => {
     true,
   );
 
-  const virtualizer = document.createElement("div");
-  virtualizer.style.overflowAnchor = "none";
-  virtualizer.style.flex = "none";
-  virtualizer.style.position = "relative";
-  virtualizer.style.visibility = "hidden";
-  virtualizer.style.width = "100%";
+  const container = document.createElement("div");
+  container.style.overflowAnchor = "none";
+  container.style.flex = "none";
+  container.style.position = "relative";
+  container.style.visibility = "hidden";
+  container.style.width = "100%";
 
-  const vlist = document.createElement("div");
-  vlist.style.display = "block";
-  vlist.style.overflowY = "auto";
-  vlist.style.contain = "strict";
-  vlist.style.width = "100%";
-  vlist.style.height = "100%";
-  vlist.appendChild(virtualizer);
+  const root = document.createElement("div");
+  root.style.display = "block";
+  root.style.overflowY = "auto";
+  root.style.contain = "strict";
+  root.style.width = "100%";
+  root.style.height = "100%";
+  root.appendChild(container);
 
   const resizer = virtua.createResizer(store, false);
-  resizer._observeRoot(vlist);
+  resizer._observeRoot(root);
 
   const scroller = virtua.createScroller(store, false);
-  scroller._observe(vlist);
+  scroller._observe(root);
 
   const context: Context = {
     children: newChildren,
-    virtualizer,
+    container,
     store,
     resizer,
     scroller,
@@ -111,7 +111,7 @@ export const init = (newChildren: HTMLElement[]): InitResult => {
   });
 
   return {
-    vlist,
+    root,
     context,
   };
 };
@@ -131,9 +131,9 @@ const _render = (context: Context) => {
   }
 
   const newVirtualizerHeight = `${context.store._getTotalSize()}px`;
-  if (context.virtualizerHeight !== newVirtualizerHeight) {
-    context.virtualizer.style.height = newVirtualizerHeight;
-    context.virtualizerHeight = newVirtualizerHeight;
+  if (context.containerHeight !== newVirtualizerHeight) {
+    context.container.style.height = newVirtualizerHeight;
+    context.containerHeight = newVirtualizerHeight;
   }
 
   const [startIdx, endIdx] = context.store._getRange();
@@ -152,7 +152,7 @@ const _render = (context: Context) => {
 
     if (oldChildMaybe === undefined) {
       const newChild = createNewChild();
-      context.virtualizer.appendChild(newChild);
+      context.container.appendChild(newChild);
       context.childrenData.shift();
       continue;
     }
@@ -166,7 +166,7 @@ const _render = (context: Context) => {
       const nextOldChild = context.childrenData[0];
       if (nextOldChild === undefined) {
         const newChild = createNewChild();
-        context.virtualizer.appendChild(newChild);
+        context.container.appendChild(newChild);
         context.childrenData.shift();
         continue;
       }
@@ -176,7 +176,7 @@ const _render = (context: Context) => {
 
     if (newIdx < oldChild.idx) {
       const newChild = createNewChild()
-      context.virtualizer.insertBefore(newChild, oldChild.element);
+      context.container.insertBefore(newChild, oldChild.element);
       continue;
     }
 
