@@ -16,15 +16,30 @@ const rand = [
   60, 50, 130, 90, 110, 80, 100, 60, 70, 60, 110, 140, 50,
 ];
 
-const childrenEls = rand.map((height, i) => {
+function createChildren(height: number, index: number): HTMLElement {
   const el = document.createElement("p");
-  el.textContent = `Item ${i + 1}`;
+  el.textContent = `Item ${index + 1}`;
   el.style.border = "1px solid #ccc";
   el.style.height = `${height}px`;
   return el;
-});
+}
 
-setChildren(childrenEls);
+const childrenEls = createChildren(20, 0);
+
+setChildren([childrenEls]);
 init(app);
 render()
 
+let count = 1;
+
+function addChildren() {
+  count += 1;
+  const newChildren = rand.slice(1, count + 1).map(createChildren);
+  setChildren(newChildren);
+  render();
+  setTimeout(() => {
+    addChildren();
+  }, 1000);
+}
+
+addChildren();

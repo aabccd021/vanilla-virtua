@@ -25,6 +25,7 @@ let childrenData: ChildrenData[] = [];
 
 export const setChildren = (newChildren: HTMLElement[]) => {
   children = newChildren;
+  render();
 };
 
 const createListItem = (
@@ -73,8 +74,8 @@ export const init = (parent: HTMLElement) => {
   vlist.style.display = "block";
   vlist.style.overflowY = "auto";
   vlist.style.contain = "strict";
-  vlist.style.width = "400px";
-  vlist.style.height = "400px";
+  vlist.style.width = "100%";
+  vlist.style.height = "100%";
   vlist.appendChild(virtualizer);
 
   parent.appendChild(vlist);
@@ -96,16 +97,9 @@ export const render = () => {
   });
 }
 
-let rendering = false;
 const _render = () => {
-  if (rendering) {
-    return;
-  }
-  rendering = true;
-
   if (children.length !== store._getItemsLength()) {
     store._update(virtua.ACTION_ITEMS_LENGTH_CHANGE, [children.length, false]);
-    rendering = false;
     return;
   }
 
@@ -113,7 +107,6 @@ const _render = () => {
   if (jumpCount !== newJumpCount) {
     scroller._fixScrollJump();
     jumpCount = newJumpCount;
-    rendering = false;
     return;
   }
 
@@ -188,5 +181,4 @@ const _render = () => {
   }
 
   childrenData = newChildrenData;
-  rendering = false;
 };
