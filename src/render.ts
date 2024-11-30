@@ -30,11 +30,11 @@ interface Context {
   readonly state: State;
 }
 
-export function setChildren(
+export function appendChild(
   context: Context,
   newChildren: HTMLElement[],
 ): void {
-  context.state.children = newChildren;
+  context.state.children = context.state.children.concat(newChildren);
   context.store._update(virtua.ACTION_ITEMS_LENGTH_CHANGE, [
     context.state.children.length,
     false,

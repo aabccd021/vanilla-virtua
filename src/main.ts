@@ -1,5 +1,5 @@
 import "./style.css";
-import { init, render, setChildren } from "./render.ts";
+import { init, render, appendChild } from "./render.ts";
 
 const app = document.querySelector<HTMLDivElement>("#app");
 
@@ -24,10 +24,8 @@ render(context)
 
 
 const addChildren = () => {
-  for (let i = 0; i < 3; i++) {
-    childrenEls.push(createChild());
-  }
-  setChildren(context, childrenEls);
+  const newChildren = Array.from({ length: 1 }, createChild);
+  appendChild(context, newChildren);
   setTimeout(() => {
     addChildren();
   }, 1000);
