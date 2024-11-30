@@ -22,7 +22,6 @@ interface State {
 }
 
 interface Context {
-  readonly root: HTMLElement;
   readonly container: HTMLElement;
   readonly store: virtua.VirtualStore;
   readonly resizer: ListResizer;
@@ -155,13 +154,19 @@ export interface VirtualizerProps {
   // reverse?: boolean;
 }
 
+interface InitResult {
+  context: Context;
+  dispose: () => void;
+  root: HTMLElement;
+}
+
 export function init({
   children,
   as,
   itemSize,
   overscan,
   cache,
-}: VirtualizerProps): [Context, () => void] {
+}: VirtualizerProps): InitResult {
   const container = document.createElement(as ?? "div");
   container.style.overflowAnchor = "none";
   container.style.flex = "none";
@@ -193,7 +198,6 @@ export function init({
   scroller._observe(root);
 
   const context: Context = {
-    root,
     container,
     store,
     resizer,
@@ -218,7 +222,7 @@ export function init({
     }
   };
 
-  return [context, dispose];
+  return { context, dispose, root };
 }
 
 export function render(context: Context): void {

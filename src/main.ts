@@ -18,8 +18,8 @@ function createChild(): HTMLElement {
 
 const children = Array.from({ length: 3000 }, createChild);
 
-const [context, _dispose] = init({ children })
-app.appendChild(context.root);
+const { context, root } = init({ children })
+app.appendChild(root);
 render(context)
 
 
