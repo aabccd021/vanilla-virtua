@@ -16,7 +16,7 @@ interface ChildData {
 
 interface State {
   children: HTMLElement[];
-  childrenData: ChildData[];
+  childData: ChildData[];
   containerHeight?: string;
   jumpCount?: number;
 }
@@ -30,11 +30,8 @@ interface Context {
   readonly state: State;
 }
 
-export function appendChild(
-  context: Context,
-  newChildren: HTMLElement[],
-): void {
-  context.state.children = context.state.children.concat(newChildren);
+export function appendChild(context: Context, newChild: HTMLElement[]): void {
+  context.state.children = context.state.children.concat(newChild);
   context.store._update(virtua.ACTION_ITEMS_LENGTH_CHANGE, [
     context.state.children.length,
     false,
@@ -42,7 +39,7 @@ export function appendChild(
   render(context);
 }
 
-function _createChildEl(
+function newChild(
   context: Context,
   idx: number,
   top: string,
@@ -73,7 +70,7 @@ export interface VirtualizerProps {
    *
    * You can also pass a function and set {@link VirtualizerProps.count} to create elements lazily.
    */
-  children: HTMLElement[] ;
+  children: HTMLElement[];
   // TODO
   // | ((index: number) => HTMLElement);
   /**
@@ -155,9 +152,8 @@ export interface VirtualizerProps {
    * It's useful for chat like app.
    */
   // TODO
- // reverse?: boolean;
+  // reverse?: boolean;
 }
-
 
 export function init({
   children,
@@ -203,8 +199,8 @@ export function init({
     resizer,
     scroller,
     state: {
-      childrenData: [],
-      children: children,
+      childData: [],
+      children,
     },
   };
 
@@ -217,7 +213,7 @@ export function init({
 
   const dispose = () => {
     unsubscribeStore();
-    for (const childData of context.state.childrenData) {
+    for (const childData of context.state.childData) {
       childData.unobserve();
     }
   };
@@ -246,20 +242,19 @@ function _render(context: Context): void {
   }
 
   const [startIdx, endIdx] = store._getRange();
-  const newChildrenData: ChildData[] = [];
+  const newChildData: ChildData[] = [];
   for (
     let newChildIdx = startIdx, j = endIdx;
     newChildIdx <= j;
     newChildIdx++
   ) {
-    const oldChildDataMaybe: ChildData | undefined = state.childrenData[0];
+    const oldChildDataMaybe: ChildData | undefined = state.childData[0];
     const top = `${store._getItemOffset(newChildIdx)}px`;
-    const createChildEl = () =>
-      _createChildEl(context, newChildIdx, top, newChildrenData);
 
     if (oldChildDataMaybe === undefined) {
-      container.appendChild(createChildEl());
-      state.childrenData.shift();
+      const childEl = newChild(context, newChildIdx, top, newChildData);
+      container.appendChild(childEl);
+      state.childData.shift();
       continue;
     }
 
@@ -267,12 +262,13 @@ function _render(context: Context): void {
     while (newChildIdx > oldChildData.idx) {
       oldChildData.element.remove();
       oldChildData.unobserve();
-      state.childrenData.shift();
+      state.childData.shift();
 
-      const nextOldChild = state.childrenData[0];
+      const nextOldChild = state.childData[0];
       if (nextOldChild === undefined) {
-        container.appendChild(createChildEl());
-        state.childrenData.shift();
+        const childEl = newChild(context, newChildIdx, top, newChildData);
+        container.appendChild(childEl);
+        state.childData.shift();
         break;
       }
 
@@ -280,7 +276,8 @@ function _render(context: Context): void {
     }
 
     if (newChildIdx < oldChildData.idx) {
-      container.insertBefore(createChildEl(), oldChildData.element);
+      const childEl = newChild(context, newChildIdx, top, newChildData);
+      container.insertBefore(childEl, oldChildData.element);
       continue;
     }
 
@@ -299,16 +296,16 @@ function _render(context: Context): void {
         oldChildData.top = top;
       }
 
-      newChildrenData.push(oldChildData);
-      state.childrenData.shift();
+      newChildData.push(oldChildData);
+      state.childData.shift();
       continue;
     }
   }
 
-  for (const oldChild of state.childrenData) {
+  for (const oldChild of state.childData) {
     oldChild.element.remove();
     oldChild.unobserve();
   }
 
-  state.childrenData = newChildrenData;
+  state.childData = newChildData;
 }
