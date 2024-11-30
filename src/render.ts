@@ -26,6 +26,7 @@ interface Context {
   readonly store: virtua.VirtualStore;
   readonly resizer: ListResizer;
   readonly scroller: virtua.Scroller;
+  readonly itemTag?: keyof HTMLElementTagNameMap;
   readonly state: State;
 }
 
@@ -45,7 +46,7 @@ function newChild(
   newChild: ChildData[],
 ): HTMLElement {
   const child = context.state.children[idx]!;
-  const element = document.createElement("div");
+  const element = document.createElement(context.itemTag ?? "div");
   element.style.position = "absolute";
   element.style.visibility = "visible";
   element.style.top = top;
@@ -102,11 +103,12 @@ export interface VirtualizerProps {
    * If true, rendered as a horizontally scrollable list.
    * Otherwise rendered as a vertically scrollable list.
    */
-  horizontal?: boolean;
+  // TODO
+  // horizontal?: boolean;
   /**
    * List of indexes that should be always mounted, even when off screen.
    */
-  keepMounted?: number[];
+  // keepMounted?: number[];
   /**
    * You can restore cache by passing a {@link CacheSnapshot} on mount.
    * This is useful when you want to restore scroll position after navigation.
