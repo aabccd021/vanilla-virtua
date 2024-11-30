@@ -125,15 +125,9 @@ export const init = (newChildren: HTMLElement[]): [Context, () => void] => {
   return [context, dispose];
 };
 
-let isRendering = false;
 export const render = (context: Context) => {
   requestAnimationFrame(() => {
-    if (isRendering) {
-      return;
-    }
-    isRendering = true;
     _render(context);
-    isRendering = false;
   });
 };
 

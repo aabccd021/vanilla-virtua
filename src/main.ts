@@ -24,7 +24,7 @@ render(context)
 
 
 const addChildren = () => {
-  for (let i = 0; i < 100; i++) {
+  for (let i = 0; i < 3; i++) {
     childrenEls.push(createChild());
   }
   setChildren(context, childrenEls);
