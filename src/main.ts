@@ -1,4 +1,3 @@
-import "./style.css";
 import { init, render, appendChild } from "./render.ts";
 
 const app = document.querySelector<HTMLDivElement>("#app");
