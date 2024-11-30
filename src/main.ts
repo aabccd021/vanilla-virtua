@@ -23,17 +23,12 @@ app.appendChild(root);
 render(context)
 
 
-const addChildren = () => {
-  const newChildren = Array.from({ length: 1000 }, createChild);
-  appendChild(context, newChildren);
-}
-
 let count = 0;
 const interval = setInterval(() => {
   count++;
   if (count > 10) {
     clearInterval(interval);
   }
-
-  addChildren();
+  const newChildren = Array.from({ length: 1000 }, createChild);
+  appendChild(context, newChildren);
 }, 1000);
