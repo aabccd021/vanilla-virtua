@@ -266,23 +266,21 @@ function _render(context: Context): void {
     }
 
     let oldChildData: ChildData = oldChildDataMaybe;
-    let shouldContinue = false;
-    while (newChildIdx > oldChildData.idx) {
-      shouldContinue = true;
-      oldChildData.element.remove();
-      oldChildData.unobserve();
-      state.childrenData.shift();
-
-      const nextOldChild = state.childrenData[0];
-      if (nextOldChild === undefined) {
-        container.appendChild(createChildEl());
+    if (newChildIdx > oldChildData.idx) {
+      while (newChildIdx > oldChildData.idx) {
+        oldChildData.element.remove();
+        oldChildData.unobserve();
         state.childrenData.shift();
-        break;
-      }
 
-      oldChildData = nextOldChild;
-    }
-    if (shouldContinue) {
+        const nextOldChild = state.childrenData[0];
+        if (nextOldChild === undefined) {
+          container.appendChild(createChildEl());
+          state.childrenData.shift();
+          break;
+        }
+
+        oldChildData = nextOldChild;
+      }
       continue;
     }
 
