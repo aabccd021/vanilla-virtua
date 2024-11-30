@@ -26,9 +26,9 @@ render(context)
 const addChildren = () => {
   const newChildren = Array.from({ length: 1 }, createChild);
   appendChild(context, newChildren);
-  setTimeout(() => {
-    addChildren();
-  }, 1000);
 }
 
-addChildren();
+setInterval(() => {
+  addChildren();
+}, 1000);
+

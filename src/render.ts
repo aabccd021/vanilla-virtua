@@ -51,8 +51,8 @@ function _createChildEl(
 ): HTMLElement {
   const child = context.state.children[idx]!;
   const listItem = document.createElement("div");
-  listItem.style.position = hide ? "" : "absolute";
-  listItem.style.visibility = hide ? "hidden" : "visible";
+  listItem.style.position = "absolute";
+  listItem.style.visibility = "visible";
   listItem.style.top = top;
   listItem.style.width = "100%";
   listItem.style.left = "0";
@@ -83,23 +83,29 @@ export interface VirtualizerProps {
   // TODO
   // count?: number;
   /**
-   * Number of items to render above/below the visible bounds of the list. Lower value will give better performance but you can increase to avoid showing blank items in fast scrolling.
+   * Number of items to render above/below the visible bounds of the list.
+   * Lower value will give better performance but you can increase to avoid showing blank items in fast scrolling.
    * @defaultValue 4
    */
   overscan?: number;
   /**
-   * Item size hint for unmeasured items. It will help to reduce scroll jump when items are measured if used properly.
+   * Item size hint for unmeasured items.
+   * It will help to reduce scroll jump when items are measured if used properly.
    *
-   * - If not set, initial item sizes will be automatically estimated from measured sizes. This is recommended for most cases.
+   * - If not set, initial item sizes will be automatically estimated from measured sizes.
+   * This is recommended for most cases.
    * - If set, you can opt out estimation and use the value as initial item size.
    */
   itemSize?: number;
   /**
-   * While true is set, scroll position will be maintained from the end not usual start when items are added to/removed from start. It's recommended to set false if you add to/remove from mid/end of the list because it can cause unexpected behavior. This prop is useful for reverse infinite scrolling.
+   * While true is set, scroll position will be maintained from the end not usual start when items are added to/removed from start.
+   * It's recommended to set false if you add to/remove from mid/end of the list because it can cause unexpected behavior.
+   * This prop is useful for reverse infinite scrolling.
    */
-  shift?: boolean;
+  // shift?: boolean;
   /**
-   * If true, rendered as a horizontally scrollable list. Otherwise rendered as a vertically scrollable list.
+   * If true, rendered as a horizontally scrollable list.
+   * Otherwise rendered as a vertically scrollable list.
    */
   horizontal?: boolean;
   /**
@@ -107,7 +113,9 @@ export interface VirtualizerProps {
    */
   keepMounted?: number[];
   /**
-   * You can restore cache by passing a {@link CacheSnapshot} on mount. This is useful when you want to restore scroll position after navigation. The snapshot can be obtained from {@link VirtualizerHandle.cache}.
+   * You can restore cache by passing a {@link CacheSnapshot} on mount.
+   * This is useful when you want to restore scroll position after navigation.
+   * The snapshot can be obtained from {@link VirtualizerHandle.cache}.
    *
    * **The length of items should be the same as when you take the snapshot, otherwise restoration may not work as expected.**
    */
@@ -115,14 +123,20 @@ export interface VirtualizerProps {
   /**
    * If you put an element before virtualizer, you have to define its height with this prop.
    */
-  startMargin?: number;
+  // startMargin?: number;
+  /**
+   * A prop for SSR.
+   * If set, the specified amount of items will be mounted in the initial rendering regardless of the container size until hydrated.
+   */
+  // ssrCount?: number;
   /**
    * Component or element type for container element.
    * @defaultValue "div"
    */
   as?: keyof HTMLElementTagNameMap;
   /**
-   * Component or element type for item element. This component will get {@link CustomItemComponentProps} as props.
+   * Component or element type for item element.
+   * This component will get {@link CustomItemComponentProps} as props.
    * @defaultValue "div"
    */
   item?: keyof HTMLElementTagNameMap;
@@ -130,11 +144,19 @@ export interface VirtualizerProps {
    * Callback invoked whenever scroll offset changes.
    * @param offset Current scrollTop, or scrollLeft if horizontal: true.
    */
-  onScroll?: (offset: number) => void;
+  // TODO
+  // onScroll?: (offset: number) => void;
   /**
    * Callback invoked when scrolling stops.
    */
-  onScrollEnd?: () => void;
+  // TODO
+  // onScrollEnd?: () => void;
+  /**
+   * If true, items are aligned to the end of the list when total size of items are smaller than viewport size.
+   * It's useful for chat like app.
+   */
+  // TODO
+ // reverse?: boolean;
 }
 
 
@@ -216,7 +238,6 @@ function _render(context: Context): void {
   if (state.jumpCount !== newJumpCount) {
     scroller._fixScrollJump();
     state.jumpCount = newJumpCount;
-    return;
   }
 
   const newContainerHeight = `${store._getTotalSize()}px`;
