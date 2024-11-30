@@ -16,7 +16,7 @@ function createChild(): HTMLElement {
   return el;
 }
 
-const children = Array.from({ length: 3000 }, createChild);
+const children = Array.from({ length: 30 }, createChild);
 
 const { context, root } = init({ children })
 app.appendChild(root);
@@ -29,6 +29,6 @@ const interval = setInterval(() => {
   if (count > 10) {
     clearInterval(interval);
   }
-  const newChildren = Array.from({ length: 1000 }, createChild);
+  const newChildren = Array.from({ length: 10 }, createChild);
   appendChild(context, newChildren);
 }, 1000);
