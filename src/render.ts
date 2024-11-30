@@ -253,7 +253,6 @@ function _render(context: Context): void {
     newChildIdx++
   ) {
     const oldChildDataMaybe: ChildData | undefined = state.childrenData[0];
-    const hide = store._isUnmeasuredItem(newChildIdx);
     const top = `${store._getItemOffset(newChildIdx)}px`;
     const createChildEl = () =>
       _createChildEl(context, newChildIdx, top, newChildrenData);
@@ -287,6 +286,7 @@ function _render(context: Context): void {
 
     if (oldChildData.idx === newChildIdx) {
       const prevHide = oldChildData.hide;
+      const hide = store._isUnmeasuredItem(newChildIdx);
       if (hide !== prevHide) {
         oldChildData.element.style.position = hide ? "" : "absolute";
         oldChildData.element.style.visibility = hide ? "hidden" : "visible";
