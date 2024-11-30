@@ -68,8 +68,84 @@ function _createChildEl(
   return listItem;
 }
 
-export function init(newChildren: HTMLElement[]): [Context, () => void] {
-  const container = document.createElement("div");
+export interface VirtualizerProps {
+  /**
+   * Elements rendered by this component.
+   *
+   * You can also pass a function and set {@link VirtualizerProps.count} to create elements lazily.
+   */
+  children: HTMLElement[] ;
+  // TODO
+  // | ((index: number) => HTMLElement);
+  /**
+   * If you set a function to {@link VirtualizerProps.children}, you have to set total number of items to this prop.
+   */
+  // TODO
+  // count?: number;
+  /**
+   * Number of items to render above/below the visible bounds of the list. Lower value will give better performance but you can increase to avoid showing blank items in fast scrolling.
+   * @defaultValue 4
+   */
+  overscan?: number;
+  /**
+   * Item size hint for unmeasured items. It will help to reduce scroll jump when items are measured if used properly.
+   *
+   * - If not set, initial item sizes will be automatically estimated from measured sizes. This is recommended for most cases.
+   * - If set, you can opt out estimation and use the value as initial item size.
+   */
+  itemSize?: number;
+  /**
+   * While true is set, scroll position will be maintained from the end not usual start when items are added to/removed from start. It's recommended to set false if you add to/remove from mid/end of the list because it can cause unexpected behavior. This prop is useful for reverse infinite scrolling.
+   */
+  shift?: boolean;
+  /**
+   * If true, rendered as a horizontally scrollable list. Otherwise rendered as a vertically scrollable list.
+   */
+  horizontal?: boolean;
+  /**
+   * List of indexes that should be always mounted, even when off screen.
+   */
+  keepMounted?: number[];
+  /**
+   * You can restore cache by passing a {@link CacheSnapshot} on mount. This is useful when you want to restore scroll position after navigation. The snapshot can be obtained from {@link VirtualizerHandle.cache}.
+   *
+   * **The length of items should be the same as when you take the snapshot, otherwise restoration may not work as expected.**
+   */
+  cache?: virtua.CacheSnapshot;
+  /**
+   * If you put an element before virtualizer, you have to define its height with this prop.
+   */
+  startMargin?: number;
+  /**
+   * Component or element type for container element.
+   * @defaultValue "div"
+   */
+  as?: keyof HTMLElementTagNameMap;
+  /**
+   * Component or element type for item element. This component will get {@link CustomItemComponentProps} as props.
+   * @defaultValue "div"
+   */
+  item?: keyof HTMLElementTagNameMap;
+  /**
+   * Callback invoked whenever scroll offset changes.
+   * @param offset Current scrollTop, or scrollLeft if horizontal: true.
+   */
+  onScroll?: (offset: number) => void;
+  /**
+   * Callback invoked when scrolling stops.
+   */
+  onScrollEnd?: () => void;
+}
+
+
+export function init({
+  children,
+  as,
+  itemSize,
+  overscan,
+  cache,
+}: VirtualizerProps): [Context, () => void] {
+  const container = document.createElement(as ?? "div");
   container.style.overflowAnchor = "none";
   container.style.flex = "none";
   container.style.position = "relative";
@@ -85,12 +161,12 @@ export function init(newChildren: HTMLElement[]): [Context, () => void] {
   root.appendChild(container);
 
   const store = virtua.createVirtualStore(
-    newChildren.length,
+    children.length,
+    itemSize,
+    overscan,
     undefined,
-    undefined,
-    undefined,
-    undefined,
-    true,
+    cache,
+    !itemSize,
   );
 
   const resizer = virtua.createResizer(store, false);
@@ -107,7 +183,7 @@ export function init(newChildren: HTMLElement[]): [Context, () => void] {
     scroller,
     state: {
       childrenData: [],
-      children: newChildren,
+      children: children,
     },
   };
 
