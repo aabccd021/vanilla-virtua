@@ -97,8 +97,8 @@ export const init = (newChildren: HTMLElement[]): [Context, () => void] => {
   scroller._observe(root);
 
   const context: Context = {
-    root: root,
-    container: container,
+    root,
+    container,
     store,
     resizer,
     scroller,
