@@ -42,13 +42,13 @@ export function setChildren(
   render(context);
 }
 
-const _createChildEl = (
+function _createChildEl(
   context: Context,
   idx: number,
   hide: boolean,
   top: string,
   newChild: ChildData[],
-) => {
+): HTMLElement {
   const child = context.state.children[idx]!;
   const listItem = document.createElement("div");
   listItem.style.position = hide ? "" : "absolute";
@@ -66,7 +66,7 @@ const _createChildEl = (
   });
 
   return listItem;
-};
+}
 
 export function init(newChildren: HTMLElement[]): [Context, () => void] {
   const container = document.createElement("div");
@@ -220,4 +220,4 @@ function _render(context: Context): void {
   }
 
   state.childrenData = newChildrenData;
-};
+}
