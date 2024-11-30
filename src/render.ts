@@ -247,8 +247,6 @@ function _render(context: Context): void {
   }
 
   const [startIdx, endIdx] = store._getRange();
-  console.warn(`old: ${state.childrenData.at(0)?.idx} - ${state.childrenData.at(-1)?.idx}`);
-  console.warn(`new: ${startIdx} - ${endIdx}`);
   const newChildrenData: ChildData[] = [];
   for (
     let newChildIdx = startIdx, j = endIdx;
@@ -262,7 +260,6 @@ function _render(context: Context): void {
       _createChildEl(context, newChildIdx, hide, top, newChildrenData);
 
     if (oldChildDataMaybe === undefined) {
-      console.warn("appending", newChildIdx);
       container.appendChild(createChildEl());
       state.childrenData.shift();
       continue;
@@ -270,7 +267,6 @@ function _render(context: Context): void {
 
     let oldChildData: ChildData = oldChildDataMaybe;
     while (newChildIdx > oldChildData.idx) {
-      console.warn("deleting", oldChildData.idx);
       oldChildData.element.remove();
       oldChildData.unobserve();
       state.childrenData.shift();
