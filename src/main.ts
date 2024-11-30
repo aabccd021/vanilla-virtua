@@ -16,7 +16,7 @@ function createChild(): HTMLElement {
   return el;
 }
 
-const children = Array.from({ length: 3 }, createChild);
+const children = Array.from({ length: 3000 }, createChild);
 
 const [context, _dispose] = init({ children })
 app.appendChild(context.root);
@@ -24,7 +24,7 @@ render(context)
 
 
 const addChildren = () => {
-  const newChildren = Array.from({ length: 1 }, createChild);
+  const newChildren = Array.from({ length: 1000 }, createChild);
   appendChild(context, newChildren);
 }
 
