@@ -45,27 +45,26 @@ export function appendChild(
 function _createChildEl(
   context: Context,
   idx: number,
-  hide: boolean,
   top: string,
   newChild: ChildData[],
 ): HTMLElement {
   const child = context.state.children[idx]!;
-  const listItem = document.createElement("div");
-  listItem.style.position = "absolute";
-  listItem.style.visibility = "visible";
-  listItem.style.top = top;
-  listItem.style.width = "100%";
-  listItem.style.left = "0";
-  listItem.appendChild(child);
+  const element = document.createElement("div");
+  element.style.position = "absolute";
+  element.style.visibility = "visible";
+  element.style.top = top;
+  element.style.width = "100%";
+  element.style.left = "0";
+  element.appendChild(child);
   newChild.push({
     idx,
-    hide,
+    hide: false,
     top,
-    element: listItem,
-    unobserve: context.resizer._observeItem(listItem, idx),
+    element,
+    unobserve: context.resizer._observeItem(element, idx),
   });
 
-  return listItem;
+  return element;
 }
 
 export interface VirtualizerProps {
@@ -257,7 +256,7 @@ function _render(context: Context): void {
     const hide = store._isUnmeasuredItem(newChildIdx);
     const top = `${store._getItemOffset(newChildIdx)}px`;
     const createChildEl = () =>
-      _createChildEl(context, newChildIdx, hide, top, newChildrenData);
+      _createChildEl(context, newChildIdx, top, newChildrenData);
 
     if (oldChildDataMaybe === undefined) {
       container.appendChild(createChildEl());
