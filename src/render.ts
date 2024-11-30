@@ -30,14 +30,17 @@ interface Context {
   readonly state: State;
 }
 
-export const setChildren = (context: Context, newChildren: HTMLElement[]) => {
+export function setChildren(
+  context: Context,
+  newChildren: HTMLElement[],
+): void {
   context.state.children = newChildren;
   context.store._update(virtua.ACTION_ITEMS_LENGTH_CHANGE, [
     context.state.children.length,
     false,
   ]);
   render(context);
-};
+}
 
 const _createChildEl = (
   context: Context,
@@ -65,7 +68,7 @@ const _createChildEl = (
   return listItem;
 };
 
-export const init = (newChildren: HTMLElement[]): [Context, () => void] => {
+export function init(newChildren: HTMLElement[]): [Context, () => void] {
   const container = document.createElement("div");
   container.style.overflowAnchor = "none";
   container.style.flex = "none";
@@ -120,18 +123,18 @@ export const init = (newChildren: HTMLElement[]): [Context, () => void] => {
     for (const childData of context.state.childrenData) {
       childData.unobserve();
     }
-  }
+  };
 
   return [context, dispose];
-};
+}
 
-export const render = (context: Context) => {
+export function render(context: Context): void {
   requestAnimationFrame(() => {
     _render(context);
   });
-};
+}
 
-const _render = (context: Context) => {
+function _render(context: Context): void {
   const { store, scroller, state, container: container } = context;
   const newJumpCount = store._getJumpCount();
   if (state.jumpCount !== newJumpCount) {
@@ -215,7 +218,6 @@ const _render = (context: Context) => {
     oldChild.element.remove();
     oldChild.unobserve();
   }
-
 
   state.childrenData = newChildrenData;
 };
