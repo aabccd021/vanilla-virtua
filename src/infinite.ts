@@ -2,10 +2,9 @@ function infiniteScroll(
   listId: string,
   root: HTMLElement,
   next: HTMLAnchorElement,
+  triggers: NodeListOf<Element>,
 ): void {
-  const triggers = root.querySelectorAll(`[data-infinite-trigger="${listId}"]`);
-
-  const observer = new IntersectionObserver(async (entries, observer) => {
+  const observer = new IntersectionObserver(async (entries) => {
     if (entries.every((entry) => !entry.isIntersecting)) {
       return;
     }
@@ -24,6 +23,9 @@ function infiniteScroll(
     for (const trigger of triggers) {
       trigger.removeAttribute("data-infinite-trigger");
     }
+    const newTriggers = newRoot.querySelectorAll(
+      `[data-infinite-trigger="${listId}"]`,
+    );
 
     for (const newChild of newRoot.children) {
       root.appendChild(newChild);
@@ -36,9 +38,9 @@ function infiniteScroll(
       next.remove();
       return;
     }
-
     next.replaceWith(newNext);
-    infiniteScroll(listId, root, newNext);
+
+    infiniteScroll(listId, root, newNext, newTriggers);
   });
 
   for (const trigger of triggers) {
@@ -62,5 +64,6 @@ for (const root of roots) {
   if (next === null) {
     continue;
   }
-  infiniteScroll(listId, root, next);
+  const triggers = root.querySelectorAll(`[data-infinite-trigger="${listId}"]`);
+  infiniteScroll(listId, root, next, triggers);
 }
