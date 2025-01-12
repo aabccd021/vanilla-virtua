@@ -1,10 +1,10 @@
-import * as lib from "./render.ts";
+import * as vList from "./render.ts";
 
-const app = document.querySelector<HTMLDivElement>("#app");
+const app = document.createElement("div");
+app.style.width = "100%";
+app.style.height = "90dvh";
 
-if (app === null) {
-	throw new Error("No #app found");
-}
+document.body.appendChild(app);
 
 function createChild(): HTMLElement {
 	const height = Math.floor(Math.random() * 100) + 20;
@@ -17,16 +17,18 @@ function createChild(): HTMLElement {
 
 const children = Array.from({ length: 30 }, createChild);
 
-const { context, root } = lib.init({ children });
+const { context, root } = vList.init({ children });
 app.appendChild(root);
-lib.render(context);
+vList.render(context);
+
 
 let count = 0;
 const interval = setInterval(() => {
-	count++;
 	if (count > 10) {
 		clearInterval(interval);
+		return;
 	}
 	const newChildren = Array.from({ length: 10 }, createChild);
-	lib.appendChild(context, newChildren);
+	vList.appendChild(context, newChildren);
+	count++;
 }, 1000);
