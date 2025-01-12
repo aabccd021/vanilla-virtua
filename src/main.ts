@@ -1,4 +1,4 @@
-import * as vList from "./render.ts";
+import * as vList from "./index.ts";
 
 const app = document.createElement("div");
 app.style.width = "100%";
