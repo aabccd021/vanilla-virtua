@@ -6,41 +6,40 @@ function infiniteScroll(
   const triggers = root.querySelectorAll(`[data-infinite-trigger="${listId}"]`);
 
   const observer = new IntersectionObserver(async (entries, observer) => {
-    for (const entry of entries) {
-      if (!entry.isIntersecting) {
-        continue;
-      }
-      observer.disconnect();
-
-      const response = await fetch(next.href);
-      const html = await response.text();
-      const newDoc = new DOMParser().parseFromString(html, "text/html");
-
-      const newRoot = newDoc.querySelector(`[data-infinite-root="${listId}"]`);
-      if (newRoot === null) {
-        return;
-      }
-
-      for (const trigger of triggers) {
-        trigger.removeAttribute("data-infinite-trigger");
-      }
-
-      for (const newChild of newRoot.children) {
-        root.appendChild(newChild);
-      }
-
-      const newNext = newDoc.querySelector<HTMLAnchorElement>(
-        `a[data-infinite-next="${listId}"]`,
-      );
-      if (newNext === null) {
-        next.remove();
-        return;
-      }
-
-      next.replaceWith(newNext);
-      infiniteScroll(listId, root, newNext);
+    if (entries.every((entry) => !entry.isIntersecting)) {
       return;
     }
+
+    observer.disconnect();
+
+    const response = await fetch(next.href);
+    const html = await response.text();
+    const newDoc = new DOMParser().parseFromString(html, "text/html");
+
+    const newRoot = newDoc.querySelector(`[data-infinite-root="${listId}"]`);
+    if (newRoot === null) {
+      return;
+    }
+
+    for (const trigger of triggers) {
+      trigger.removeAttribute("data-infinite-trigger");
+    }
+
+    for (const newChild of newRoot.children) {
+      root.appendChild(newChild);
+    }
+
+    const newNext = newDoc.querySelector<HTMLAnchorElement>(
+      `a[data-infinite-next="${listId}"]`,
+    );
+    if (newNext === null) {
+      next.remove();
+      return;
+    }
+
+    next.replaceWith(newNext);
+    infiniteScroll(listId, root, newNext);
+    return;
   });
 
   for (const trigger of triggers) {
