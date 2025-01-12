@@ -1,4 +1,4 @@
-import { init, render, appendChild } from "./render.ts";
+import * as lib from "./render.ts";
 
 const app = document.querySelector<HTMLDivElement>("#app");
 
@@ -17,9 +17,9 @@ function createChild(): HTMLElement {
 
 const children = Array.from({ length: 30 }, createChild);
 
-const { context, root } = init({ children })
+const { context, root } = lib.init({ children })
 app.appendChild(root);
-render(context)
+lib.render(context)
 
 
 let count = 0;
@@ -29,5 +29,5 @@ const interval = setInterval(() => {
     clearInterval(interval);
   }
   const newChildren = Array.from({ length: 10 }, createChild);
-  appendChild(context, newChildren);
+  lib.appendChild(context, newChildren);
 }, 1000);

@@ -1,10 +1,8 @@
 import * as virtua from "virtua/core";
 
-interface ListResizer {
-  _observeRoot(viewportEl: HTMLElement): void;
-  _observeItem: virtua.ItemResizeObserver;
-  _dispose(): void;
-}
+type Scroller = ReturnType<typeof virtua.createScroller>;
+
+type Resizer = ReturnType<typeof virtua.createResizer>;
 
 interface ChildData {
   idx: number;
@@ -24,15 +22,15 @@ interface State {
 interface Context {
   readonly container: HTMLElement;
   readonly store: virtua.VirtualStore;
-  readonly resizer: ListResizer;
-  readonly scroller: virtua.Scroller;
+  readonly resizer: Resizer;
+  readonly scroller: Scroller;
   readonly itemTag?: keyof HTMLElementTagNameMap;
   readonly state: State;
 }
 
 export function appendChild(context: Context, newChild: HTMLElement[]): void {
   context.state.children = context.state.children.concat(newChild);
-  context.store._update(virtua.ACTION_ITEMS_LENGTH_CHANGE, [
+  context.store.$update(virtua.ACTION_ITEMS_LENGTH_CHANGE, [
     context.state.children.length,
     false,
   ]);
@@ -58,7 +56,7 @@ function newChild(
     hide: false,
     top,
     element,
-    unobserve: context.resizer._observeItem(element, idx),
+    unobserve: context.resizer.$observeItem(element, idx),
   });
 
   return element;
@@ -194,10 +192,10 @@ export function init({
   );
 
   const resizer = virtua.createResizer(store, false);
-  resizer._observeRoot(root);
+  resizer.$observeRoot(root);
 
   const scroller = virtua.createScroller(store, false);
-  scroller._observe(root);
+  scroller.$observe(root);
 
   const context: Context = {
     container,
@@ -210,7 +208,7 @@ export function init({
     },
   };
 
-  const unsubscribeStore = store._subscribe(
+  const unsubscribeStore = store.$subscribe(
     virtua.UPDATE_VIRTUAL_STATE,
     (_sync) => {
       render(context);
@@ -235,19 +233,19 @@ export function render(context: Context): void {
 
 function _render(context: Context): void {
   const { store, scroller, state, container: container } = context;
-  const newJumpCount = store._getJumpCount();
+  const newJumpCount = store.$getJumpCount();
   if (state.jumpCount !== newJumpCount) {
-    scroller._fixScrollJump();
+    scroller.$fixScrollJump();
     state.jumpCount = newJumpCount;
   }
 
-  const newContainerHeight = `${store._getTotalSize()}px`;
+  const newContainerHeight = `${store.$getTotalSize()}px`;
   if (state.containerHeight !== newContainerHeight) {
     container.style.height = newContainerHeight;
     state.containerHeight = newContainerHeight;
   }
 
-  const [startIdx, endIdx] = store._getRange();
+  const [startIdx, endIdx] = store.$getRange();
   const newChildData: ChildData[] = [];
   for (
     let newChildIdx = startIdx, j = endIdx;
@@ -255,7 +253,7 @@ function _render(context: Context): void {
     newChildIdx++
   ) {
     const oldChildDataMaybe: ChildData | undefined = state.childData[0];
-    const top = `${store._getItemOffset(newChildIdx)}px`;
+    const top = `${store.$getItemOffset(newChildIdx)}px`;
 
     if (oldChildDataMaybe === undefined) {
       const childEl = newChild(context, newChildIdx, top, newChildData);
@@ -289,7 +287,7 @@ function _render(context: Context): void {
 
     if (oldChildData.idx === newChildIdx) {
       const prevHide = oldChildData.hide;
-      const hide = store._isUnmeasuredItem(newChildIdx);
+      const hide = store.$isUnmeasuredItem(newChildIdx);
       if (hide !== prevHide) {
         oldChildData.element.style.position = hide ? "" : "absolute";
         oldChildData.element.style.visibility = hide ? "hidden" : "visible";
