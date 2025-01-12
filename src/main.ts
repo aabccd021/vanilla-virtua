@@ -8,10 +8,15 @@ document.body.appendChild(app);
 
 function createChild(): HTMLElement {
 	const height = Math.floor(Math.random() * 100) + 20;
-	const el = document.createElement("p");
+	const el = document.createElement("button");
 	el.textContent = `Height: ${height}px`;
 	el.style.border = "1px solid #ccc";
 	el.style.height = `${height}px`;
+
+  el.addEventListener("click", () => {
+    console.log("clicked");
+  })
+
 	return el;
 }
 
