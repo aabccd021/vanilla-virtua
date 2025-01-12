@@ -39,6 +39,7 @@ function infiniteScroll(
 
       next.replaceWith(newNext);
       infiniteScroll(listId, root, newNext);
+      return;
     }
   });
 
