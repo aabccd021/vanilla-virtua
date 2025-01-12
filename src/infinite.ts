@@ -11,6 +11,7 @@ function infiniteScroll(
         continue;
       }
       observer.disconnect();
+
       const response = await fetch(next.href);
       const html = await response.text();
       const newDoc = new DOMParser().parseFromString(html, "text/html");
