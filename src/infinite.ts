@@ -23,27 +23,25 @@ function infiniteScroll(
       const response = await fetch(nextPageUrl);
       const html = await response.text();
       const newDoc = new DOMParser().parseFromString(html, "text/html");
-      const newRoot = newDoc.querySelector(`[data-infinite-root="${listId}"]`);
-      if (newRoot === null) {
+      const newRootEl = newDoc.querySelector(
+        `[data-infinite-root="${listId}"]`,
+      );
+      if (newRootEl === null) {
         throw new Error(`Root element not found: ${listId}`);
       }
       triggerEl.removeAttribute("data-infinite-trigger");
-      for (const newChild of newRoot.children) {
+      for (const newChild of newRootEl.children) {
         rootEl.appendChild(newChild);
       }
-      const newNext = newDoc.querySelector<HTMLAnchorElement>(
+      const newNextEl = newDoc.querySelector<HTMLAnchorElement>(
         `a[data-infinite-next="${listId}"]`,
       );
-      if (newNext === null) {
-        for (const trigger of rootEl.querySelectorAll(
-          `[data-infinite-trigger="${listId}"]`,
-        )) {
-          trigger.removeAttribute("data-infinite-trigger");
-        }
+      if (newNextEl === null) {
+        nextEl.remove();
         return;
       }
-      nextEl.replaceWith(newNext);
-      infiniteScroll(rootEl, newNext, listId);
+      nextEl.replaceWith(newNextEl);
+      infiniteScroll(rootEl, newNextEl, listId);
     }
   }).observe(triggerEl);
 }
@@ -56,9 +54,9 @@ for (const rootEl of rootEls) {
   }
   const listId = rootEl.dataset["infiniteRoot"];
   if (listId === undefined) {
-    throw new Error(`Root ID is undefined${rootEl}`);
+    throw new Error("Absurd");
   }
-  const nextEl = rootEl.querySelector<HTMLAnchorElement>(
+  const nextEl = document.body.querySelector<HTMLAnchorElement>(
     `a[data-infinite-next="${listId}"]`,
   );
   if (nextEl === null) {
