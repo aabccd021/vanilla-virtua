@@ -1,35 +1,24 @@
 function infiniteScroll(
+  listId: string,
   rootEl: HTMLElement,
   nextEl: HTMLAnchorElement,
-  listId: string,
+  triggerEl: Element,
 ): void {
-  const [triggerEl, secondTrigger] = rootEl.querySelectorAll(
-    `[data-infinite-trigger="${listId}"]`,
-  );
-  if (secondTrigger !== undefined) {
-    throw new Error(`Only one trigger element is allowed: ${listId}`);
-  }
-  const nextPageUrl = nextEl.getAttribute("href");
-  if (triggerEl === undefined || nextPageUrl === null) {
-    return;
-  }
-
-  new IntersectionObserver(async (entries, observer) => {
+  const observer = new IntersectionObserver(async (entries, observer) => {
     for (const entry of entries) {
       if (!entry.isIntersecting) {
         return;
       }
       observer.disconnect();
-      const response = await fetch(nextPageUrl);
+      const response = await fetch(nextEl.href);
       const html = await response.text();
       const newDoc = new DOMParser().parseFromString(html, "text/html");
       const newRootEl = newDoc.querySelector(
         `[data-infinite-root="${listId}"]`,
       );
       if (newRootEl === null) {
-        throw new Error(`Root element not found: ${listId}`);
+        return;
       }
-      triggerEl.removeAttribute("data-infinite-trigger");
       for (const newChild of newRootEl.children) {
         rootEl.appendChild(newChild);
       }
@@ -41,9 +30,17 @@ function infiniteScroll(
         return;
       }
       nextEl.replaceWith(newNextEl);
-      infiniteScroll(rootEl, newNextEl, listId);
+      const newTriggerEl = newRootEl.querySelector(
+        `[data-infinite-trigger="${listId}"]`,
+      );
+      if (newTriggerEl === null) {
+        return;
+      }
+      infiniteScroll(listId, rootEl, newNextEl, newTriggerEl);
     }
-  }).observe(triggerEl);
+  });
+
+  observer.observe(triggerEl);
 }
 
 const rootEls = document.body.querySelectorAll("[data-infinite-root]");
@@ -60,7 +57,11 @@ for (const rootEl of rootEls) {
     `a[data-infinite-next="${listId}"]`,
   );
   if (nextEl === null) {
-    throw new Error(`Next element not found: ${rootEl}`);
+    continue;
   }
-  infiniteScroll(rootEl, nextEl, listId);
+  const triggerEl = rootEl.querySelector(`[data-infinite-trigger="${listId}"]`);
+  if (triggerEl === null) {
+    continue;
+  }
+  infiniteScroll(listId, rootEl, nextEl, triggerEl);
 }
