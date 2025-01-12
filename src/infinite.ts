@@ -1,67 +1,69 @@
 function infiniteScroll(
   listId: string,
-  rootEl: HTMLElement,
-  nextEl: HTMLAnchorElement,
-  triggerEl: Element,
+  root: HTMLElement,
+  next: HTMLAnchorElement,
 ): void {
+  const triggers = root.querySelectorAll(`[data-infinite-trigger="${listId}"]`);
+
   const observer = new IntersectionObserver(async (entries, observer) => {
     for (const entry of entries) {
       if (!entry.isIntersecting) {
         return;
       }
       observer.disconnect();
-      const response = await fetch(nextEl.href);
+      const response = await fetch(next.href);
       const html = await response.text();
       const newDoc = new DOMParser().parseFromString(html, "text/html");
-      const newRootEl = newDoc.querySelector(
-        `[data-infinite-root="${listId}"]`,
-      );
-      if (newRootEl === null) {
+      const newRoot = newDoc.querySelector(`[data-infinite-root="${listId}"]`);
+
+      if (newRoot === null) {
         return;
       }
-      for (const newChild of newRootEl.children) {
-        rootEl.appendChild(newChild);
+
+      for (const trigger of triggers) {
+        trigger.removeAttribute("data-infinite-trigger");
       }
-      const newNextEl = newDoc.querySelector<HTMLAnchorElement>(
+
+      for (const newChild of newRoot.children) {
+        root.appendChild(newChild);
+      }
+
+      const newNext = newDoc.querySelector<HTMLAnchorElement>(
         `a[data-infinite-next="${listId}"]`,
       );
-      if (newNextEl === null) {
-        nextEl.remove();
+
+      if (newNext === null) {
+        for (const trigger of triggers) {
+          trigger.removeAttribute("data-infinite-trigger");
+        }
         return;
       }
-      nextEl.replaceWith(newNextEl);
-      const newTriggerEl = newRootEl.querySelector(
-        `[data-infinite-trigger="${listId}"]`,
-      );
-      if (newTriggerEl === null) {
-        return;
-      }
-      infiniteScroll(listId, rootEl, newNextEl, newTriggerEl);
+
+      next.replaceWith(newNext);
+      infiniteScroll(listId, root, newNext);
     }
   });
 
-  observer.observe(triggerEl);
+  for (const trigger of triggers) {
+    observer.observe(trigger);
+  }
 }
 
-const rootEls = document.body.querySelectorAll("[data-infinite-root]");
+const roots = document.body.querySelectorAll("[data-infinite-root]");
 
-for (const rootEl of rootEls) {
-  if (!(rootEl instanceof HTMLElement)) {
-    throw new Error(`Not an HTMLElement: ${rootEl}`);
+for (const root of roots) {
+  if (!(root instanceof HTMLElement)) {
+    continue;
   }
-  const listId = rootEl.dataset["infiniteRoot"];
+  const listId = root.dataset["infiniteRoot"];
   if (listId === undefined) {
     throw new Error("Absurd");
   }
-  const nextEl = document.body.querySelector<HTMLAnchorElement>(
+  const next = document.body.querySelector<HTMLAnchorElement>(
     `a[data-infinite-next="${listId}"]`,
   );
-  if (nextEl === null) {
+  if (next === null) {
     continue;
   }
-  const triggerEl = rootEl.querySelector(`[data-infinite-trigger="${listId}"]`);
-  if (triggerEl === null) {
-    continue;
-  }
-  infiniteScroll(listId, rootEl, nextEl, triggerEl);
+  infiniteScroll(listId, root, next);
 }
