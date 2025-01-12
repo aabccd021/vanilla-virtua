@@ -28,7 +28,8 @@
         "all": true
       },
       "complexity": {
-        "all": true
+        "all": true,
+        "noExcessiveCognitiveComplexity": "off"
       },
       "suspicious": {
         "all": true

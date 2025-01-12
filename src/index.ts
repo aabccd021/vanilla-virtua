@@ -1,8 +1,16 @@
-import * as virtua from "virtua/core";
+import {
+  ACTION_ITEMS_LENGTH_CHANGE,
+  type CacheSnapshot,
+  UPDATE_VIRTUAL_STATE,
+  type VirtualStore,
+  createResizer,
+  createScroller,
+  createVirtualStore,
+} from "virtua/core";
 
-type Scroller = ReturnType<typeof virtua.createScroller>;
+type Scroller = ReturnType<typeof createScroller>;
 
-type Resizer = ReturnType<typeof virtua.createResizer>;
+type Resizer = ReturnType<typeof createResizer>;
 
 interface ChildData {
   idx: number;
@@ -21,7 +29,7 @@ interface State {
 
 interface Context {
   readonly container: HTMLElement;
-  readonly store: virtua.VirtualStore;
+  readonly store: VirtualStore;
   readonly resizer: Resizer;
   readonly scroller: Scroller;
   readonly itemTag?: keyof HTMLElementTagNameMap;
@@ -30,7 +38,7 @@ interface Context {
 
 export function appendChild(context: Context, newChild: HTMLElement[]): void {
   context.state.children = context.state.children.concat(newChild);
-  context.store.$update(virtua.ACTION_ITEMS_LENGTH_CHANGE, [
+  context.store.$update(ACTION_ITEMS_LENGTH_CHANGE, [
     context.state.children.length,
     false,
   ]);
@@ -69,7 +77,7 @@ export interface VirtualizerProps {
   children: HTMLElement[];
   overscan?: number;
   itemSize?: number;
-  cache?: virtua.CacheSnapshot;
+  cache?: CacheSnapshot;
   as?: keyof HTMLElementTagNameMap;
   item?: keyof HTMLElementTagNameMap;
 }
@@ -103,7 +111,7 @@ export function init({
   root.style.height = "100%";
   root.appendChild(container);
 
-  const store = virtua.createVirtualStore(
+  const store = createVirtualStore(
     children.length,
     itemSize,
     overscan,
@@ -112,10 +120,10 @@ export function init({
     !itemSize,
   );
 
-  const resizer = virtua.createResizer(store, false);
+  const resizer = createResizer(store, false);
   resizer.$observeRoot(root);
 
-  const scroller = virtua.createScroller(store, false);
+  const scroller = createScroller(store, false);
   scroller.$observe(root);
 
   const context: Context = {
@@ -130,14 +138,11 @@ export function init({
     },
   };
 
-  const unsubscribeStore = store.$subscribe(
-    virtua.UPDATE_VIRTUAL_STATE,
-    (_sync) => {
-      render(context);
-    },
-  );
+  const unsubscribeStore = store.$subscribe(UPDATE_VIRTUAL_STATE, (_sync) => {
+    render(context);
+  });
 
-  const dispose = () => {
+  const dispose = (): void => {
     unsubscribeStore();
     for (const childData of context.state.childData) {
       childData.unobserve();

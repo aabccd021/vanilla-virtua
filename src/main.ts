@@ -1,4 +1,4 @@
-import * as vList from "./index.ts";
+import { appendChild, init, render } from "./index.ts";
 
 const app = document.createElement("div");
 app.style.width = "100%";
@@ -13,16 +13,14 @@ function createChild(): HTMLElement {
   el.style.border = "1px solid #ccc";
   el.style.height = `${height}px`;
 
-  el.addEventListener("click", () => {});
-
   return el;
 }
 
 const children = Array.from({ length: 30 }, createChild);
 
-const { context, root } = vList.init({ children });
+const { context, root } = init({ children });
 app.appendChild(root);
-vList.render(context);
+render(context);
 
 let count = 0;
 const interval = setInterval(() => {
@@ -31,6 +29,6 @@ const interval = setInterval(() => {
     return;
   }
   const newChildren = Array.from({ length: 10 }, createChild);
-  vList.appendChild(context, newChildren);
+  appendChild(context, newChildren);
   count++;
 }, 1000);
