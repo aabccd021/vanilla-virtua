@@ -24,9 +24,8 @@
       devShell.x86_64-linux = pkgs.mkShellNoCC {
         buildInputs = [
           pkgs.bun
-          pkgs.nodejs
+          pkgs.biome
           pkgs.typescript
-          pkgs.typescript-language-server
         ];
       };
 
