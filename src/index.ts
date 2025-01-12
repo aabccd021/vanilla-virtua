@@ -36,8 +36,11 @@ interface Context {
   readonly state: State;
 }
 
-export function appendChild(context: Context, newChild: HTMLElement[]): void {
-  context.state.children = context.state.children.concat(newChild);
+export function appendChildren(
+  context: Context,
+  newChildren: HTMLElement[],
+): void {
+  context.state.children = context.state.children.concat(newChildren);
   context.store.$update(ACTION_ITEMS_LENGTH_CHANGE, [
     context.state.children.length,
     false,
