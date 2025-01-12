@@ -1,4 +1,4 @@
-import { appendChild, init, render } from "./index.ts";
+import { appendChildren, init, render } from "./index.ts";
 
 const app = document.createElement("div");
 app.style.width = "100%";
@@ -29,6 +29,6 @@ const interval = setInterval(() => {
     return;
   }
   const newChildren = Array.from({ length: 10 }, createChild);
-  appendChild(context, newChildren);
+  appendChildren(context, newChildren);
   count++;
 }, 1000);

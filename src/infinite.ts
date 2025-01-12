@@ -1,6 +1,8 @@
+import { type Context, appendChildren, init, render } from "./index.ts";
+
 function infiniteScroll(
   listId: string,
-  root: HTMLElement,
+  context: Context,
   next: HTMLAnchorElement,
   triggers: NodeListOf<Element>,
 ): void {
@@ -28,9 +30,7 @@ function infiniteScroll(
       `[data-infinite-trigger="${listId}"]`,
     );
 
-    for (const newChild of newRoot.children) {
-      root.appendChild(newChild);
-    }
+    appendChildren(context, Array.from(newRoot.children));
 
     const newNext = newDoc.querySelector<HTMLAnchorElement>(
       `a[data-infinite-next="${listId}"]`,
@@ -41,7 +41,7 @@ function infiniteScroll(
     }
     next.replaceWith(newNext);
 
-    infiniteScroll(listId, root, newNext, newTriggers);
+    infiniteScroll(listId, context, newNext, newTriggers);
   });
 
   for (const trigger of triggers) {
@@ -55,16 +55,25 @@ for (const root of roots) {
   if (!(root instanceof HTMLElement)) {
     continue;
   }
+
   const listId = root.dataset["infiniteRoot"];
   if (listId === undefined) {
     throw new Error("Absurd");
   }
+
   const next = document.body.querySelector<HTMLAnchorElement>(
     `a[data-infinite-next="${listId}"]`,
   );
   if (next === null) {
     continue;
   }
+
   const triggers = root.querySelectorAll(`[data-infinite-trigger="${listId}"]`);
-  infiniteScroll(listId, root, next, triggers);
+  const { context, root: infiniteRoot } = init({
+    children: Array.from(root.children),
+  });
+  
+  render(context);
+  root.appendChild(infiniteRoot);
+  infiniteScroll(listId, context, next, triggers);
 }

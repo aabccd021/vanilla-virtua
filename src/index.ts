@@ -21,13 +21,13 @@ interface ChildData {
 }
 
 interface State {
-  children: HTMLElement[];
+  children: Element[];
   childData: ChildData[];
   containerHeight?: string;
   jumpCount?: number;
 }
 
-interface Context {
+export interface Context {
   readonly container: HTMLElement;
   readonly store: VirtualStore;
   readonly resizer: Resizer;
@@ -36,10 +36,7 @@ interface Context {
   readonly state: State;
 }
 
-export function appendChildren(
-  context: Context,
-  newChildren: HTMLElement[],
-): void {
+export function appendChildren(context: Context, newChildren: Element[]): void {
   context.state.children = context.state.children.concat(newChildren);
   context.store.$update(ACTION_ITEMS_LENGTH_CHANGE, [
     context.state.children.length,
@@ -53,7 +50,7 @@ function newChild(
   idx: number,
   top: string,
   newChildData: ChildData[],
-): HTMLElement {
+): Element {
   const child = context.state.children[idx];
   if (child === undefined) {
     throw new Error(`Absurd: child is undefined at index ${idx}`);
@@ -77,7 +74,7 @@ function newChild(
 }
 
 export interface VirtualizerProps {
-  children: HTMLElement[];
+  children: Element[];
   overscan?: number;
   itemSize?: number;
   cache?: CacheSnapshot;
@@ -151,6 +148,17 @@ export function init({
       childData.unobserve();
     }
   };
+
+  // oldChildData.element.style.visibility = "hidden";
+  for (const child of children) {
+    const element = document.createElement(item ?? "div");
+    element.style.position = "";
+    element.style.visibility = "hidden";
+    element.style.width = "100%";
+    element.style.left = "0";
+
+    element.appendChild(child);
+  }
 
   return { context, dispose, root };
 }
