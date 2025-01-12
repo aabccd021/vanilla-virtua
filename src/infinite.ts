@@ -31,7 +31,6 @@ function infiniteScroll(
       const newNext = newDoc.querySelector<HTMLAnchorElement>(
         `a[data-infinite-next="${listId}"]`,
       );
-
       if (newNext === null) {
         next.remove();
         return;
