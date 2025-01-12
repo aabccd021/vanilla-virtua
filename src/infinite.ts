@@ -23,6 +23,7 @@ function infiniteScroll(
     for (const trigger of triggers) {
       trigger.removeAttribute("data-infinite-trigger");
     }
+
     const newTriggers = newRoot.querySelectorAll(
       `[data-infinite-trigger="${listId}"]`,
     );
