@@ -1,17 +1,17 @@
 {
-	"name": "vanilla-virtualized",
-	"private": true,
-	"version": "0.0.1",
-	"type": "module",
+  "name": "vanilla-virtualized",
+  "private": true,
+  "version": "0.0.1",
+  "type": "module",
   "module": "src/index.ts",
-	"scripts": {
-		"dev": "vite"
-	},
-	"devDependencies": {
-		"typescript": "~5.6.2",
-		"vite": "^6.0.1"
-	},
-	"dependencies": {
-		"virtua": "git@github.com:aabccd021/virtua.git#74d552d9ff43f93b4529787a359fc6f73e3bd62b"
-	}
+  "scripts": {
+    "dev": "vite"
+  },
+  "devDependencies": {
+    "typescript": "~5.6.2",
+    "vite": "^6.0.1"
+  },
+  "dependencies": {
+    "virtua": "git@github.com:aabccd021/virtua.git#74d552d9ff43f93b4529787a359fc6f73e3bd62b"
+  }
 }
