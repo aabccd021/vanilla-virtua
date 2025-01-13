@@ -182,8 +182,7 @@ for (const anchor of anchors) {
     // }
 
     console.log("replacing scripts");
-    const fe = await import("/fe.js");
-    fe.init();
+    await import("http://localhost:3000/fe.js");
     console.log("replaced scripts");
 
     history.pushState({}, "", anchor.href);

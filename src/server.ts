@@ -47,7 +47,7 @@ Bun.serve({
             <title>Foo</title>
           </head>
           <body>
-            <script src="/fe2.js" defer></script>
+            <script src="/fe2.js" type="module"></script>
             <div>foo</div>
             <a 
               data-infinite-link="mylist"
