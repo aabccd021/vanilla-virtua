@@ -179,7 +179,7 @@ for (const anchor of anchors) {
 
     await Promise.all(cache.scripts.map((src) => import(src)));
 
-    history.pushState({}, "", anchor.href);
+    history.replaceState({}, "", anchor.href);
 
     initInfinite(cache);
   });
