@@ -59,6 +59,10 @@ function infiniteScroll(
   }
 }
 
+function waitAnimationFrame(): Promise<void> {
+  return new Promise((resolve) => requestAnimationFrame(() => resolve()));
+}
+
 type Storage = {
   cache: CacheSnapshot;
   scrollOffset: number;
@@ -67,7 +71,7 @@ type Storage = {
   scripts: string[];
 };
 
-function initInfinite(cache?: Storage): void {
+async function initInfinite(cache?: Storage): Promise<void> {
   const root = document.body.querySelector("[data-infinite-root]");
   if (!(root instanceof HTMLElement)) {
     return;
@@ -95,53 +99,50 @@ function initInfinite(cache?: Storage): void {
     }
   });
 
-  requestAnimationFrame(() => {
-    const vList = init({ root, cache: cache?.cache });
+  const vList = init({ root, cache: cache?.cache });
+  await waitAnimationFrame();
 
-    render(vList.context);
-    for (const attr of root.attributes) {
-      vList.root.setAttribute(attr.name, attr.value);
+  render(vList.context);
+
+  for (const attr of root.attributes) {
+    vList.root.setAttribute(attr.name, attr.value);
+  }
+  root.replaceWith(vList.root);
+
+  await waitAnimationFrame();
+  if (cache?.scrollOffset) {
+    vList.context.scroller.$scrollTo(cache.scrollOffset);
+  }
+
+  infiniteScroll(listId, vList.context, next, triggers);
+
+  window.dispatchEvent(
+    new CustomEvent<InfiniteEvent>("infinite", {
+      detail: {
+        type: "newChildren",
+        children: vList.context.state.children,
+      },
+    }),
+  );
+
+  window.addEventListener("beforeunload", () => {
+    const cache = vList.context.store.$getCacheSnapshot();
+    const scrollOffset = vList.context.store.$getScrollOffset();
+
+    for (const child of vList.context.state.children) {
+      vList.root.appendChild(child);
     }
-    root.replaceWith(vList.root);
 
-    infiniteScroll(listId, vList.context, next, triggers);
+    vList.container.remove();
 
-    requestAnimationFrame(() => {
-      if (cache?.scrollOffset) {
-        vList.context.scroller.$scrollTo(cache.scrollOffset);
-      }
-    });
+    const body = document.body.outerHTML;
+    const title = document.title;
 
-    requestIdleCallback(() => {
-      window.dispatchEvent(
-        new CustomEvent<InfiniteEvent>("infinite", {
-          detail: {
-            type: "newChildren",
-            children: vList.context.state.children,
-          },
-        }),
-      );
-    });
+    const scripts = Array.from(subscribedScripts);
 
-    window.addEventListener("beforeunload", () => {
-      const cache = vList.context.store.$getCacheSnapshot();
-      const scrollOffset = vList.context.store.$getScrollOffset();
+    const storage: Storage = { cache, scrollOffset, body, title, scripts };
 
-      for (const child of vList.context.state.children) {
-        vList.root.appendChild(child);
-      }
-
-      vList.container.remove();
-
-      const body = document.body.outerHTML;
-      const title = document.title;
-
-      const scripts = Array.from(subscribedScripts);
-
-      const storage: Storage = { cache, scrollOffset, body, title, scripts };
-
-      sessionStorage.setItem(`cache-${listId}`, JSON.stringify(storage));
-    });
+    sessionStorage.setItem(`cache-${listId}`, JSON.stringify(storage));
   });
 }
 
