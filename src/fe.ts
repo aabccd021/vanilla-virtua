@@ -1,17 +1,17 @@
 import type { InfiniteEvent } from "./event.ts";
 
-function onInfiniteEvent(e: CustomEventInit<InfiniteEvent>): void {
-  if (e.detail === undefined) {
-    return;
-  }
-  if (e.detail.type === "unsubscribe") {
+function onInfiniteEvent(event: CustomEventInit<InfiniteEvent>): void {
+  if (event.detail?.type === "unsubscribe") {
     window.removeEventListener("infinite", onInfiniteEvent);
     return;
   }
-  for (const el of e.detail.children) {
-    el.addEventListener("click", () => {
-      console.warn("fe");
-    });
+  if (event.detail?.type === "newChildren") {
+    for (const el of event.detail.children) {
+      el.addEventListener("click", () => {
+        console.warn("fe");
+      });
+    }
+    return;
   }
 }
 
