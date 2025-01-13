@@ -82,6 +82,9 @@ for (const root of roots) {
     const infinite = init({ root });
 
     render(infinite.context);
+    for (const attr of root.attributes) {
+      infinite.root.setAttribute(attr.name, attr.value);
+    }
     root.replaceWith(infinite.root);
     infiniteScroll(listId, infinite.context, next, triggers);
   });

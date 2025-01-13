@@ -31,20 +31,27 @@ Bun.serve({
       return new Response(undefined, { status: 200 });
     }
 
-    const buttons = Array.from({ length: 30 }, (_, i) => button(i === 29));
+    const buttons = Array.from({ length: 30 }, (_, i) => button(i === 29)).join('\n');
 
     return new Response(
       `<head>
-        <style> :root { color-scheme: dark; } </style>
+        <style> 
+          :root { 
+            color-scheme: dark; 
+          } 
+          ul {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+          }
+        </style>
         <script src="/infinite.js" type="module"></script>
         <script src="/fe.js" type="module"></script>
       </head>
       <body>
-        <div data-infinite-root="mylist">
-          <div>
-          ${buttons.join("\n")}
-          </div>
-        </div>
+        <ul data-infinite-root="mylist">
+          ${buttons}
+        </ul>
         <a 
           data-infinite-next="mylist" 
           style="visibility: hidden; position: fixed;"

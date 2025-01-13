@@ -94,22 +94,14 @@ export function init({
   cache,
   item,
 }: VirtualizerProps): InitResult {
-  const oldContainer = oldRoot.firstElementChild;
-  if (!(oldContainer instanceof HTMLElement)) {
-    throw new Error("Absurd: oldContainer is not an HTMLElement");
-  }
-  const children = Array.from(oldContainer.children);
+  const children = Array.from(oldRoot.children);
 
-  const container = document.createElement(oldContainer.tagName);
+  const container = document.createElement("div");
   container.style.overflowAnchor = "none";
   container.style.flex = "none";
   container.style.position = "relative";
   container.style.visibility = "hidden";
   container.style.width = "100%";
-
-  for (const attr of oldContainer.attributes) {
-    container.setAttribute(attr.name, attr.value);
-  }
 
   const root = document.createElement(oldRoot.tagName);
   root.style.display = "block";
