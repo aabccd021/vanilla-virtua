@@ -149,17 +149,6 @@ export function init({
     }
   };
 
-  // oldChildData.element.style.visibility = "hidden";
-  for (const child of children) {
-    const element = document.createElement(item ?? "div");
-    element.style.position = "";
-    element.style.visibility = "hidden";
-    element.style.width = "100%";
-    element.style.left = "0";
-
-    element.appendChild(child);
-  }
-
   return { context, dispose, root };
 }
 
