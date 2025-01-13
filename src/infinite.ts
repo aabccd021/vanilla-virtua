@@ -69,11 +69,11 @@ for (const root of roots) {
   }
 
   const triggers = root.querySelectorAll(`[data-infinite-trigger="${listId}"]`);
-  const { context, root: infiniteRoot } = init({
+  const infinite = init({
     children: Array.from(root.children),
   });
   
-  render(context);
-  root.replaceWith(infiniteRoot);
-  infiniteScroll(listId, context, next, triggers);
+  render(infinite.context);
+  root.replaceWith(infinite.root);
+  infiniteScroll(listId, infinite.context, next, triggers);
 }
