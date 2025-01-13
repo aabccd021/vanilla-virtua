@@ -91,7 +91,7 @@ Bun.serve({
         <title>Root</title>
       </head>
       <body style="margin: 0; padding: 0; display: flex;">
-        <script src="/fe.js" defer></script>
+        <script src="/fe.js" type="module"></script>
         <a 
           href="/foo"
           style="padding: 30px;"

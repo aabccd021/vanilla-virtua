@@ -148,7 +148,7 @@ for (const anchor of anchors) {
     continue;
   }
 
-  anchor.addEventListener("click", (e) => {
+  anchor.addEventListener("click", async (e) => {
     const cacheStr = sessionStorage.getItem(`cache-${listId}`);
     if (cacheStr === null) {
       return;
@@ -169,16 +169,22 @@ for (const anchor of anchors) {
         },
       }),
     );
+    console.log("dispatched unsubscribe");
 
-    const scripts = document.querySelectorAll("script:not([type='module'])");
-    for (const script of scripts) {
-      console.log("replacing script", script);
-      const newScript = document.createElement("script");
-      for (const attr of script.attributes) {
-        newScript.setAttribute(attr.name, attr.value);
-      }
-      script.replaceWith(newScript);
-    }
+    // const scripts = document.querySelectorAll("script:not([type='module'])");
+    // for (const script of scripts) {
+    //   console.log("replacing script", script);
+    //   const newScript = document.createElement("script");
+    //   for (const attr of script.attributes) {
+    //     newScript.setAttribute(attr.name, attr.value);
+    //   }
+    //   script.replaceWith(newScript);
+    // }
+
+    console.log("replacing scripts");
+    const fe = await import("/fe.js");
+    fe.init();
+    console.log("replaced scripts");
 
     history.pushState({}, "", anchor.href);
 

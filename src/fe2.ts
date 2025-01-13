@@ -1,6 +1,9 @@
 import type { InfiniteEvent } from "./event.ts";
 
+console.log("fe2");
+
 function onInfiniteEvent(e: CustomEventInit<InfiniteEvent>): void {
+  console.log("fe2 event");
   if (e.detail === undefined) {
     return;
   }
