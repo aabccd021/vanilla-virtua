@@ -7,7 +7,7 @@ function button(trigger: boolean): string {
   <li>
     <button 
       style="border: 1px solid #ccc; height: ${height}px; width: ${height}px"
-      ${trigger ? 'data-infinite-trigger="mylist"' : ''}
+      ${trigger ? 'data-infinite-trigger="mylist"' : ""}
       onClick="console.warn('clicked ${counter}')"
     >
       ID: ${counter}
@@ -20,18 +20,17 @@ function button(trigger: boolean): string {
 Bun.serve({
   fetch: (req): Response => {
     const path = new URL(req.url).pathname;
-    if (path === '/infinite.js') {
-      return new Response(Bun.file('infinite.js'));
+    if (path === "/infinite.js") {
+      return new Response(Bun.file("infinite.js"));
     }
 
-    if (path !== '/') {
+    if (path !== "/") {
       return new Response(undefined, { status: 200 });
     }
 
     const firstCounter = counter;
 
     const buttons = Array.from({ length: 30 }, (_, i) => button(i === 29));
-
 
     return new Response(
       `<head>
@@ -41,7 +40,7 @@ Bun.serve({
       </head>
       <body>
         <ul data-infinite-root="mylist">
-          ${buttons.join('\n')}
+          ${buttons.join("\n")}
         </ul>
         <a 
           data-infinite-next="mylist" 
@@ -50,8 +49,10 @@ Bun.serve({
           Next
         </a>
       </body>
-      `, {
-      headers: { 'content-type': 'text/html' }
-    })
-  }
-})
+      `,
+      {
+        headers: { "content-type": "text/html" },
+      },
+    );
+  },
+});

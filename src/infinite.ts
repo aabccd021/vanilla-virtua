@@ -72,7 +72,7 @@ for (const root of roots) {
   const infinite = init({
     children: Array.from(root.children),
   });
-  
+
   render(infinite.context);
   root.replaceWith(infinite.root);
   infiniteScroll(listId, infinite.context, next, triggers);
