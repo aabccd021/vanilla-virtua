@@ -1,3 +1,4 @@
+import { CacheSnapshot } from "virtua/core";
 import { type Context, appendChildren, init, render } from "./index.ts";
 
 function infiniteScroll(
@@ -78,14 +79,32 @@ for (const root of roots) {
 
   const triggers = root.querySelectorAll(`[data-infinite-trigger="${listId}"]`);
 
+  const cacheStr = sessionStorage.getItem(`cache-${listId}`);
+  const cache = cacheStr === null ? undefined : JSON.parse(cacheStr) as { cache: CacheSnapshot, scrollOffset: number };
+
   requestAnimationFrame(() => {
-    const infinite = init({ root });
+    const infinite = init({ 
+      root,
+      cache: cache?.cache,
+    });
 
     render(infinite.context);
     for (const attr of root.attributes) {
       infinite.root.setAttribute(attr.name, attr.value);
     }
     root.replaceWith(infinite.root);
+
+    if (cache?.scrollOffset) {
+      infinite.context.scroller.$scrollTo(cache.scrollOffset);
+    }
+
+    window.addEventListener("beforeunload", () => {
+      localStorage.setItem("hello", "world");
+      const cache = infinite.context.store.$getCacheSnapshot();
+      const scrollOffset = infinite.context.store.$getScrollOffset();
+      sessionStorage.setItem(`cache-${listId}`, JSON.stringify({ cache, scrollOffset }));
+    })
+
     infiniteScroll(listId, infinite.context, next, triggers);
   });
 }
