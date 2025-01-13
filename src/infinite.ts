@@ -1,4 +1,5 @@
 import type { CacheSnapshot } from "virtua/core";
+import type { InfiniteEvent } from "./event.ts";
 import { type Context, appendChildren, init, render } from "./index.ts";
 
 function infiniteScroll(
@@ -33,8 +34,8 @@ function infiniteScroll(
 
     const newChildren = Array.from(newRoot.children);
 
-    document.dispatchEvent(
-      new CustomEvent("infinite-new-children", {
+    window.dispatchEvent(
+      new CustomEvent("infinite", {
         detail: { children: newChildren },
       }),
     );
@@ -107,13 +108,15 @@ function initInfinite(cache?: {
     });
 
     requestIdleCallback(() => {
-      console.log("dispatching new children");
-      document.dispatchEvent(
-        new CustomEvent("infinite-new-children", {
-          detail: { children: vList.context.state.children },
+      window.dispatchEvent(
+        new CustomEvent<InfiniteEvent>("infinite", {
+          detail: {
+            type: "newChildren",
+            children: vList.context.state.children,
+          },
         }),
       );
-    })
+    });
 
     window.addEventListener("beforeunload", () => {
       const cache = vList.context.store.$getCacheSnapshot();
@@ -157,6 +160,15 @@ for (const anchor of anchors) {
 
     document.body.outerHTML = cache.body;
     document.title = cache.title;
+
+    console.log("dispatching unsubscribe");
+    window.dispatchEvent(
+      new CustomEvent<InfiniteEvent>("infinite", {
+        detail: {
+          type: "unsubscribe",
+        },
+      }),
+    );
 
     const scripts = document.querySelectorAll("script:not([type='module'])");
     for (const script of scripts) {

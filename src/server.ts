@@ -26,6 +26,9 @@ Bun.serve({
     if (path === "/fe.js") {
       return new Response(Bun.file("fe.js"));
     }
+    if (path === "/fe2.js") {
+      return new Response(Bun.file("fe2.js"));
+    }
 
     if (path === "/foo") {
       return new Response(
@@ -44,6 +47,7 @@ Bun.serve({
             <title>Foo</title>
           </head>
           <body>
+            <script src="/fe2.js" defer></script>
             <div>foo</div>
             <a 
               data-infinite-link="mylist"
@@ -59,8 +63,12 @@ Bun.serve({
       );
     }
 
-    if (path !== "/") {
+    if (path === "/favicon.ico") {
       return new Response(undefined, { status: 200 });
+    }
+
+    if (path !== "/") {
+      return new Response("Not found", { status: 404 });
     }
 
     const buttons = Array.from({ length: 30 }, (_, i) => button(i === 29)).join(

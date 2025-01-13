@@ -10,7 +10,7 @@ function onInfiniteEvent(e: CustomEventInit<InfiniteEvent>): void {
   }
   for (const el of e.detail.children) {
     el.addEventListener("click", () => {
-      console.warn("fe");
+      console.warn("fe2");
     });
   }
 }
