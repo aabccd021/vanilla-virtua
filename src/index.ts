@@ -86,6 +86,7 @@ interface InitResult {
   context: Context;
   dispose: () => void;
   root: HTMLElement;
+  container: HTMLElement;
 }
 
 export function init({
@@ -151,12 +152,14 @@ export function init({
 
   const dispose = (): void => {
     unsubscribeStore();
+    resizer.$dispose();
+    scroller.$dispose();
     for (const childData of context.state.childData) {
       childData.unobserve();
     }
   };
 
-  return { context, dispose, root };
+  return { context, dispose, root, container };
 }
 
 export function render(context: Context): void {

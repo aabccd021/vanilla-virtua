@@ -58,62 +58,102 @@ function infiniteScroll(
   }
 }
 
-const roots = document.body.querySelectorAll("[data-infinite-root]");
+type Storage = {
+  cache: CacheSnapshot;
+  scrollOffset: number;
+  body: string;
+  title: string;
+};
 
-for (const root of roots) {
+function initInfinite(cache?: {
+  cache: CacheSnapshot;
+  scrollOffset: number;
+}): void {
+  const root = document.body.querySelector("[data-infinite-root]");
   if (!(root instanceof HTMLElement)) {
-    continue;
+    return;
   }
 
   const listId = root.dataset["infiniteRoot"];
   if (listId === undefined) {
-    throw new Error("Absurd");
+    throw new Error("List ID not found");
   }
 
   const next = document.body.querySelector<HTMLAnchorElement>(
     `a[data-infinite-next="${listId}"]`,
   );
   if (next === null) {
-    continue;
+    throw new Error("Next not found");
   }
 
   const triggers = root.querySelectorAll(`[data-infinite-trigger="${listId}"]`);
 
-  const cacheStr = sessionStorage.getItem(`cache-${listId}`);
-  const cache =
-    cacheStr === null
-      ? undefined
-      : (JSON.parse(cacheStr) as {
-          cache: CacheSnapshot;
-          scrollOffset: number;
-        });
-
   requestAnimationFrame(() => {
-    const infinite = init({
-      root,
-      cache: cache?.cache,
-    });
+    const vList = init({ root, cache: cache?.cache });
 
-    render(infinite.context);
+    render(vList.context);
     for (const attr of root.attributes) {
-      infinite.root.setAttribute(attr.name, attr.value);
+      vList.root.setAttribute(attr.name, attr.value);
     }
-    root.replaceWith(infinite.root);
+    root.replaceWith(vList.root);
 
-    if (cache?.scrollOffset) {
-      infinite.context.scroller.$scrollTo(cache.scrollOffset);
-    }
+    infiniteScroll(listId, vList.context, next, triggers);
+
+    requestAnimationFrame(() => {
+      if (cache?.scrollOffset) {
+        console.log("scrolling to", cache.scrollOffset);
+        vList.context.scroller.$scrollTo(cache.scrollOffset);
+      }
+    });
 
     window.addEventListener("beforeunload", () => {
-      localStorage.setItem("hello", "world");
-      const cache = infinite.context.store.$getCacheSnapshot();
-      const scrollOffset = infinite.context.store.$getScrollOffset();
-      sessionStorage.setItem(
-        `cache-${listId}`,
-        JSON.stringify({ cache, scrollOffset }),
-      );
+      const cache = vList.context.store.$getCacheSnapshot();
+      const scrollOffset = vList.context.store.$getScrollOffset();
+
+      for (const child of vList.context.state.children) {
+        vList.root.appendChild(child);
+      }
+
+      vList.container.remove();
+
+      const body = document.body.outerHTML;
+      const title = document.title;
+
+      const storage: Storage = { cache, scrollOffset, body, title };
+
+      sessionStorage.setItem(`cache-${listId}`, JSON.stringify(storage));
     });
 
-    infiniteScroll(listId, infinite.context, next, triggers);
   });
 }
+
+const anchors = document.body.querySelectorAll<HTMLAnchorElement>(
+  "a[data-infinite-link]",
+);
+
+for (const anchor of anchors) {
+  const listId = anchor.dataset["infiniteLink"];
+  if (listId === undefined) {
+    continue;
+  }
+
+  anchor.addEventListener("click", (e) => {
+    const cacheStr = sessionStorage.getItem(`cache-${listId}`);
+    if (cacheStr === null) {
+      return;
+    }
+
+    e.preventDefault();
+
+    const cache = JSON.parse(cacheStr) as Storage;
+
+    document.body.outerHTML = cache.body;
+    document.title = cache.title;
+
+    history.replaceState({}, "", anchor.href);
+
+    initInfinite(cache);
+  });
+}
+
+initInfinite();

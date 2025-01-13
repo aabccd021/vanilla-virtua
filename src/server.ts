@@ -27,6 +27,39 @@ Bun.serve({
       return new Response(Bun.file("fe.js"));
     }
 
+    if (path === "/foo") {
+      return new Response(
+        `<head>
+            <style> 
+              :root { 
+                color-scheme: dark; 
+              } 
+              ul {
+                list-style: none;
+                padding: 0;
+                margin: 0;
+              }
+            </style>
+            <script src="/infinite.js" type="module"></script>
+            <script src="/fe.js" type="module"></script>
+            <title>Foo</title>
+          </head>
+          <body>
+            <div>foo</div>
+            <a 
+              data-infinite-link="mylist"
+              href='/'
+            >
+              Home
+            </a>
+          </body>
+        `,
+        {
+          headers: { "content-type": "text/html" },
+        },
+      );
+    }
+
     if (path !== "/") {
       return new Response(undefined, { status: 200 });
     }
@@ -49,8 +82,13 @@ Bun.serve({
         </style>
         <script src="/infinite.js" type="module"></script>
         <script src="/fe.js" type="module"></script>
+        <title>Root</title>
       </head>
-      <body>
+      <body style="margin: 0; padding: 0; display: flex;">
+        <a 
+          href="/foo"
+          style="padding: 30px;"
+        >Foo</a>
         <ul data-infinite-root="mylist">
           ${buttons}
         </ul>
