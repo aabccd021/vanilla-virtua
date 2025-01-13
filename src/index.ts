@@ -74,7 +74,7 @@ function newChild(
 }
 
 export interface VirtualizerProps {
-  children: Element[];
+  root: HTMLElement;
   overscan?: number;
   itemSize?: number;
   cache?: CacheSnapshot;
@@ -89,13 +89,19 @@ interface InitResult {
 }
 
 export function init({
-  children,
+  root: oldRoot,
   as,
   itemSize,
   overscan,
   cache,
   item,
 }: VirtualizerProps): InitResult {
+  const oldContainer = oldRoot.firstElementChild;
+  if (!(oldContainer instanceof HTMLElement)) {
+    throw new Error("Absurd: oldContainer is not an HTMLElement");
+  }
+  const children = Array.from(oldContainer.children);
+
   const container = document.createElement("div");
   container.style.overflowAnchor = "none";
   container.style.flex = "none";
@@ -103,12 +109,21 @@ export function init({
   container.style.visibility = "hidden";
   container.style.width = "100%";
 
+  for (const attr of oldContainer.attributes) {
+    container.setAttribute(attr.name, attr.value);
+  }
+
   const root = document.createElement(as ?? "div");
   root.style.display = "block";
   root.style.overflowY = "auto";
   root.style.contain = "strict";
   root.style.width = "100%";
   root.style.height = "100%";
+
+  for (const attr of oldRoot.attributes) {
+    root.setAttribute(attr.name, attr.value);
+  }
+
   root.appendChild(container);
 
   const store = createVirtualStore(

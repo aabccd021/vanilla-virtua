@@ -79,9 +79,7 @@ for (const root of roots) {
   const triggers = root.querySelectorAll(`[data-infinite-trigger="${listId}"]`);
 
   requestAnimationFrame(() => {
-    const infinite = init({
-      children: Array.from(root.children),
-    });
+    const infinite = init({ root });
 
     render(infinite.context);
     root.replaceWith(infinite.root);

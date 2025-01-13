@@ -41,7 +41,9 @@ Bun.serve({
       </head>
       <body>
         <div data-infinite-root="mylist">
+          <div>
           ${buttons.join("\n")}
+          </div>
         </div>
         <a 
           data-infinite-next="mylist" 
