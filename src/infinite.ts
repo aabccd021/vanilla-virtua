@@ -106,6 +106,15 @@ function initInfinite(cache?: {
       }
     });
 
+    requestIdleCallback(() => {
+      console.log("dispatching new children");
+      document.dispatchEvent(
+        new CustomEvent("infinite-new-children", {
+          detail: { children: vList.context.state.children },
+        }),
+      );
+    })
+
     window.addEventListener("beforeunload", () => {
       const cache = vList.context.store.$getCacheSnapshot();
       const scrollOffset = vList.context.store.$getScrollOffset();
@@ -149,7 +158,17 @@ for (const anchor of anchors) {
     document.body.outerHTML = cache.body;
     document.title = cache.title;
 
-    history.replaceState({}, "", anchor.href);
+    const scripts = document.querySelectorAll("script:not([type='module'])");
+    for (const script of scripts) {
+      console.log("replacing script", script);
+      const newScript = document.createElement("script");
+      for (const attr of script.attributes) {
+        newScript.setAttribute(attr.name, attr.value);
+      }
+      script.replaceWith(newScript);
+    }
+
+    history.pushState({}, "", anchor.href);
 
     initInfinite(cache);
   });

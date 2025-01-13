@@ -1,4 +1,3 @@
 # Todo
 
-- move to bun
-- infinite list
+- remove list id
