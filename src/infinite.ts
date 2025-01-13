@@ -30,7 +30,15 @@ function infiniteScroll(
       `[data-infinite-trigger="${listId}"]`,
     );
 
-    appendChildren(context, Array.from(newRoot.children));
+    const newChildren = Array.from(newRoot.children);
+
+    document.dispatchEvent(
+      new CustomEvent("infinite-new-children", {
+        detail: { children: newChildren },
+      }),
+    );
+
+    appendChildren(context, newChildren);
 
     const newNext = newDoc.querySelector<HTMLAnchorElement>(
       `a[data-infinite-next="${listId}"]`,

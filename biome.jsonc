@@ -33,7 +33,9 @@
         "useLiteralKeys": "off"
       },
       "suspicious": {
-        "all": true
+        "all": true,
+        "noConsole": "off",
+        "noConsoleLog": "off"
       },
       "correctness": {
         "all": true

@@ -6,9 +6,9 @@ function button(trigger: boolean): string {
   const html = `
   <li>
     <button 
+      data-click-hello
       style="border: 1px solid #ccc; height: ${height}px; width: ${height}px"
       ${trigger ? 'data-infinite-trigger="mylist"' : ""}
-      onClick="console.warn('clicked ${counter}')"
     >
       ID: ${counter}
     </button>
@@ -23,12 +23,13 @@ Bun.serve({
     if (path === "/infinite.js") {
       return new Response(Bun.file("infinite.js"));
     }
+    if (path === "/fe.js") {
+      return new Response(Bun.file("fe.js"));
+    }
 
     if (path !== "/") {
       return new Response(undefined, { status: 200 });
     }
-
-    const firstCounter = counter;
 
     const buttons = Array.from({ length: 30 }, (_, i) => button(i === 29));
 
@@ -36,7 +37,7 @@ Bun.serve({
       `<head>
         <style> :root { color-scheme: dark; } </style>
         <script src="/infinite.js" type="module"></script>
-        <script>console.log('${firstCounter}')</script>
+        <script src="/fe.js" type="module"></script>
       </head>
       <body>
         <div data-infinite-root="mylist">
