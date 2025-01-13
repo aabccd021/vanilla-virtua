@@ -55,7 +55,8 @@ Bun.serve({
         <a 
           data-infinite-next="mylist" 
           style="visibility: hidden; position: fixed;"
-          href="/">
+          href="/"
+        >
           Next
         </a>
       </body>
