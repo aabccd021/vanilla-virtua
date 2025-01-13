@@ -31,7 +31,9 @@ Bun.serve({
       return new Response(undefined, { status: 200 });
     }
 
-    const buttons = Array.from({ length: 30 }, (_, i) => button(i === 29)).join('\n');
+    const buttons = Array.from({ length: 30 }, (_, i) => button(i === 29)).join(
+      "\n",
+    );
 
     return new Response(
       `<head>
