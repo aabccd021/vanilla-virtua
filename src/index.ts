@@ -78,6 +78,7 @@ export interface VirtualizerProps {
   overscan?: number;
   itemSize?: number;
   cache?: CacheSnapshot;
+  as?: keyof HTMLElementTagNameMap;
   item?: keyof HTMLElementTagNameMap;
 }
 
@@ -89,6 +90,7 @@ interface InitResult {
 
 export function init({
   root: oldRoot,
+  as,
   itemSize,
   overscan,
   cache,
@@ -96,7 +98,7 @@ export function init({
 }: VirtualizerProps): InitResult {
   const children = Array.from(oldRoot.children);
 
-  const container = document.createElement("div");
+  const container = document.createElement(as ?? "div");
   container.style.overflowAnchor = "none";
   container.style.flex = "none";
   container.style.position = "relative";
