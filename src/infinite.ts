@@ -109,8 +109,8 @@ async function initInfinite(cache?: Storage): Promise<void> {
   }
   root.replaceWith(vList.root);
 
-  await waitAnimationFrame();
   if (cache?.scrollOffset) {
+    await waitAnimationFrame();
     vList.context.scroller.$scrollTo(cache.scrollOffset);
   }
 
