@@ -20,5 +20,3 @@ window.addEventListener("infinite", onInfiniteEvent);
 window.dispatchEvent(
   new CustomEvent<string>("infsub", { detail: import.meta.url }),
 );
-
-console.log("fe done");
