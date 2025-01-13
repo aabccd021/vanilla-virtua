@@ -1,9 +1,6 @@
 import type { InfiniteEvent } from "./event.ts";
 
-console.log("fe");
-
 function onInfiniteEvent(e: CustomEventInit<InfiniteEvent>): void {
-  console.log("fe event");
   if (e.detail === undefined) {
     return;
   }
@@ -19,3 +16,9 @@ function onInfiniteEvent(e: CustomEventInit<InfiniteEvent>): void {
 }
 
 window.addEventListener("infinite", onInfiniteEvent);
+
+window.dispatchEvent(
+  new CustomEvent<string>("infsub", { detail: import.meta.url }),
+);
+
+console.log("fe done");

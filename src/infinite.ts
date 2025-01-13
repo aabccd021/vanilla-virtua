@@ -64,12 +64,10 @@ type Storage = {
   scrollOffset: number;
   body: string;
   title: string;
+  scripts: string[];
 };
 
-function initInfinite(cache?: {
-  cache: CacheSnapshot;
-  scrollOffset: number;
-}): void {
+function initInfinite(cache?: Storage): void {
   const root = document.body.querySelector("[data-infinite-root]");
   if (!(root instanceof HTMLElement)) {
     return;
@@ -89,6 +87,14 @@ function initInfinite(cache?: {
 
   const triggers = root.querySelectorAll(`[data-infinite-trigger="${listId}"]`);
 
+  const subscribedScripts = new Set<string>(cache?.scripts);
+
+  window.addEventListener("infsub", (e: CustomEventInit<string>) => {
+    if (e.detail !== undefined) {
+      subscribedScripts.add(e.detail);
+    }
+  });
+
   requestAnimationFrame(() => {
     const vList = init({ root, cache: cache?.cache });
 
@@ -102,7 +108,6 @@ function initInfinite(cache?: {
 
     requestAnimationFrame(() => {
       if (cache?.scrollOffset) {
-        console.log("scrolling to", cache.scrollOffset);
         vList.context.scroller.$scrollTo(cache.scrollOffset);
       }
     });
@@ -131,7 +136,9 @@ function initInfinite(cache?: {
       const body = document.body.outerHTML;
       const title = document.title;
 
-      const storage: Storage = { cache, scrollOffset, body, title };
+      const scripts = Array.from(subscribedScripts);
+
+      const storage: Storage = { cache, scrollOffset, body, title, scripts };
 
       sessionStorage.setItem(`cache-${listId}`, JSON.stringify(storage));
     });
@@ -161,7 +168,6 @@ for (const anchor of anchors) {
     document.body.outerHTML = cache.body;
     document.title = cache.title;
 
-    console.log("dispatching unsubscribe");
     window.dispatchEvent(
       new CustomEvent<InfiniteEvent>("infinite", {
         detail: {
@@ -169,21 +175,8 @@ for (const anchor of anchors) {
         },
       }),
     );
-    console.log("dispatched unsubscribe");
 
-    // const scripts = document.querySelectorAll("script:not([type='module'])");
-    // for (const script of scripts) {
-    //   console.log("replacing script", script);
-    //   const newScript = document.createElement("script");
-    //   for (const attr of script.attributes) {
-    //     newScript.setAttribute(attr.name, attr.value);
-    //   }
-    //   script.replaceWith(newScript);
-    // }
-
-    console.log("replacing scripts");
-    await import("http://localhost:3000/fe.js");
-    console.log("replaced scripts");
+    await Promise.all(cache.scripts.map((src) => import(src)));
 
     history.pushState({}, "", anchor.href);
 

@@ -44,10 +44,10 @@ Bun.serve({
               }
             </style>
             <script src="/infinite.js" type="module"></script>
+            <script src="/fe2.js" type="module"></script>
             <title>Foo</title>
           </head>
           <body>
-            <script src="/fe2.js" type="module"></script>
             <div>foo</div>
             <a 
               data-infinite-link="mylist"
@@ -88,10 +88,10 @@ Bun.serve({
           }
         </style>
         <script src="/infinite.js" type="module"></script>
+        <script src="/fe.js" type="module"></script>
         <title>Root</title>
       </head>
       <body style="margin: 0; padding: 0; display: flex;">
-        <script src="/fe.js" type="module"></script>
         <a 
           href="/foo"
           style="padding: 30px;"
