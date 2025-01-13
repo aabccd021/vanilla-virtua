@@ -39,9 +39,9 @@ Bun.serve({
         <script>console.log('${firstCounter}')</script>
       </head>
       <body>
-        <ul data-infinite-root="mylist">
+        <div data-infinite-root="mylist">
           ${buttons.join("\n")}
-        </ul>
+        </div>
         <a 
           data-infinite-next="mylist" 
           style="visibility: hidden; position: fixed;"
