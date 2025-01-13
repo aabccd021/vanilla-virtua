@@ -28,7 +28,6 @@ Bun.serve({
       </head>
       <body>
         <div 
-          style="overflow-anchor: none; flex: 0 0 auto; position: relative; width: 100%;"
           data-infinite-root="mylist"
         >
           ${buttons.join('\n')}

@@ -74,6 +74,6 @@ for (const root of roots) {
   });
   
   render(context);
-  root.appendChild(infiniteRoot);
+  root.replaceWith(infiniteRoot);
   infiniteScroll(listId, context, next, triggers);
 }
