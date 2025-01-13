@@ -123,7 +123,6 @@ function initInfinite(cache?: {
 
       sessionStorage.setItem(`cache-${listId}`, JSON.stringify(storage));
     });
-
   });
 }
 
