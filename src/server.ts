@@ -1,7 +1,8 @@
 let counter = 0;
 
-function button(trigger?: true): string {
+function button(trigger: boolean): string {
   const height = Math.floor(Math.random() * 100) + 100;
+
   const html = `
   <li>
     <button 
@@ -23,10 +24,14 @@ Bun.serve({
       return new Response(Bun.file('infinite.js'));
     }
 
+    if (path !== '/') {
+      return new Response(undefined, { status: 200 });
+    }
+
     const firstCounter = counter;
 
-    const buttons = Array.from({ length: 30 }, (_) => button());
-    buttons.push(button(true));
+    const buttons = Array.from({ length: 30 }, (_, i) => button(i === 29));
+
 
     return new Response(
       `<head>
