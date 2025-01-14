@@ -42,11 +42,10 @@ async function restorePage(cached: HistoryItem, url: RelPath): Promise<void> {
   await Promise.all(cached.scripts.map((src) => import(src)));
   history.replaceState({ freeze: true }, "", url.pathname + url.search);
 
-  bindAnchors();
-  savePage();
+  initPage();
 }
 
-function savePage(): void {
+function savePageOnNavigation(): void {
   abortController.abort();
   abortController = new AbortController();
 
@@ -124,24 +123,24 @@ function savePage(): void {
 }
 
 function bindAnchors(): void {
-  const anchors = document.body.querySelectorAll<HTMLAnchorElement>(
-    "a[data-freeze-link]",
-  );
-
+  const anchors = document.body.querySelectorAll("a");
   for (const anchor of anchors) {
-    anchor.addEventListener("click", (clickEvent) => {
+    anchor.addEventListener("click", (event) => {
       const url = new URL(anchor.href);
       const cached = getCachedHistory(url);
       if (cached) {
-        clickEvent.preventDefault();
+        event.preventDefault();
         restorePage(cached, url);
       }
     });
   }
 }
 
-bindAnchors();
-
-if (document.body.hasAttribute("data-freeze")) {
-  savePage();
+function initPage(): void {
+  bindAnchors();
+  if (document.body.hasAttribute("data-freeze")) {
+    savePageOnNavigation();
+  }
 }
+
+initPage();
