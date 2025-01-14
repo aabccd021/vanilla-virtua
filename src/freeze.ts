@@ -26,7 +26,7 @@ function getCachedPage(url: RelPath): Page | null {
   return null;
 }
 
-function bindAnchors(): void {
+function bindAnchors(currentUrl: RelPath): void {
   const anchors = document.body.querySelectorAll("a");
   for (const anchor of anchors) {
     anchor.addEventListener("click", (event) => {
@@ -35,7 +35,7 @@ function bindAnchors(): void {
       if (cached) {
         event.preventDefault();
         if (shouldFreeze()) {
-          savePage(location);
+          savePage(currentUrl);
         }
         restorePage(cached, url);
       }
@@ -57,17 +57,17 @@ async function restorePage(cached: Page, url: RelPath): Promise<void> {
   await Promise.all(cached.scripts.map((src) => import(src)));
   history.pushState({ freeze: true }, "", url.pathname + url.search);
 
-  initPage();
+  initPage(url);
 }
 
 function shouldFreeze(): boolean {
   return document.body.hasAttribute("data-freeze");
 }
 
-function initPage(): void {
-  bindAnchors();
+function initPage(url: RelPath): void {
+  bindAnchors(url);
   if (shouldFreeze()) {
-    savePageOnNavigation();
+    savePageOnNavigation(url);
   }
 }
 
@@ -112,7 +112,7 @@ function savePage(url: RelPath): void {
 
 let abortController = new AbortController();
 
-function savePageOnNavigation(): void {
+function savePageOnNavigation(url: RelPath): void {
   abortController.abort();
   abortController = new AbortController();
   console.log("savePageOnNavigation");
@@ -127,8 +127,6 @@ function savePageOnNavigation(): void {
   );
 
   window.dispatchEvent(new CustomEvent("freeze:page-loaded"));
-
-  const url = location;
 
   window.addEventListener("beforeunload", () => savePage(url), {
     signal: abortController.signal,
@@ -159,4 +157,4 @@ function savePageOnNavigation(): void {
   );
 }
 
-initPage();
+initPage(location);
