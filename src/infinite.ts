@@ -64,11 +64,8 @@ function waitAnimationFrame(): Promise<void> {
 }
 
 type Storage = {
-  cache: CacheSnapshot;
+  virtuaSnapshot: CacheSnapshot;
   scrollOffset: number;
-  body: string;
-  title: string;
-  scripts: string[];
 };
 
 async function initInfinite(cache?: Storage): Promise<void> {
@@ -91,15 +88,7 @@ async function initInfinite(cache?: Storage): Promise<void> {
 
   const triggers = root.querySelectorAll(`[data-infinite-trigger="${listId}"]`);
 
-  const subscribedScripts = new Set<string>(cache?.scripts);
-
-  window.addEventListener("infsub", (e: CustomEventInit<string>) => {
-    if (e.detail !== undefined) {
-      subscribedScripts.add(e.detail);
-    }
-  });
-
-  const vList = init({ root, cache: cache?.cache });
+  const vList = init({ root, cache: cache?.virtuaSnapshot });
   await waitAnimationFrame();
 
   render(vList.context);
@@ -135,54 +124,20 @@ async function initInfinite(cache?: Storage): Promise<void> {
 
     vList.container.remove();
 
-    const body = document.body.outerHTML;
-    const title = document.title;
-
-    const scripts = Array.from(subscribedScripts);
-
-    const storage: Storage = { cache, scrollOffset, body, title, scripts };
+    const storage: Storage = { virtuaSnapshot: cache, scrollOffset };
 
     sessionStorage.setItem(`cache-${listId}`, JSON.stringify(storage));
   });
 }
 
-const anchors = document.body.querySelectorAll<HTMLAnchorElement>(
-  "a[data-infinite-link]",
+window.dispatchEvent(
+  new CustomEvent<string>("infsub", { detail: import.meta.url }),
 );
 
-for (const anchor of anchors) {
-  const listId = anchor.dataset["infiniteLink"];
-  if (listId === undefined) {
-    continue;
-  }
-
-  anchor.addEventListener("click", async (e) => {
-    const cacheStr = sessionStorage.getItem(`cache-${listId}`);
-    if (cacheStr === null) {
-      return;
-    }
-
-    e.preventDefault();
-
-    const cache = JSON.parse(cacheStr) as Storage;
-
-    document.body.outerHTML = cache.body;
-    document.title = cache.title;
-
-    window.dispatchEvent(
-      new CustomEvent<InfiniteEvent>("infinite", {
-        detail: {
-          type: "unsubscribe",
-        },
-      }),
-    );
-
-    await Promise.all(cache.scripts.map((src) => import(src)));
-
-    history.replaceState({}, "", anchor.href);
-
-    initInfinite(cache);
-  });
-}
+window.dispatchEvent(
+  new CustomEvent<InfiniteEvent>("infinite", {
+    detail: { type: "unsubscribe" },
+  }),
+);
 
 initInfinite();
