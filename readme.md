@@ -1,5 +1,6 @@
 # Todo
 
+- debug +4 -2
 - remove list id
 - popstate
 - wait for infinite event to subscribe
