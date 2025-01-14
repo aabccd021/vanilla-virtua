@@ -28,7 +28,7 @@ function getCachedHistory(url: RelPath): HistoryItem | null {
 
 let abortController = new AbortController();
 
-async function restorePage(cached: HistoryItem, url: string): Promise<void> {
+async function restorePage(cached: HistoryItem, url: RelPath): Promise<void> {
   document.body.innerHTML = cached.content;
 
   const titleElt = document.querySelector("title");
@@ -40,8 +40,9 @@ async function restorePage(cached: HistoryItem, url: string): Promise<void> {
 
   window.setTimeout(() => window.scrollTo(0, cached.scroll), 0);
   await Promise.all(cached.scripts.map((src) => import(src)));
-  history.replaceState({ freeze: true }, "", url);
+  history.replaceState({ freeze: true }, "", url.pathname + url.search);
 
+  bindAnchors();
   savePage();
 }
 
@@ -60,8 +61,6 @@ function savePage(): void {
     },
     { signal: abortController.signal },
   );
-
-  bindAnchors();
 
   window.addEventListener(
     "beforeunload",
@@ -114,7 +113,7 @@ function savePage(): void {
     if (event.state?.freeze) {
       const newCached = getCachedHistory(location);
       if (newCached) {
-        restorePage(newCached, location.href + location.search);
+        restorePage(newCached, location);
         return;
       }
       location.reload();
@@ -131,10 +130,11 @@ function bindAnchors(): void {
 
   for (const anchor of anchors) {
     anchor.addEventListener("click", (clickEvent) => {
-      const cached = getCachedHistory(new URL(anchor.href));
+      const url = new URL(anchor.href);
+      const cached = getCachedHistory(url);
       if (cached) {
         clickEvent.preventDefault();
-        restorePage(cached, anchor.href);
+        restorePage(cached, url);
       }
     });
   }
