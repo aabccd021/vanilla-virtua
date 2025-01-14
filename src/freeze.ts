@@ -26,8 +26,6 @@ function getCachedPage(url: RelPath): Page | null {
   return null;
 }
 
-let shouldFreeze = false;
-
 function bindAnchors(): void {
   const anchors = document.body.querySelectorAll("a");
   for (const anchor of anchors) {
@@ -36,7 +34,7 @@ function bindAnchors(): void {
       const cached = getCachedPage(url);
       if (cached) {
         event.preventDefault();
-        if (shouldFreeze) {
+        if (shouldFreeze()) {
           savePage();
         }
         restorePage(cached, url);
@@ -62,10 +60,13 @@ async function restorePage(cached: Page, url: RelPath): Promise<void> {
   initPage();
 }
 
+function shouldFreeze(): boolean {
+  return document.body.hasAttribute("data-freeze");
+}
+
 function initPage(): void {
   bindAnchors();
-  shouldFreeze = document.body.hasAttribute("data-freeze");
-  if (shouldFreeze) {
+  if (shouldFreeze()) {
     savePageOnNavigation();
   }
 }
