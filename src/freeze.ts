@@ -1,6 +1,6 @@
 type RelPath = { pathname: string; search: string };
 
-type HistoryItem = {
+type Page = {
   cacheKey: string;
   content: string;
   title: string;
@@ -8,16 +8,16 @@ type HistoryItem = {
   scripts: string[];
 };
 
-function getHistoryCache(): HistoryItem[] {
+function getPageCache(): Page[] {
   return JSON.parse(
     localStorage.getItem("htmx-history-cache") ?? "[]",
-  ) as HistoryItem[];
+  ) as Page[];
 }
 
-function getCachedHistory(url: RelPath): HistoryItem | null {
-  const historyCache = getHistoryCache();
+function getCachedPage(url: RelPath): Page | null {
+  const pageCache = getPageCache();
 
-  for (const item of historyCache) {
+  for (const item of pageCache) {
     if (item.cacheKey === url.pathname + url.search) {
       return item;
     }
@@ -26,9 +26,7 @@ function getCachedHistory(url: RelPath): HistoryItem | null {
   return null;
 }
 
-let abortController = new AbortController();
-
-async function restorePage(cached: HistoryItem, url: RelPath): Promise<void> {
+async function restorePage(cached: Page, url: RelPath): Promise<void> {
   document.body.innerHTML = cached.content;
 
   const titleElt = document.querySelector("title");
@@ -40,10 +38,12 @@ async function restorePage(cached: HistoryItem, url: RelPath): Promise<void> {
 
   window.setTimeout(() => window.scrollTo(0, cached.scroll), 0);
   await Promise.all(cached.scripts.map((src) => import(src)));
-  history.replaceState({ freeze: true }, "", url.pathname + url.search);
+  history.pushState({ freeze: true }, "", url.pathname + url.search);
 
   initPage();
 }
+
+let abortController = new AbortController();
 
 function savePageOnNavigation(): void {
   abortController.abort();
@@ -69,16 +69,16 @@ function savePageOnNavigation(): void {
 
       const scripts = Array.from(subscribedScripts);
 
-      const historyCache = getHistoryCache();
+      const pageCache = getPageCache();
       const cacheKey = location.pathname + location.search;
-      for (let i = 0; i < historyCache.length; i++) {
-        if (historyCache[i]?.cacheKey === cacheKey) {
-          historyCache.splice(i, 1);
+      for (let i = 0; i < pageCache.length; i++) {
+        if (pageCache[i]?.cacheKey === cacheKey) {
+          pageCache.splice(i, 1);
           break;
         }
       }
 
-      const newHistoryItem: HistoryItem = {
+      const newPage: Page = {
         content,
         title,
         scripts,
@@ -86,18 +86,15 @@ function savePageOnNavigation(): void {
         scroll: window.scrollY,
       };
 
-      historyCache.push(newHistoryItem);
+      pageCache.push(newPage);
 
       // keep trying to save the cache until it succeeds or is empty
-      while (historyCache.length > 0) {
+      while (pageCache.length > 0) {
         try {
-          localStorage.setItem(
-            "htmx-history-cache",
-            JSON.stringify(historyCache),
-          );
+          localStorage.setItem("htmx-history-cache", JSON.stringify(pageCache));
           break;
         } catch {
-          historyCache.shift(); // shrink the cache and retry
+          pageCache.shift(); // shrink the cache and retry
         }
       }
     },
@@ -110,7 +107,7 @@ function savePageOnNavigation(): void {
 
   window.addEventListener("popstate", (event) => {
     if (event.state?.freeze) {
-      const newCached = getCachedHistory(location);
+      const newCached = getCachedPage(location);
       if (newCached) {
         restorePage(newCached, location);
         return;
@@ -127,7 +124,7 @@ function bindAnchors(): void {
   for (const anchor of anchors) {
     anchor.addEventListener("click", (event) => {
       const url = new URL(anchor.href);
-      const cached = getCachedHistory(url);
+      const cached = getCachedPage(url);
       if (cached) {
         event.preventDefault();
         restorePage(cached, url);
