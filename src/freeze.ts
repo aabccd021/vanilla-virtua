@@ -26,6 +26,20 @@ function getCachedPage(url: RelPath): Page | null {
   return null;
 }
 
+function bindAnchors(): void {
+  const anchors = document.body.querySelectorAll("a");
+  for (const anchor of anchors) {
+    anchor.addEventListener("click", (event) => {
+      const url = new URL(anchor.href);
+      const cached = getCachedPage(url);
+      if (cached) {
+        event.preventDefault();
+        restorePage(cached, url);
+      }
+    });
+  }
+}
+
 async function restorePage(cached: Page, url: RelPath): Promise<void> {
   document.body.innerHTML = cached.content;
 
@@ -41,6 +55,13 @@ async function restorePage(cached: Page, url: RelPath): Promise<void> {
   history.pushState({ freeze: true }, "", url.pathname + url.search);
 
   initPage();
+}
+
+function initPage(): void {
+  bindAnchors();
+  if (document.body.hasAttribute("data-freeze")) {
+    savePageOnNavigation();
+  }
 }
 
 let abortController = new AbortController();
@@ -117,27 +138,6 @@ function savePageOnNavigation(): void {
       originalPopstate(event);
     }
   });
-}
-
-function bindAnchors(): void {
-  const anchors = document.body.querySelectorAll("a");
-  for (const anchor of anchors) {
-    anchor.addEventListener("click", (event) => {
-      const url = new URL(anchor.href);
-      const cached = getCachedPage(url);
-      if (cached) {
-        event.preventDefault();
-        restorePage(cached, url);
-      }
-    });
-  }
-}
-
-function initPage(): void {
-  bindAnchors();
-  if (document.body.hasAttribute("data-freeze")) {
-    savePageOnNavigation();
-  }
 }
 
 initPage();
