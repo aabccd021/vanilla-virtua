@@ -10,7 +10,7 @@ type Page = {
 
 function getPageCache(): Page[] {
   return JSON.parse(
-    localStorage.getItem("htmx-history-cache") ?? "[]",
+    sessionStorage.getItem("htmx-history-cache") ?? "[]",
   ) as Page[];
 }
 
@@ -60,7 +60,46 @@ async function restorePage(cached: Page, url: RelPath): Promise<void> {
 function initPage(): void {
   bindAnchors();
   if (document.body.hasAttribute("data-freeze")) {
+    console.log("freeze");
     savePageOnNavigation();
+  }
+}
+
+const subscribedScripts = new Set<string>();
+
+function savePage(): void {
+  const content = document.body.innerHTML;
+  const title = document.title;
+
+  const scripts = Array.from(subscribedScripts);
+
+  const pageCache = getPageCache();
+  const cacheKey = location.pathname + location.search;
+  for (let i = 0; i < pageCache.length; i++) {
+    if (pageCache[i]?.cacheKey === cacheKey) {
+      pageCache.splice(i, 1);
+      break;
+    }
+  }
+
+  const newPage: Page = {
+    content,
+    title,
+    scripts,
+    cacheKey,
+    scroll: window.scrollY,
+  };
+
+  pageCache.push(newPage);
+
+  // keep trying to save the cache until it succeeds or is empty
+  while (pageCache.length > 0) {
+    try {
+      sessionStorage.setItem("htmx-history-cache", JSON.stringify(pageCache));
+      break;
+    } catch {
+      pageCache.shift(); // shrink the cache and retry
+    }
   }
 }
 
@@ -68,12 +107,13 @@ let abortController = new AbortController();
 
 function savePageOnNavigation(): void {
   abortController.abort();
-  abortController = new AbortController();
+  savePage();
 
-  const subscribedScripts = new Set<string>();
+  abortController = new AbortController();
+  subscribedScripts.clear();
 
   window.addEventListener(
-    "infsub",
+    "freeze:subscribe",
     (e: CustomEventInit<string>) => {
       if (e.detail) {
         subscribedScripts.add(e.detail);
@@ -82,51 +122,18 @@ function savePageOnNavigation(): void {
     { signal: abortController.signal },
   );
 
-  window.addEventListener(
-    "beforeunload",
-    () => {
-      const content = document.body.innerHTML;
-      const title = document.title;
+  window.dispatchEvent(new CustomEvent("freeze:page-loaded"));
 
-      const scripts = Array.from(subscribedScripts);
-
-      const pageCache = getPageCache();
-      const cacheKey = location.pathname + location.search;
-      for (let i = 0; i < pageCache.length; i++) {
-        if (pageCache[i]?.cacheKey === cacheKey) {
-          pageCache.splice(i, 1);
-          break;
-        }
-      }
-
-      const newPage: Page = {
-        content,
-        title,
-        scripts,
-        cacheKey,
-        scroll: window.scrollY,
-      };
-
-      pageCache.push(newPage);
-
-      // keep trying to save the cache until it succeeds or is empty
-      while (pageCache.length > 0) {
-        try {
-          localStorage.setItem("htmx-history-cache", JSON.stringify(pageCache));
-          break;
-        } catch {
-          pageCache.shift(); // shrink the cache and retry
-        }
-      }
-    },
-    { signal: abortController.signal },
-  );
+  window.addEventListener("beforeunload", () => savePage(), {
+    signal: abortController.signal,
+  });
 
   const originalPopstate = window.onpopstate
     ? window.onpopstate.bind(window)
     : null;
 
   window.addEventListener("popstate", (event) => {
+    savePage();
     if (event.state?.freeze) {
       const newCached = getCachedPage(location);
       if (newCached) {
