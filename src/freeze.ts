@@ -46,7 +46,6 @@ function bindAnchors(): void {
 }
 
 async function restorePage(cached: Page, url: RelPath): Promise<void> {
-  console.log("restorePage");
   document.body.outerHTML = cached.content;
 
   const titleElt = document.querySelector("title");
@@ -115,12 +114,10 @@ function savePage(): void {
 let abortController = new AbortController();
 
 function savePageOnNavigation(): void {
-  console.log("savePageOnNavigation");
   window.addEventListener(
     "freeze:subscribe",
     (e: CustomEventInit<string>) => {
       if (e.detail) {
-        console.log("subscribed", e.detail);
         subscribedScripts.add(e.detail);
       }
     },
