@@ -26,48 +26,9 @@ function getCachedHistory(url: RelPath): HistoryItem | null {
   return null;
 }
 
-function beforeUnload(subscribedScripts: Set<string>): void {
-  const content = document.body.innerHTML;
-  const title = document.title;
-
-  const scripts = Array.from(subscribedScripts);
-
-  const historyCache = getHistoryCache();
-  const cacheKey = location.pathname + location.search;
-  for (let i = 0; i < historyCache.length; i++) {
-    if (historyCache[i]?.cacheKey === cacheKey) {
-      historyCache.splice(i, 1);
-      break;
-    }
-  }
-
-  const newHistoryItem: HistoryItem = {
-    content,
-    title,
-    scripts,
-    cacheKey,
-    scroll: window.scrollY,
-  };
-
-  historyCache.push(newHistoryItem);
-
-  // keep trying to save the cache until it succeeds or is empty
-  while (historyCache.length > 0) {
-    try {
-      localStorage.setItem("htmx-history-cache", JSON.stringify(historyCache));
-      break;
-    } catch {
-      historyCache.shift(); // shrink the cache and retry
-    }
-  }
-}
-
 let abortController = new AbortController();
 
 async function restorePage(cached: HistoryItem, url: string): Promise<void> {
-  abortController.abort();
-  abortController = new AbortController();
-
   document.body.innerHTML = cached.content;
 
   const titleElt = document.querySelector("title");
@@ -85,6 +46,9 @@ async function restorePage(cached: HistoryItem, url: string): Promise<void> {
 }
 
 function savePage(): void {
+  abortController.abort();
+  abortController = new AbortController();
+
   const subscribedScripts = new Set<string>();
 
   window.addEventListener(
@@ -101,7 +65,44 @@ function savePage(): void {
 
   window.addEventListener(
     "beforeunload",
-    () => beforeUnload(subscribedScripts),
+    () => {
+      const content = document.body.innerHTML;
+      const title = document.title;
+
+      const scripts = Array.from(subscribedScripts);
+
+      const historyCache = getHistoryCache();
+      const cacheKey = location.pathname + location.search;
+      for (let i = 0; i < historyCache.length; i++) {
+        if (historyCache[i]?.cacheKey === cacheKey) {
+          historyCache.splice(i, 1);
+          break;
+        }
+      }
+
+      const newHistoryItem: HistoryItem = {
+        content,
+        title,
+        scripts,
+        cacheKey,
+        scroll: window.scrollY,
+      };
+
+      historyCache.push(newHistoryItem);
+
+      // keep trying to save the cache until it succeeds or is empty
+      while (historyCache.length > 0) {
+        try {
+          localStorage.setItem(
+            "htmx-history-cache",
+            JSON.stringify(historyCache),
+          );
+          break;
+        } catch {
+          historyCache.shift(); // shrink the cache and retry
+        }
+      }
+    },
     { signal: abortController.signal },
   );
 
