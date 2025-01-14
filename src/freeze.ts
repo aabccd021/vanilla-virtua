@@ -46,6 +46,7 @@ function bindAnchors(): void {
 }
 
 async function restorePage(cached: Page, url: RelPath): Promise<void> {
+  console.log("restorePage");
   document.body.outerHTML = cached.content;
 
   const titleElt = document.querySelector("title");
@@ -147,6 +148,8 @@ function savePageOnNavigation(): void {
       location.reload();
     } else if (originalPopstate) {
       originalPopstate(event);
+    } else {
+      location.reload();
     }
   });
 }

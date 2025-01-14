@@ -11,7 +11,6 @@ window.addEventListener(
     window.dispatchEvent(
       new CustomEvent("freeze:subscribe", { detail: import.meta.url }),
     );
-    console.log("dispatched freeze:subscribe");
   },
   { once: true },
 );
