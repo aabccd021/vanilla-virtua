@@ -1,4 +1,12 @@
+console.log("4");
+
 type RelPath = { pathname: string; search: string };
+
+function counter(): number {
+  const c = Number(sessionStorage.getItem("counter")) ?? 0;
+  sessionStorage.setItem("counter", String(c + 1));
+  return c;
+}
 
 type Page = {
   cacheKey: string;
@@ -10,7 +18,7 @@ type Page = {
 
 function getPageCache(): Page[] {
   return JSON.parse(
-    sessionStorage.getItem("htmx-history-cache") ?? "[]",
+    sessionStorage.getItem("aaaa-history-cache") ?? "[]",
   ) as Page[];
 }
 
@@ -35,6 +43,7 @@ function bindAnchors(currentUrl: RelPath): void {
       if (cached) {
         event.preventDefault();
         if (shouldFreeze()) {
+          sessionStorage.setItem(`anchor-${counter()}`, currentUrl.pathname);
           savePage(currentUrl);
         }
         restorePage(cached, url);
@@ -44,6 +53,7 @@ function bindAnchors(currentUrl: RelPath): void {
 }
 
 async function restorePage(cached: Page, url: RelPath): Promise<void> {
+  sessionStorage.setItem(`restorePage-${counter()}`, url.pathname);
   document.body.outerHTML = cached.content;
 
   const titleElt = document.querySelector("title");
@@ -55,6 +65,16 @@ async function restorePage(cached: Page, url: RelPath): Promise<void> {
 
   window.setTimeout(() => window.scrollTo(0, cached.scroll), 0);
   await Promise.all(cached.scripts.map((src) => import(src)));
+
+  subscribedScripts.clear();
+  for (const script of cached.scripts) {
+    subscribedScripts.add(script);
+  }
+
+  sessionStorage.setItem(`history.pushState-${counter()}`, url.pathname);
+  if (url.pathname === "/") {
+    throw new Error("no");
+  }
   history.pushState({ freeze: true }, "", url.pathname + url.search);
 
   initPage(url);
@@ -65,6 +85,7 @@ function shouldFreeze(): boolean {
 }
 
 function initPage(url: RelPath): void {
+  sessionStorage.setItem(`initPage-${counter()}`, url.pathname);
   bindAnchors(url);
   if (shouldFreeze()) {
     savePageOnNavigation(url);
@@ -78,7 +99,6 @@ function savePage(url: RelPath): void {
   const title = document.title;
 
   const scripts = Array.from(subscribedScripts);
-  subscribedScripts.clear();
 
   const pageCache = getPageCache();
   const cacheKey = url.pathname + url.search;
@@ -102,7 +122,7 @@ function savePage(url: RelPath): void {
   // keep trying to save the cache until it succeeds or is empty
   while (pageCache.length > 0) {
     try {
-      sessionStorage.setItem("htmx-history-cache", JSON.stringify(pageCache));
+      sessionStorage.setItem("aaaa-history-cache", JSON.stringify(pageCache));
       break;
     } catch {
       pageCache.shift(); // shrink the cache and retry
@@ -115,7 +135,8 @@ let abortController = new AbortController();
 function savePageOnNavigation(url: RelPath): void {
   abortController.abort();
   abortController = new AbortController();
-  console.log("savePageOnNavigation");
+  sessionStorage.setItem(`savePageOnNavigation-${counter()}`, url.pathname);
+
   window.addEventListener(
     "freeze:subscribe",
     (e: CustomEventInit<string>) => {
@@ -128,9 +149,16 @@ function savePageOnNavigation(url: RelPath): void {
 
   window.dispatchEvent(new CustomEvent("freeze:page-loaded"));
 
-  window.addEventListener("beforeunload", () => savePage(url), {
-    signal: abortController.signal,
-  });
+  window.addEventListener(
+    "beforeunload",
+    () => {
+      sessionStorage.setItem(`beforeunload-${counter()}`, url.pathname);
+      savePage(url);
+    },
+    {
+      signal: abortController.signal,
+    },
+  );
 
   const originalPopstate = window.onpopstate
     ? window.onpopstate.bind(window)
@@ -139,6 +167,7 @@ function savePageOnNavigation(url: RelPath): void {
   window.addEventListener(
     "popstate",
     (event) => {
+      sessionStorage.setItem(`popstate-${counter()}`, url.pathname);
       savePage(url);
       if (event.state?.freeze) {
         const newCached = getCachedPage(location);
@@ -146,11 +175,11 @@ function savePageOnNavigation(url: RelPath): void {
           restorePage(newCached, location);
           return;
         }
-        location.reload();
+        window.location.reload();
       } else if (originalPopstate) {
         originalPopstate(event);
       } else {
-        location.reload();
+        window.location.reload();
       }
     },
     { signal: abortController.signal },
