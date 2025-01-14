@@ -1,7 +1,5 @@
 type RelPath = { pathname: string; search: string };
 
-const _counter = 0;
-
 type Page = {
   cacheKey: string;
   content: string;
@@ -110,13 +108,14 @@ function savePage(url: RelPath): void {
       pageCache.shift(); // shrink the cache and retry
     }
   }
-  abortController.abort();
-  abortController = new AbortController();
 }
 
 let abortController = new AbortController();
 
 function savePageOnNavigation(): void {
+  abortController.abort();
+  abortController = new AbortController();
+  console.log("savePageOnNavigation");
   window.addEventListener(
     "freeze:subscribe",
     (e: CustomEventInit<string>) => {
