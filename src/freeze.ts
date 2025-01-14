@@ -26,6 +26,8 @@ function getCachedPage(url: RelPath): Page | null {
   return null;
 }
 
+let shouldFreeze = false;
+
 function bindAnchors(): void {
   const anchors = document.body.querySelectorAll("a");
   for (const anchor of anchors) {
@@ -34,6 +36,9 @@ function bindAnchors(): void {
       const cached = getCachedPage(url);
       if (cached) {
         event.preventDefault();
+        if (shouldFreeze) {
+          savePage();
+        }
         restorePage(cached, url);
       }
     });
@@ -41,7 +46,7 @@ function bindAnchors(): void {
 }
 
 async function restorePage(cached: Page, url: RelPath): Promise<void> {
-  document.body.innerHTML = cached.content;
+  document.body.outerHTML = cached.content;
 
   const titleElt = document.querySelector("title");
   if (titleElt) {
@@ -59,8 +64,8 @@ async function restorePage(cached: Page, url: RelPath): Promise<void> {
 
 function initPage(): void {
   bindAnchors();
-  if (document.body.hasAttribute("data-freeze")) {
-    console.log("freeze");
+  shouldFreeze = document.body.hasAttribute("data-freeze");
+  if (shouldFreeze) {
     savePageOnNavigation();
   }
 }
@@ -68,10 +73,11 @@ function initPage(): void {
 const subscribedScripts = new Set<string>();
 
 function savePage(): void {
-  const content = document.body.innerHTML;
+  const content = document.body.outerHTML;
   const title = document.title;
 
   const scripts = Array.from(subscribedScripts);
+  subscribedScripts.clear();
 
   const pageCache = getPageCache();
   const cacheKey = location.pathname + location.search;
@@ -101,21 +107,19 @@ function savePage(): void {
       pageCache.shift(); // shrink the cache and retry
     }
   }
+  abortController.abort();
+  abortController = new AbortController();
 }
 
 let abortController = new AbortController();
 
 function savePageOnNavigation(): void {
-  abortController.abort();
-  savePage();
-
-  abortController = new AbortController();
-  subscribedScripts.clear();
-
+  console.log("savePageOnNavigation");
   window.addEventListener(
     "freeze:subscribe",
     (e: CustomEventInit<string>) => {
       if (e.detail) {
+        console.log("subscribed", e.detail);
         subscribedScripts.add(e.detail);
       }
     },
