@@ -1,7 +1,9 @@
 type Unsubscribe = () => void;
 
+console.warn("foo.js");
+
 export function init(): Unsubscribe {
-  console.log("foo");
+  console.warn("foo init");
 
   const newChild = document.createElement("h2");
   newChild.textContent = "this is dynamically added";
@@ -14,22 +16,24 @@ export function init(): Unsubscribe {
   const h2s = document.querySelectorAll("h2");
   for (const el of h2s) {
     el.addEventListener("click", () => {
-      console.log("clicked", el.textContent);
+      console.warn("clicked", el.textContent);
     });
   }
 
   return (): void => {
     newChild2.remove();
-    console.log("cleanup foo done");
+    console.warn("foo cleanup");
   };
 }
 
 window.addEventListener(
   "freeze:page-loaded",
   () => {
+    console.warn("foo.js freeze:page-loaded");
     window.dispatchEvent(
       new CustomEvent("freeze:subscribe", { detail: import.meta.url }),
     );
+    console.warn("foo.js freeze:subscribe");
   },
   { once: true },
 );

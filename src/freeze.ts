@@ -157,6 +157,12 @@ async function savePageOnNavigation(url: RelPath): Promise<void> {
   sessionStorage.setItem(`${counter()}-savePageOnNavigation`, url.pathname);
   console.log("savePageOnNavigation", url.pathname);
 
+  await Promise.all(
+    subscribedScripts
+      .values()
+      .map((src): Promise<{ init: () => Unsub }> => import(src)),
+  );
+
   window.addEventListener(
     "freeze:subscribe",
     (e: CustomEventInit<string>) => {
@@ -170,7 +176,7 @@ async function savePageOnNavigation(url: RelPath): Promise<void> {
 
   window.dispatchEvent(new CustomEvent("freeze:page-loaded"));
 
-  console.log("restoring scripts", url.pathname, subscribedScripts);
+  console.log("initing scripts", url.pathname, subscribedScripts);
   const inits = await Promise.all(
     subscribedScripts
       .values()
@@ -178,7 +184,7 @@ async function savePageOnNavigation(url: RelPath): Promise<void> {
   );
   console.log("inits.length", inits.length);
   for (const init of inits) {
-    console.log("init", init);
+    console.log("init");
     const unsub = init.init();
     unsubscribeScripts.add(unsub);
   }
