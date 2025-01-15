@@ -1,5 +1,12 @@
 type RelPath = { pathname: string; search: string };
 
+export function sessionLog(key: string, value: string): void {
+  const count = Number(sessionStorage.getItem("counter") ?? "0");
+  sessionStorage.setItem("counter", String(count + 1));
+  sessionStorage.setItem(`${count}-${key}`, value);
+  console.log(`${count}-${key}`, value);
+}
+
 type Page = {
   cacheKey: string;
   content: string;
@@ -33,20 +40,35 @@ function getCachedPage(url: RelPath): Page | null {
   return null;
 }
 
+let state: "init" | "event" | "click" = "init";
+
 function bindAnchors(currentUrl: RelPath): void {
-  const anchors = document.body.querySelectorAll("a");
+  const anchors = document.body.querySelectorAll<HTMLAnchorElement>("a");
   for (const anchor of anchors) {
-    anchor.addEventListener("click", (event) => {
-      const url = new URL(anchor.href);
-      const cached = getCachedPage(url);
-      if (cached) {
-        event.preventDefault();
-        if (shouldFreeze()) {
-          savePage(currentUrl);
+    anchor.addEventListener(
+      "click",
+      (event) => {
+        sessionLog("click", anchor.href);
+        const urlRaw = new URL(anchor.href);
+        const url = { pathname: urlRaw.pathname, search: urlRaw.search };
+        const cached = getCachedPage(url);
+        if (cached) {
+          event.preventDefault();
+          sessionLog("prevent", anchor.href);
+          if (shouldFreeze()) {
+            sessionLog("save page in bind anchors", currentUrl.pathname);
+            savePage(currentUrl);
+          }
+          restorePage(cached, url);
+          return;
         }
-        restorePage(cached, url);
-      }
-    });
+        if (state === "event") {
+          sessionLog("state on anchor", state);
+          state = "click";
+        }
+      },
+      { once: true },
+    );
   }
 }
 
@@ -55,6 +77,7 @@ type Unsub = () => void;
 const unsubscribeScripts = new Set<Unsub>();
 
 async function restorePage(cached: Page, url: RelPath): Promise<void> {
+  sessionLog("restorePage", url.pathname);
   document.body.outerHTML = cached.content;
 
   const titleElt = document.querySelector("title");
@@ -84,6 +107,7 @@ function shouldFreeze(): boolean {
 }
 
 function initPage(url: RelPath): void {
+  sessionLog("initPage", url.pathname);
   bindAnchors(url);
   if (shouldFreeze()) {
     savePageOnNavigation(url);
@@ -93,6 +117,7 @@ function initPage(url: RelPath): void {
 const subscribedScripts = new Set<string>();
 
 function savePage(url: RelPath): void {
+  sessionLog("savePage", url.pathname);
   for (const unsub of unsubscribeScripts) {
     unsub();
   }
@@ -136,6 +161,7 @@ function savePage(url: RelPath): void {
 let abortController = new AbortController();
 
 async function savePageOnNavigation(url: RelPath): Promise<void> {
+  sessionLog("savePageOnNavigation", url.pathname);
   abortController.abort();
   abortController = new AbortController();
 
@@ -150,9 +176,7 @@ async function savePageOnNavigation(url: RelPath): Promise<void> {
   );
 
   await Promise.all(
-    subscribedScripts
-      .values()
-      .map((src): Promise<{ init: () => Unsub }> => import(src)),
+    subscribedScripts.values().map((src): Promise<unknown> => import(src)),
   );
 
   window.dispatchEvent(new CustomEvent("freeze:page-loaded"));
@@ -171,16 +195,21 @@ async function savePageOnNavigation(url: RelPath): Promise<void> {
   window.addEventListener(
     "beforeunload",
     () => {
+      sessionLog("beforeunload", url.pathname);
+      if (state === "click") {
+        sessionLog("beforeunload canceled", url.pathname);
+        state = "init";
+        return;
+      }
       savePage(url);
     },
-    {
-      signal: abortController.signal,
-    },
+    { signal: abortController.signal },
   );
 
   window.addEventListener(
     "popstate",
     (event) => {
+      sessionLog("popstate", url.pathname);
       if (event.state?.freeze) {
         const loc = currentLocation();
         const newCached = getCachedPage(loc);
@@ -194,6 +223,9 @@ async function savePageOnNavigation(url: RelPath): Promise<void> {
     },
     { signal: abortController.signal },
   );
+
+  state = "event";
+  sessionLog("state on savePageOnNavigation", state);
 }
 
 initPage(currentLocation());
