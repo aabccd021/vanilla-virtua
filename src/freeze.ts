@@ -185,11 +185,11 @@ async function savePageOnNavigation(url: RelPath): Promise<void> {
     "popstate",
     (event) => {
       if (event.state?.freeze) {
-        const loc = currentLocation();
-        const newCached = getCachedPage(loc);
+        const newUrl = currentLocation();
+        const newCached = getCachedPage(newUrl);
         if (newCached) {
           savePage(url);
-          restorePage(newCached, loc);
+          restorePage(newCached, newUrl);
           return;
         }
       }
