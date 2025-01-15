@@ -155,6 +155,7 @@ async function savePageOnNavigation(url: RelPath): Promise<void> {
     { signal: abortController.signal },
   );
 
+  // trigger `window.addEventListener("freeze:page-loaded")`
   await Promise.all(
     subscribedScripts.values().map((src): Promise<unknown> => import(src)),
   );
