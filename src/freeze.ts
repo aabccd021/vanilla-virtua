@@ -196,11 +196,6 @@ async function savePageOnNavigation(url: RelPath): Promise<void> {
     "beforeunload",
     () => {
       sessionLog("beforeunload", url.pathname);
-      if (state === "click") {
-        sessionLog("beforeunload canceled", url.pathname);
-        state = "init";
-        return;
-      }
       savePage(url);
     },
     { signal: abortController.signal },
