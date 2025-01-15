@@ -1,12 +1,4 @@
-console.log("4");
-
 type RelPath = { pathname: string; search: string };
-
-function counter(): number {
-  const c = Number(sessionStorage.getItem("counter")) ?? 0;
-  sessionStorage.setItem("counter", String(c + 1));
-  return c;
-}
 
 type Page = {
   cacheKey: string;
@@ -43,8 +35,6 @@ function bindAnchors(currentUrl: RelPath): void {
       if (cached) {
         event.preventDefault();
         if (shouldFreeze()) {
-          sessionStorage.setItem(`${counter()}-anchor`, currentUrl.pathname);
-          console.log("anchor", currentUrl.pathname);
           savePage(currentUrl);
         }
         restorePage(cached, url);
@@ -58,8 +48,6 @@ type Unsub = () => void;
 const unsubscribeScripts = new Set<Unsub>();
 
 async function restorePage(cached: Page, url: RelPath): Promise<void> {
-  sessionStorage.setItem(`${counter()}-restorePage`, url.pathname);
-  console.log("restorePage", url.pathname);
   document.body.outerHTML = cached.content;
 
   const titleElt = document.querySelector("title");
@@ -72,14 +60,10 @@ async function restorePage(cached: Page, url: RelPath): Promise<void> {
   window.setTimeout(() => window.scrollTo(0, cached.scroll), 0);
 
   subscribedScripts.clear();
-  console.log("subscribedScripts.clear", subscribedScripts);
   for (const script of cached.scripts) {
-    console.log("subscribedScripts.add", script);
     subscribedScripts.add(script);
   }
 
-  sessionStorage.setItem(`${counter()}-history.pushState`, url.pathname);
-  console.log("history.pushState", url.pathname);
   if (url.pathname === "/") {
     throw new Error("no");
   }
@@ -93,8 +77,6 @@ function shouldFreeze(): boolean {
 }
 
 function initPage(url: RelPath): void {
-  sessionStorage.setItem(`${counter()}-initPage`, url.pathname);
-  console.log("initPage", url.pathname);
   bindAnchors(url);
   if (shouldFreeze()) {
     savePageOnNavigation(url);
@@ -105,13 +87,10 @@ const subscribedScripts = new Set<string>();
 
 function savePage(url: RelPath): void {
   for (const unsub of unsubscribeScripts) {
-    console.log("unsubscribing");
     unsub();
   }
   unsubscribeScripts.clear();
 
-  sessionStorage.setItem(`${counter()}-savePage`, url.pathname);
-  console.log("savePage", url.pathname);
   const content = document.body.outerHTML;
   const title = document.title;
 
@@ -142,8 +121,6 @@ function savePage(url: RelPath): void {
       sessionStorage.setItem("aaaa-history-cache", JSON.stringify(pageCache));
       break;
     } catch {
-      sessionStorage.setItem(`${counter()}-compacting`, url.pathname);
-      console.log("compacting");
       pageCache.shift(); // shrink the cache and retry
     }
   }
@@ -154,21 +131,17 @@ let abortController = new AbortController();
 async function savePageOnNavigation(url: RelPath): Promise<void> {
   abortController.abort();
   abortController = new AbortController();
-  sessionStorage.setItem(`${counter()}-savePageOnNavigation`, url.pathname);
-  console.log("savePageOnNavigation", url.pathname);
 
   window.addEventListener(
     "freeze:subscribe",
     (e: CustomEventInit<string>) => {
       if (e.detail) {
         subscribedScripts.add(e.detail);
-        console.log("subscribedScripts.add", e.detail);
       }
     },
     { signal: abortController.signal },
   );
 
-  console.log("initing scripts", url.pathname, subscribedScripts);
   await Promise.all(
     subscribedScripts
       .values()
@@ -183,19 +156,14 @@ async function savePageOnNavigation(url: RelPath): Promise<void> {
       .map((src): Promise<{ init: () => Unsub }> => import(src)),
   );
 
-  console.log("inits.length", inits.length);
   for (const init of inits) {
-    console.log("init");
     const unsub = init.init();
     unsubscribeScripts.add(unsub);
   }
-  console.log("restored scripts", url.pathname);
 
   window.addEventListener(
     "beforeunload",
     () => {
-      sessionStorage.setItem(`${counter()}-beforeunload`, url.pathname);
-      console.log("beforeunload", url.pathname);
       savePage(url);
     },
     {
@@ -206,20 +174,18 @@ async function savePageOnNavigation(url: RelPath): Promise<void> {
   window.addEventListener(
     "popstate",
     (event) => {
-      sessionStorage.setItem(`${counter()}-popstate`, url.pathname);
-      console.log("popstate", url.pathname);
       if (event.state?.freeze) {
-        const newCached = getCachedPage(location);
+        const newCached = getCachedPage({ ...location });
         if (newCached) {
           savePage(url);
-          restorePage(newCached, location);
+          restorePage(newCached, { ...location });
           return;
         }
       }
-      window.location.reload();
+      location.reload();
     },
     { signal: abortController.signal },
   );
 }
 
-initPage(location);
+initPage({ ...location });
