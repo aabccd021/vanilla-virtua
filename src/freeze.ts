@@ -43,7 +43,7 @@ function bindAnchors(currentUrl: RelPath): void {
       if (cached) {
         event.preventDefault();
         if (shouldFreeze()) {
-          sessionStorage.setItem(`anchor-${counter()}`, currentUrl.pathname);
+          sessionStorage.setItem(`${counter()}-anchor`, currentUrl.pathname);
           savePage(currentUrl);
         }
         restorePage(cached, url);
@@ -53,7 +53,7 @@ function bindAnchors(currentUrl: RelPath): void {
 }
 
 async function restorePage(cached: Page, url: RelPath): Promise<void> {
-  sessionStorage.setItem(`restorePage-${counter()}`, url.pathname);
+  sessionStorage.setItem(`${counter()}-restorePage`, url.pathname);
   document.body.outerHTML = cached.content;
 
   const titleElt = document.querySelector("title");
@@ -71,7 +71,7 @@ async function restorePage(cached: Page, url: RelPath): Promise<void> {
     subscribedScripts.add(script);
   }
 
-  sessionStorage.setItem(`history.pushState-${counter()}`, url.pathname);
+  sessionStorage.setItem(`${counter()}-history.pushState`, url.pathname);
   if (url.pathname === "/") {
     throw new Error("no");
   }
@@ -85,7 +85,7 @@ function shouldFreeze(): boolean {
 }
 
 function initPage(url: RelPath): void {
-  sessionStorage.setItem(`initPage-${counter()}`, url.pathname);
+  sessionStorage.setItem(`${counter()}-initPage`, url.pathname);
   bindAnchors(url);
   if (shouldFreeze()) {
     savePageOnNavigation(url);
@@ -95,6 +95,7 @@ function initPage(url: RelPath): void {
 const subscribedScripts = new Set<string>();
 
 function savePage(url: RelPath): void {
+  sessionStorage.setItem(`${counter()}-savePage`, url.pathname);
   const content = document.body.outerHTML;
   const title = document.title;
 
@@ -125,6 +126,7 @@ function savePage(url: RelPath): void {
       sessionStorage.setItem("aaaa-history-cache", JSON.stringify(pageCache));
       break;
     } catch {
+      sessionStorage.setItem(`${counter()}-compacting`, url.pathname);
       pageCache.shift(); // shrink the cache and retry
     }
   }
@@ -135,7 +137,7 @@ let abortController = new AbortController();
 function savePageOnNavigation(url: RelPath): void {
   abortController.abort();
   abortController = new AbortController();
-  sessionStorage.setItem(`savePageOnNavigation-${counter()}`, url.pathname);
+  sessionStorage.setItem(`${counter()}-savePageOnNavigation`, url.pathname);
 
   window.addEventListener(
     "freeze:subscribe",
@@ -152,7 +154,7 @@ function savePageOnNavigation(url: RelPath): void {
   window.addEventListener(
     "beforeunload",
     () => {
-      sessionStorage.setItem(`beforeunload-${counter()}`, url.pathname);
+      sessionStorage.setItem(`${counter()}-beforeunload`, url.pathname);
       savePage(url);
     },
     {
@@ -160,27 +162,19 @@ function savePageOnNavigation(url: RelPath): void {
     },
   );
 
-  const originalPopstate = window.onpopstate
-    ? window.onpopstate.bind(window)
-    : null;
-
   window.addEventListener(
     "popstate",
     (event) => {
-      sessionStorage.setItem(`popstate-${counter()}`, url.pathname);
-      savePage(url);
+      sessionStorage.setItem(`${counter()}-popstate`, url.pathname);
       if (event.state?.freeze) {
         const newCached = getCachedPage(location);
         if (newCached) {
+          savePage(url);
           restorePage(newCached, location);
           return;
         }
-        window.location.reload();
-      } else if (originalPopstate) {
-        originalPopstate(event);
-      } else {
-        window.location.reload();
       }
+      window.location.reload();
     },
     { signal: abortController.signal },
   );
