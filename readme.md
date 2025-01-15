@@ -1,7 +1,5 @@
 # Todo
 
-- debug +16 -14
-- remove list id
-- popstate
-- wait for infinite event to subscribe
+- only dispatch event unsubscribe
 - set timeout 0 instead of animation frame
+- remove list id
