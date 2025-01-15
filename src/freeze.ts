@@ -44,6 +44,7 @@ function bindAnchors(currentUrl: RelPath): void {
         event.preventDefault();
         if (shouldFreeze()) {
           sessionStorage.setItem(`${counter()}-anchor`, currentUrl.pathname);
+          console.log("anchor", currentUrl.pathname);
           savePage(currentUrl);
         }
         restorePage(cached, url);
@@ -52,8 +53,13 @@ function bindAnchors(currentUrl: RelPath): void {
   }
 }
 
+type Unsub = () => void;
+
+const unsubscribeScripts = new Set<Unsub>();
+
 async function restorePage(cached: Page, url: RelPath): Promise<void> {
   sessionStorage.setItem(`${counter()}-restorePage`, url.pathname);
+  console.log("restorePage", url.pathname);
   document.body.outerHTML = cached.content;
 
   const titleElt = document.querySelector("title");
@@ -64,14 +70,16 @@ async function restorePage(cached: Page, url: RelPath): Promise<void> {
   }
 
   window.setTimeout(() => window.scrollTo(0, cached.scroll), 0);
-  await Promise.all(cached.scripts.map((src) => import(src)));
 
   subscribedScripts.clear();
+  console.log("subscribedScripts.clear", subscribedScripts);
   for (const script of cached.scripts) {
+    console.log("subscribedScripts.add", script);
     subscribedScripts.add(script);
   }
 
   sessionStorage.setItem(`${counter()}-history.pushState`, url.pathname);
+  console.log("history.pushState", url.pathname);
   if (url.pathname === "/") {
     throw new Error("no");
   }
@@ -86,6 +94,7 @@ function shouldFreeze(): boolean {
 
 function initPage(url: RelPath): void {
   sessionStorage.setItem(`${counter()}-initPage`, url.pathname);
+  console.log("initPage", url.pathname);
   bindAnchors(url);
   if (shouldFreeze()) {
     savePageOnNavigation(url);
@@ -95,7 +104,14 @@ function initPage(url: RelPath): void {
 const subscribedScripts = new Set<string>();
 
 function savePage(url: RelPath): void {
+  for (const unsub of unsubscribeScripts) {
+    console.log("unsubscribing");
+    unsub();
+  }
+  unsubscribeScripts.clear();
+
   sessionStorage.setItem(`${counter()}-savePage`, url.pathname);
+  console.log("savePage", url.pathname);
   const content = document.body.outerHTML;
   const title = document.title;
 
@@ -127,6 +143,7 @@ function savePage(url: RelPath): void {
       break;
     } catch {
       sessionStorage.setItem(`${counter()}-compacting`, url.pathname);
+      console.log("compacting");
       pageCache.shift(); // shrink the cache and retry
     }
   }
@@ -134,16 +151,18 @@ function savePage(url: RelPath): void {
 
 let abortController = new AbortController();
 
-function savePageOnNavigation(url: RelPath): void {
+async function savePageOnNavigation(url: RelPath): Promise<void> {
   abortController.abort();
   abortController = new AbortController();
   sessionStorage.setItem(`${counter()}-savePageOnNavigation`, url.pathname);
+  console.log("savePageOnNavigation", url.pathname);
 
   window.addEventListener(
     "freeze:subscribe",
     (e: CustomEventInit<string>) => {
       if (e.detail) {
         subscribedScripts.add(e.detail);
+        console.log("subscribedScripts.add", e.detail);
       }
     },
     { signal: abortController.signal },
@@ -151,10 +170,25 @@ function savePageOnNavigation(url: RelPath): void {
 
   window.dispatchEvent(new CustomEvent("freeze:page-loaded"));
 
+  console.log("restoring scripts", url.pathname, subscribedScripts);
+  const inits = await Promise.all(
+    subscribedScripts
+      .values()
+      .map((src): Promise<{ init: () => Unsub }> => import(src)),
+  );
+  console.log("inits.length", inits.length);
+  for (const init of inits) {
+    console.log("init", init);
+    const unsub = init.init();
+    unsubscribeScripts.add(unsub);
+  }
+  console.log("restored scripts", url.pathname);
+
   window.addEventListener(
     "beforeunload",
     () => {
       sessionStorage.setItem(`${counter()}-beforeunload`, url.pathname);
+      console.log("beforeunload", url.pathname);
       savePage(url);
     },
     {
@@ -166,6 +200,7 @@ function savePageOnNavigation(url: RelPath): void {
     "popstate",
     (event) => {
       sessionStorage.setItem(`${counter()}-popstate`, url.pathname);
+      console.log("popstate", url.pathname);
       if (event.state?.freeze) {
         const newCached = getCachedPage(location);
         if (newCached) {
