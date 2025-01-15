@@ -8,6 +8,13 @@ type Page = {
   scripts: string[];
 };
 
+function currentLocation(): RelPath {
+  return {
+    pathname: location.pathname,
+    search: location.search,
+  };
+}
+
 function getPageCache(): Page[] {
   return JSON.parse(
     sessionStorage.getItem("aaaa-history-cache") ?? "[]",
@@ -175,10 +182,11 @@ async function savePageOnNavigation(url: RelPath): Promise<void> {
     "popstate",
     (event) => {
       if (event.state?.freeze) {
-        const newCached = getCachedPage({ ...location });
+        const loc = currentLocation();
+        const newCached = getCachedPage(loc);
         if (newCached) {
           savePage(url);
-          restorePage(newCached, { ...location });
+          restorePage(newCached, loc);
           return;
         }
       }
@@ -188,4 +196,4 @@ async function savePageOnNavigation(url: RelPath): Promise<void> {
   );
 }
 
-initPage({ ...location });
+initPage(currentLocation());
