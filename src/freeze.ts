@@ -34,7 +34,7 @@ function getCachedPage(url: RelPath): Page | null {
 }
 
 function bindAnchors(currentUrl: RelPath): void {
-  const anchors = document.body.querySelectorAll<HTMLAnchorElement>("a");
+  const anchors = document.body.querySelectorAll("a");
   for (const anchor of anchors) {
     anchor.addEventListener(
       "click",
