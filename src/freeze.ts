@@ -1,12 +1,5 @@
 type RelPath = { pathname: string; search: string };
 
-export function sessionLog(key: string, value: string): void {
-  const count = Number(sessionStorage.getItem("counter") ?? "0");
-  sessionStorage.setItem("counter", String(count + 1));
-  sessionStorage.setItem(`${count}-${key}`, value);
-  console.log(`${count}-${key}`, value);
-}
-
 type Page = {
   cacheKey: string;
   content: string;
@@ -46,15 +39,12 @@ function bindAnchors(currentUrl: RelPath): void {
     anchor.addEventListener(
       "click",
       (event) => {
-        sessionLog("click", anchor.href);
         const urlRaw = new URL(anchor.href);
         const url = { pathname: urlRaw.pathname, search: urlRaw.search };
         const cached = getCachedPage(url);
         if (cached) {
           event.preventDefault();
-          sessionLog("prevent", anchor.href);
           if (shouldFreeze()) {
-            sessionLog("save page in bind anchors", currentUrl.pathname);
             savePage(currentUrl);
           }
           restorePage(cached, url);
@@ -71,7 +61,6 @@ type Unsub = () => void;
 const unsubscribeScripts = new Set<Unsub>();
 
 async function restorePage(cached: Page, url: RelPath): Promise<void> {
-  sessionLog("restorePage", url.pathname);
   document.body.outerHTML = cached.content;
 
   const titleElt = document.querySelector("title");
@@ -101,7 +90,6 @@ function shouldFreeze(): boolean {
 }
 
 function initPage(url: RelPath): void {
-  sessionLog("initPage", url.pathname);
   bindAnchors(url);
   if (shouldFreeze()) {
     savePageOnNavigation(url);
@@ -111,7 +99,6 @@ function initPage(url: RelPath): void {
 const subscribedScripts = new Set<string>();
 
 function savePage(url: RelPath): void {
-  sessionLog("savePage", url.pathname);
   for (const unsub of unsubscribeScripts) {
     unsub();
   }
@@ -155,7 +142,6 @@ function savePage(url: RelPath): void {
 let abortController = new AbortController();
 
 async function savePageOnNavigation(url: RelPath): Promise<void> {
-  sessionLog("savePageOnNavigation", url.pathname);
   abortController.abort();
   abortController = new AbortController();
 
@@ -189,7 +175,6 @@ async function savePageOnNavigation(url: RelPath): Promise<void> {
   window.addEventListener(
     "beforeunload",
     () => {
-      sessionLog("beforeunload", url.pathname);
       savePage(url);
     },
     { signal: abortController.signal },
@@ -198,7 +183,6 @@ async function savePageOnNavigation(url: RelPath): Promise<void> {
   window.addEventListener(
     "popstate",
     (event) => {
-      sessionLog("popstate", url.pathname);
       if (event.state?.freeze) {
         const loc = currentLocation();
         const newCached = getCachedPage(loc);
