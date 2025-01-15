@@ -8,6 +8,7 @@ type Page = {
   scripts: string[];
 };
 
+// dereference location and make it immutable
 function currentUrl(): RelPath {
   return {
     pathname: location.pathname,
@@ -16,9 +17,7 @@ function currentUrl(): RelPath {
 }
 
 function getPageCache(): Page[] {
-  return JSON.parse(
-    sessionStorage.getItem("aaaa-history-cache") ?? "[]",
-  ) as Page[];
+  return JSON.parse(sessionStorage.getItem("freeze-cache") ?? "[]") as Page[];
 }
 
 function getCachedPage(url: RelPath): Page | null {
@@ -45,7 +44,7 @@ function bindAnchors(currentUrl: RelPath): void {
         if (cached) {
           event.preventDefault();
           if (shouldFreeze()) {
-            savePage(currentUrl);
+            freezePage(currentUrl);
           }
           restorePage(cached, url);
           return;
@@ -92,13 +91,13 @@ function shouldFreeze(): boolean {
 function initPage(url: RelPath): void {
   bindAnchors(url);
   if (shouldFreeze()) {
-    savePageOnNavigation(url);
+    freezeOnNavigateOrPopstate(url);
   }
 }
 
 const subscribedScripts = new Set<string>();
 
-function savePage(url: RelPath): void {
+function freezePage(url: RelPath): void {
   for (const unsub of unsubscribeScripts) {
     unsub();
   }
@@ -131,7 +130,7 @@ function savePage(url: RelPath): void {
   // keep trying to save the cache until it succeeds or is empty
   while (pageCache.length > 0) {
     try {
-      sessionStorage.setItem("aaaa-history-cache", JSON.stringify(pageCache));
+      sessionStorage.setItem("freeze-cache", JSON.stringify(pageCache));
       break;
     } catch {
       pageCache.shift(); // shrink the cache and retry
@@ -141,7 +140,7 @@ function savePage(url: RelPath): void {
 
 let abortController = new AbortController();
 
-async function savePageOnNavigation(url: RelPath): Promise<void> {
+async function freezeOnNavigateOrPopstate(url: RelPath): Promise<void> {
   abortController.abort();
   abortController = new AbortController();
 
@@ -173,13 +172,9 @@ async function savePageOnNavigation(url: RelPath): Promise<void> {
     unsubscribeScripts.add(unsub);
   }
 
-  window.addEventListener(
-    "beforeunload",
-    () => {
-      savePage(url);
-    },
-    { signal: abortController.signal },
-  );
+  window.addEventListener("beforeunload", () => freezePage(url), {
+    signal: abortController.signal,
+  });
 
   window.addEventListener(
     "popstate",
@@ -188,12 +183,12 @@ async function savePageOnNavigation(url: RelPath): Promise<void> {
         const newUrl = currentUrl();
         const newCached = getCachedPage(newUrl);
         if (newCached) {
-          savePage(url);
+          freezePage(url);
           restorePage(newCached, newUrl);
           return;
         }
       }
-      location.reload();
+      window.location.reload();
     },
     { signal: abortController.signal },
   );
