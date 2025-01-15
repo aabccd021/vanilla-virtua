@@ -214,4 +214,6 @@ async function savePageOnNavigation(url: RelPath): Promise<void> {
   );
 }
 
-initPage(currentLocation());
+window.addEventListener("pageshow", () => {
+  initPage(currentLocation());
+});
