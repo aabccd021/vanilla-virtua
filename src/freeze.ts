@@ -40,8 +40,6 @@ function getCachedPage(url: RelPath): Page | null {
   return null;
 }
 
-let state: "init" | "event" | "click" = "init";
-
 function bindAnchors(currentUrl: RelPath): void {
   const anchors = document.body.querySelectorAll<HTMLAnchorElement>("a");
   for (const anchor of anchors) {
@@ -61,10 +59,6 @@ function bindAnchors(currentUrl: RelPath): void {
           }
           restorePage(cached, url);
           return;
-        }
-        if (state === "event") {
-          sessionLog("state on anchor", state);
-          state = "click";
         }
       },
       { once: true },
@@ -218,9 +212,6 @@ async function savePageOnNavigation(url: RelPath): Promise<void> {
     },
     { signal: abortController.signal },
   );
-
-  state = "event";
-  sessionLog("state on savePageOnNavigation", state);
 }
 
 initPage(currentLocation());
