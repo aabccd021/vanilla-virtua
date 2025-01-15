@@ -8,7 +8,7 @@ type Page = {
   scripts: string[];
 };
 
-function currentLocation(): RelPath {
+function currentUrl(): RelPath {
   return {
     pathname: location.pathname,
     search: location.search,
@@ -185,7 +185,7 @@ async function savePageOnNavigation(url: RelPath): Promise<void> {
     "popstate",
     (event) => {
       if (event.state?.freeze) {
-        const newUrl = currentLocation();
+        const newUrl = currentUrl();
         const newCached = getCachedPage(newUrl);
         if (newCached) {
           savePage(url);
@@ -200,5 +200,5 @@ async function savePageOnNavigation(url: RelPath): Promise<void> {
 }
 
 window.addEventListener("pageshow", () => {
-  initPage(currentLocation());
+  initPage(currentUrl());
 });
