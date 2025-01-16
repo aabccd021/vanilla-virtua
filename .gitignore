@@ -25,3 +25,7 @@ dist-ssr
 
 .direnv
 *.js
+/test-results/
+/playwright-report/
+/blob-report/
+/playwright/.cache/
