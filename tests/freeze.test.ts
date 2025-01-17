@@ -82,6 +82,36 @@ const params: Param[] = [
   // should be 2?
   { expected: "1", steps: ["gi", "gb", "gi"] },
   { expected: "1", steps: ["gs", "ci", "re"] },
+
+  { expected: "3", steps: ["gs", "ci", "cs", "ci", "cs", "ci"] },
+  // { expected: "3", steps: ["gs", "ci", "cs", "ci", "gs", "ci"] },
+  { expected: "3", steps: ["gs", "ci", "cs", "ci", "gb", "ci"] },
+  { expected: "3", steps: ["gs", "ci", "cs", "ci", "cd", "ci"] },
+  // { expected: "3", steps: ["gs", "ci", "cs", "ci", "gd", "ci"] },
+
+  { expected: "3", steps: ["gs", "ci", "gs", "ci", "cs", "ci"] },
+  // { expected: "3", steps: ["gs", "ci", "gs", "ci", "gs", "ci"] },
+  { expected: "3", steps: ["gs", "ci", "gs", "ci", "gb", "ci"] },
+  { expected: "3", steps: ["gs", "ci", "gs", "ci", "cd", "ci"] },
+  // { expected: "3", steps: ["gs", "ci", "gs", "ci", "gd", "ci"] },
+
+  // { expected: "3", steps: ["gs", "ci", "gb", "ci", "cs", "ci"] },
+  // { expected: "3", steps: ["gs", "ci", "gb", "ci", "gs", "ci"] },
+  // { expected: "3", steps: ["gs", "ci", "gb", "ci", "gb", "ci"] },
+  { expected: "3", steps: ["gs", "ci", "gb", "ci", "cd", "ci"] },
+  // { expected: "3", steps: ["gs", "ci", "gb", "ci", "gd", "ci"] },
+
+  // { expected: "3", steps: ["gs", "ci", "cd", "ci", "cs", "ci"] },
+  // { expected: "3", steps: ["gs", "ci", "cd", "ci", "gs", "ci"] },
+  // { expected: "3", steps: ["gs", "ci", "cd", "ci", "gb", "ci"] },
+  { expected: "3", steps: ["gs", "ci", "cd", "ci", "cd", "ci"] },
+  // { expected: "3", steps: ["gs", "ci", "cd", "ci", "gd", "ci"] },
+
+  // { expected: "3", steps: ["gs", "ci", "gd", "ci", "gs", "ci"] },
+  // { expected: "3", steps: ["gs", "ci", "gd", "ci", "gs", "ci"] },
+  { expected: "3", steps: ["gs", "ci", "gd", "ci", "gb", "ci"] },
+  { expected: "3", steps: ["gs", "ci", "gd", "ci", "cd", "ci"] },
+  // { expected: "3", steps: ["gs", "ci", "gd", "ci", "gd", "ci"] },
 ];
 
 for (const param of params) {
