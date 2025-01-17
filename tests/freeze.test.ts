@@ -55,7 +55,7 @@ async function getPage(): Promise<Page> {
   return page;
 }
 
-type Step = "gs" | "gd" | "gi" | "cs" | "cd" | "ci" | "gb";
+type Step = "gs" | "gd" | "gi" | "cs" | "cd" | "ci" | "gb" | "re";
 
 type Param = {
   steps: Step[];
@@ -67,16 +67,20 @@ const params: Param[] = [
   { expected: "Dynamic", steps: ["gd"] },
   { expected: "1", steps: ["gi"] },
   { expected: "1", steps: ["gs", "ci"] },
+
   { expected: "2", steps: ["gs", "ci", "cs", "ci"] },
   { expected: "2", steps: ["gs", "ci", "gs", "ci"] },
   { expected: "2", steps: ["gs", "ci", "gb", "ci"] },
   { expected: "2", steps: ["gs", "ci", "cd", "ci"] },
   { expected: "2", steps: ["gs", "ci", "gd", "ci"] },
+
   { expected: "2", steps: ["gi", "cs", "ci"] },
   { expected: "2", steps: ["gi", "gs", "ci"] },
-  // { expected: "2", steps: ["gi", "gb", "ci"] },
   { expected: "2", steps: ["gi", "cd", "ci"] },
   { expected: "2", steps: ["gi", "gd", "ci"] },
+
+  { expected: "1", steps: ["gi", "gb", "gi"] },
+  { expected: "1", steps: ["gs", "ci", "re"] },
 ];
 
 for (const param of params) {
@@ -98,6 +102,8 @@ for (const param of params) {
         await page.getByText("Increment").click();
       } else if (step === "gb") {
         await page.goBack();
+      } else if (step === "re") {
+        await page.reload();
       } else {
         throw new Error(`Absurd: ${step}`);
       }
