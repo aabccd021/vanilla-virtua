@@ -3,33 +3,7 @@ import { type Page, test as baseTest, expect } from "@playwright/test";
 const __dirname = new URL(".", import.meta.url).pathname;
 const fixtureDir = `${__dirname}/fixtures`;
 
-// const browser = await chromium.launch({
-//   channel: "chromium",
-// ignoreDefaultArgs: ['--disable-back-forward-cache'],
-// });
-//
-// async function getPage(): Promise<Page> {
-//   const page = await browser.newPage({
-//     baseURL: "http://domain",
-//   });
-//   await page.route("**/*", (route, request) => {
-//     const urlPath = new URL(request.url()).pathname;
-//     return route.fulfill({ path: `${fixtureDir}${urlPath}` });
-//   });
-//   return page;
-// }
-
-// test.beforeEach(async ({ context }) => {
-//   await context.route("**/*", async (route, request) => {
-//    const urlPath = new URL(request.url()).pathname;
-//    return route.fulfill({ path: `${fixtureDir}${urlPath}` });
-//  });
-// })
-
 const test = baseTest.extend({
-  // use: {
-  //   baseURL: "http://domain",
-  // },
   baseURL: "http://domain",
   context: async ({ context }, run): Promise<void> => {
     await context.route("**/*", (route, request) => {
