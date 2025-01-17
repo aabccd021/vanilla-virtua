@@ -35,7 +35,7 @@ const params: string[][] = [
   //   "bs",
   // ],
 
-  ["gi_1", "cs", "bi_2"],
+  // ["gi_1", "cs", "bi_2"],
 
   // ["gi_1", "cs", "ci_2", "bs", "bi_1"],
   // ["gi_1", "cs", "ci_2", "cs", "bi_1"],
@@ -107,7 +107,7 @@ const params: string[][] = [
   ["gs", "ci_1", "gs", "ci_2", "cd", "ci_3", "gi_1"],
   ["gs", "ci_1", "gs", "ci_2", "gd", "ci_3", "gi_1"],
 
-  // ["gs", "ci_1", "bs", "ci_2", "cs", "ci_3", "gi_1"],
+  ["gs", "ci_1", "bs", "ci_2", "cs", "ci_3"],
   // ["gs", "ci_1", "bs", "ci_2", "gs", "ci_3", "gi_1"],
   // ["gs", "ci_1", "bs", "ci_2", "bs", "ci_3", "gi_1"],
   // ["gs", "ci_1", "bs", "ci_2", "cd", "ci_3", "gi_1"],
@@ -165,12 +165,12 @@ async function handleStep(page: Page, step: string): Promise<void> {
     await page.goBack();
 
     // I don't know why but this is the behavior in my browser
-    await page.evaluate(() =>
-      window.dispatchEvent(new CustomEvent("beforeunload")),
-    );
-    await page.evaluate(() =>
-      window.dispatchEvent(new CustomEvent("pageshow")),
-    );
+    // await page.evaluate(() =>
+    //   window.dispatchEvent(new CustomEvent("beforeunload")),
+    // );
+    // await page.evaluate(() =>
+    //   window.dispatchEvent(new CustomEvent("pageshow")),
+    // );
 
     if (step.at(1) === "s") {
       await expect(page.getByTestId("main")).toHaveText("Static");
