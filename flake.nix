@@ -21,6 +21,11 @@
         settings.formatter.biome.priority = 2;
       };
 
+      test = pkgs.runCommandNoCCLocal "test" { } ''
+        cp ${./tests} .
+        ${pkgs.bun}/bin/bun example.spec.ts
+      '';
+
     in
 
     {
