@@ -55,13 +55,13 @@ async function getPage(): Promise<Page> {
   return page;
 }
 
-async function logCache(page: Page): Promise<void> {
-  const value = await page.evaluate(() =>
-    sessionStorage.getItem("freeze-cache"),
-  );
-  const v = JSON.parse(value);
-  console.log(v);
-}
+// async function logCache(page: Page): Promise<void> {
+//   const value = await page.evaluate(() =>
+//     sessionStorage.getItem("freeze-cache"),
+//   );
+//   const v = JSON.parse(value);
+//   console.log(v);
+// }
 
 test("static", async () => {
   const page = await getPage();
@@ -91,7 +91,6 @@ test("isi", async () => {
   const page = await getPage();
   await page.goto("increment.html");
   await page.getByText("Static").click();
-  await logCache(page);
   await page.getByText("Increment").click();
   expect(await page.getByTestId("increment").textContent()).toBe("2");
   await page.close();
