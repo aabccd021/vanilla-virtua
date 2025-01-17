@@ -124,11 +124,7 @@ for (const param of params) {
     const errors: Error[] = [];
     page.on("pageerror", (error) => errors.push(error));
 
-    console.log(`\n\n${testName}`);
-
     for (const step of param.steps) {
-      console.log(`\n${step}`);
-
       if (step === "gs") {
         await page.goto("static.html");
       } else if (step === "gd") {
@@ -136,17 +132,11 @@ for (const param of params) {
       } else if (step === "gi") {
         await page.goto("increment.html");
       } else if (step === "cs") {
-        console.log("click static");
         await page.getByText("Static").click();
-        console.log("clicked static");
       } else if (step === "cd") {
-        console.log("click dynamic");
         await page.getByText("Dynamic").click();
-        console.log("clicked dynamic");
       } else if (step === "ci") {
-        console.log("click increment");
         await page.getByText("Increment").click();
-        console.log("clicked increment");
       } else if (step === "gb") {
         await page.goBack();
       } else if (step === "re") {
@@ -155,12 +145,7 @@ for (const param of params) {
         throw new Error(`Absurd: ${step}`);
       }
 
-      // console.log({ step, path });
-      // await page.waitForURL(`http://domain/${path}`);
-      console.log(`${step}: waiting load`);
-      console.log(`${step}: waiting main`);
       await page.waitForSelector("[data-testid=main]");
-      console.log(`${step}: done`);
 
       // console.log(step);
       // const value = await page.evaluate(() =>
