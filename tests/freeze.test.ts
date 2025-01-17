@@ -1,45 +1,9 @@
-// import { afterAll, test } from "bun:test";
 import { type Page, chromium, expect, test } from "@playwright/test";
 
 const __dirname = new URL(".", import.meta.url).pathname;
 const fixtureDir = `${__dirname}/fixtures`;
 
-// const srcDir = `${import.meta.dir}/../src`;
-// const fixtureDir = `${import.meta.dir}/fixtures`;
-//
-// const srcFiles = fs.readdirSync(srcDir).map((file) => `${srcDir}/${file}`);
-//
-// const fixtureMts = fs
-//   .readdirSync(fixtureDir)
-//   .filter((file) => file.endsWith(".mts"))
-//   .map((file) => `${fixtureDir}/${file}`);
-//
-// const mjsBuildResult = await Bun.build({
-//   entrypoints: [...srcFiles, ...fixtureMts],
-//   target: "browser",
-// });
-//
-// if (!mjsBuildResult.success) {
-//   console.error(mjsBuildResult.logs);
-//   throw new Error("Build failed");
-// }
-//
-// const buildResults = mjsBuildResult.outputs;
-//
-// const jsMap = new Map<string, string>();
-// for (const output of buildResults) {
-//   const path = output.path.split("/").pop();
-//   if (path === undefined) {
-//     throw new Error(`Absurd: ${output.path}`);
-//   }
-//   jsMap.set(`/${path}`, await output.text());
-// }
-//
-const browser = await chromium.launch({
-  // headless: false,
-  // ignoreDefaultArgs: ['--headless=old'],
-  // args: ['--headless=new']
-});
+const browser = await chromium.launch();
 
 async function getPage(): Promise<Page> {
   const page = await browser.newPage({
@@ -47,17 +11,8 @@ async function getPage(): Promise<Page> {
   });
   await page.route("**/*", (route, request) => {
     const urlPath = new URL(request.url()).pathname;
-    // const js = jsMap.get(urlPath);
-    // if (js) {
-    //   return route.fulfill({
-    //     body: js,
-    //     contentType: "application/javascript",
-    //   });
-    // }
     return route.fulfill({ path: `${fixtureDir}${urlPath}` });
   });
-  // page.on("console", (msg) => console.log(`PAGE LOG: ${msg.text()}`));
-  // page.on("pageerror", (error) => console.error(`PAGE ERROR: ${error}`));
   return page;
 }
 
@@ -81,25 +36,27 @@ const params: string[][] = [
   // ],
 
   ["gi_1", "cs", "bi_2"],
+
   // ["gi_1", "cs", "ci_2", "bs", "bi_1"],
   // ["gi_1", "cs", "ci_2", "cs", "bi_1"],
   // ["gi_1", "cs", "ci_2", "bs", "ci_3", "bs", "bi_1"],
   // ["gi_1", "cs", "ci_2", "cs", "ci_3", "cs", "bi_1"],
-  //
-  // [
-  //   "gs",
-  //   "cd",
-  //   "ci_1",
-  //   "cd",
-  //   "ci_2",
-  //   "cd",
-  //   "ci_3",
-  //   "cd",
-  //   "ci_4",
-  //   "bd",
-  //   "bd",
-  //   "bd",
-  // ],
+
+  [
+    "gs",
+    "cd",
+    "ci_1",
+    "cd",
+    "ci_2",
+    "cd",
+    "ci_3",
+    "cd",
+    "ci_4",
+    "bd",
+    "bd",
+    "bd",
+  ],
+
   // [
   //   "gs",
   //   "ci_1",
@@ -114,59 +71,59 @@ const params: string[][] = [
   //   "bs",
   //   "bi_1",
   // ],
-  //
-  // ["gi_1"],
-  // ["gs", "ci_1"],
-  //
-  // ["gs", "ci_1", "cs", "ci_2"],
-  // ["gs", "ci_1", "gs", "ci_2"],
-  // ["gs", "ci_1", "bs"],
-  // ["gs", "ci_1", "cd", "ci_2"],
-  // ["gs", "ci_1", "gd", "ci_2"],
-  //
-  // ["gd", "ci_1", "cs", "ci_2"],
-  // ["gd", "ci_1", "gs", "ci_2"],
-  // ["gd", "ci_1", "bd"],
-  // ["gd", "ci_1", "cd", "ci_2"],
-  // ["gd", "ci_1", "gd", "ci_2"],
-  //
-  // ["gi_1", "cs", "ci_2"],
-  // ["gi_1", "gs", "ci_2"],
-  // ["gi_1", "cd", "ci_2"],
-  // ["gi_1", "gd", "ci_2"],
-  //
-  // ["gs", "ci_1", "gi_1"],
-  // ["gi_1", "gi_1"],
-  //
-  // ["gs", "ci_1", "cs", "ci_2", "cs", "ci_3", "gi_1"],
-  // ["gs", "ci_1", "cs", "ci_2", "gs", "ci_3", "gi_1"],
+
+  ["gi_1"],
+  ["gs", "ci_1"],
+
+  ["gs", "ci_1", "cs", "ci_2"],
+  ["gs", "ci_1", "gs", "ci_2"],
+  ["gs", "ci_1", "bs"],
+  ["gs", "ci_1", "cd", "ci_2"],
+  ["gs", "ci_1", "gd", "ci_2"],
+
+  ["gd", "ci_1", "cs", "ci_2"],
+  ["gd", "ci_1", "gs", "ci_2"],
+  ["gd", "ci_1", "bd"],
+  ["gd", "ci_1", "cd", "ci_2"],
+  ["gd", "ci_1", "gd", "ci_2"],
+
+  ["gi_1", "cs", "ci_2"],
+  ["gi_1", "gs", "ci_2"],
+  ["gi_1", "cd", "ci_2"],
+  ["gi_1", "gd", "ci_2"],
+
+  ["gs", "ci_1", "gi_1"],
+  ["gi_1", "gi_1"],
+
+  ["gs", "ci_1", "cs", "ci_2", "cs", "ci_3", "gi_1"],
+  ["gs", "ci_1", "cs", "ci_2", "gs", "ci_3", "gi_1"],
   // ["gs", "ci_1", "cs", "ci_2", "bs", "ci_3", "gi_1"],
-  // ["gs", "ci_1", "cs", "ci_2", "cd", "ci_3", "gi_1"],
-  // ["gs", "ci_1", "cs", "ci_2", "gd", "ci_3", "gi_1"],
-  //
-  // ["gs", "ci_1", "gs", "ci_2", "cs", "ci_3", "gi_1"],
-  // ["gs", "ci_1", "gs", "ci_2", "gs", "ci_3", "gi_1"],
+  ["gs", "ci_1", "cs", "ci_2", "cd", "ci_3", "gi_1"],
+  ["gs", "ci_1", "cs", "ci_2", "gd", "ci_3", "gi_1"],
+
+  ["gs", "ci_1", "gs", "ci_2", "cs", "ci_3", "gi_1"],
+  ["gs", "ci_1", "gs", "ci_2", "gs", "ci_3", "gi_1"],
   // ["gs", "ci_1", "gs", "ci_2", "bs", "ci_3", "gi_1"],
-  // ["gs", "ci_1", "gs", "ci_2", "cd", "ci_3", "gi_1"],
-  // ["gs", "ci_1", "gs", "ci_2", "gd", "ci_3", "gi_1"],
-  //
+  ["gs", "ci_1", "gs", "ci_2", "cd", "ci_3", "gi_1"],
+  ["gs", "ci_1", "gs", "ci_2", "gd", "ci_3", "gi_1"],
+
   // ["gs", "ci_1", "bs", "ci_2", "cs", "ci_3", "gi_1"],
   // ["gs", "ci_1", "bs", "ci_2", "gs", "ci_3", "gi_1"],
   // ["gs", "ci_1", "bs", "ci_2", "bs", "ci_3", "gi_1"],
   // ["gs", "ci_1", "bs", "ci_2", "cd", "ci_3", "gi_1"],
   // ["gs", "ci_1", "bs", "ci_2", "gd", "ci_3", "gi_1"],
-  //
-  // ["gs", "ci_1", "cd", "ci_2", "cs", "ci_3", "gi_1"],
-  // ["gs", "ci_1", "cd", "ci_2", "gs", "ci_3", "gi_1"],
+
+  ["gs", "ci_1", "cd", "ci_2", "cs", "ci_3", "gi_1"],
+  ["gs", "ci_1", "cd", "ci_2", "gs", "ci_3", "gi_1"],
   // ["gs", "ci_1", "cd", "ci_2", "bd", "ci_3", "gi_1"],
-  // ["gs", "ci_1", "cd", "ci_2", "cd", "ci_3", "gi_1"],
-  // ["gs", "ci_1", "cd", "ci_2", "gd", "ci_3", "gi_1"],
-  //
-  // ["gs", "ci_1", "gd", "ci_2", "cs", "ci_3", "gi_1"],
-  // ["gs", "ci_1", "gd", "ci_2", "gs", "ci_3", "gi_1"],
+  ["gs", "ci_1", "cd", "ci_2", "cd", "ci_3", "gi_1"],
+  ["gs", "ci_1", "cd", "ci_2", "gd", "ci_3", "gi_1"],
+
+  ["gs", "ci_1", "gd", "ci_2", "cs", "ci_3", "gi_1"],
+  ["gs", "ci_1", "gd", "ci_2", "gs", "ci_3", "gi_1"],
   // ["gs", "ci_1", "gd", "ci_2", "bd", "ci_3", "gi_1"],
-  // ["gs", "ci_1", "gd", "ci_2", "cd", "ci_3", "gi_1"],
-  // ["gs", "ci_1", "gd", "ci_2", "gd", "ci_3", "gi_1"],
+  ["gs", "ci_1", "gd", "ci_2", "cd", "ci_3", "gi_1"],
+  ["gs", "ci_1", "gd", "ci_2", "gd", "ci_3", "gi_1"],
 ];
 
 async function handleStep(page: Page, step: string): Promise<void> {
