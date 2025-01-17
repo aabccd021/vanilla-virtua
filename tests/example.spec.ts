@@ -81,13 +81,27 @@ test("static", async () => {
 
 test("dynamic", async () => {
   const page = await getPage();
-  page.on("pageerror", (error) => console.error("PAGE ERROR:", error));
-  page.on("console", (msg) => console.log("PAGE LOG:", msg.text()));
   await page.goto("dynamic.html");
   expect(await page.title()).toBe("Dynamic");
   expect(await page.getByTestId("dynamic").textContent()).toBe("Dynamic");
   await page.close();
 });
+
+test("increment", async () => {
+  const page = await getPage();
+  await page.goto("increment.html");
+  expect(await page.title()).toBe("Increment");
+  expect(await page.getByTestId("increment").textContent()).toBe("1");
+  await page.close();
+});
+
+// test("increment 2", async () => {
+//   const page = await getPage();
+//   await page.goto("increment.html");
+//   await page.reload();
+//   expect(await page.getByTestId("increment").textContent()).toBe("2");
+//   await page.close();
+// });
 
 afterAll(async () => {
   await browser.close();
