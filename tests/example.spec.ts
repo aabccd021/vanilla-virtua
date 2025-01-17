@@ -7,22 +7,43 @@ const fixtureDir = `${import.meta.dir}/fixtures`;
 
 const srcFiles = fs.readdirSync(srcDir).map((file) => `${srcDir}/${file}`);
 
-const fixtureJsFiles = fs
+const fixtureMts = fs
   .readdirSync(fixtureDir)
-  .filter((file) => file.endsWith(".js"))
+  .filter((file) => file.endsWith(".mts"))
   .map((file) => `${fixtureDir}/${file}`);
 
-const buildResult = await Bun.build({
-  entrypoints: [...srcFiles, ...fixtureJsFiles],
+const mjsBuildResult = await Bun.build({
+  entrypoints: [...srcFiles, ...fixtureMts],
+  target: "browser",
 });
 
-if (!buildResult.success) {
-  console.error(buildResult.logs);
+if (!mjsBuildResult.success) {
+  console.error(mjsBuildResult.logs);
   throw new Error("Build failed");
 }
 
+// const fixtureTs = fs
+//   .readdirSync(fixtureDir)
+//   .filter((file) => file.endsWith(".ts"))
+//   .map((file) => `${fixtureDir}/${file}`);
+//
+// const jsBuildResult = await Bun.build({
+//   entrypoints: fixtureTs,
+//   format: "iife",
+//   target: "browser"
+// });
+//
+// if (!jsBuildResult.success) {
+//   console.error(jsBuildResult.logs);
+//   throw new Error("Build failed");
+// }
+
+// const buildResults = [...mjsBuildResult.outputs, ...jsBuildResult.outputs];
+
+const buildResults = mjsBuildResult.outputs;
+
 const jsMap = new Map<string, string>();
-for (const output of buildResult.outputs) {
+for (const output of buildResults) {
   const path = output.path.split("/").pop();
   if (path === undefined) {
     throw new Error(`Absurd: ${output.path}`);
@@ -30,7 +51,9 @@ for (const output of buildResult.outputs) {
   jsMap.set(`/${path}`, await output.text());
 }
 
-const browser = await chromium.launch();
+const browser = await chromium.launch({
+  // headless: false,
+});
 
 async function getPage(): Promise<Page> {
   const page = await browser.newPage({ baseURL: "http://domain" });
@@ -53,6 +76,16 @@ test("static", async () => {
   await page.goto("static.html");
   expect(page).toHaveTitle("Static");
   expect(await page.getByTestId("static").textContent()).toBe("Static");
+  await page.close();
+});
+
+test("dynamic", async () => {
+  const page = await getPage();
+  page.on("pageerror", (error) => console.error("PAGE ERROR:", error));
+  page.on("console", (msg) => console.log("PAGE LOG:", msg.text()));
+  await page.goto("dynamic.html");
+  expect(await page.title()).toBe("Dynamic");
+  expect(await page.getByTestId("dynamic").textContent()).toBe("Dynamic");
   await page.close();
 });
 
