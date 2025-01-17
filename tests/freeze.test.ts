@@ -70,6 +70,8 @@ const params: Param[] = [
   { expected: "2", steps: ["gs", "ci", "cs", "ci"] },
   { expected: "2", steps: ["gs", "ci", "gs", "ci"] },
   { expected: "2", steps: ["gs", "ci", "gb", "ci"] },
+  { expected: "2", steps: ["gs", "ci", "cd", "ci"] },
+  { expected: "2", steps: ["gs", "ci", "gd", "ci"] },
 ];
 
 for (const param of params) {
