@@ -2,12 +2,9 @@ export function sessionLog(key: string, value: string): void {
   const count = Number(sessionStorage.getItem("counter") ?? "0");
   sessionStorage.setItem("counter", String(count + 1));
   sessionStorage.setItem(`${count}-${key}`, value);
-  console.log(`${count}-${key}`, value);
 }
 
-function onClick(): void {
-  console.log("hello");
-}
+function onClick(): void {}
 
 const app = document.querySelector("#app");
 if (app === null) {

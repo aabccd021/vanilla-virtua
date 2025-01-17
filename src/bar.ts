@@ -1,9 +1,7 @@
 type Unsubscribe = () => void;
 
 export function init(): Unsubscribe {
-  return (): void => {
-    console.log("unsubscribing");
-  };
+  return (): void => {};
 }
 
 window.addEventListener(

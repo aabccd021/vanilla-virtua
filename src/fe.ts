@@ -7,9 +7,7 @@ function onInfiniteEvent(event: CustomEventInit<InfiniteEvent>): void {
   }
   if (event.detail?.type === "newChildren") {
     for (const newChild of event.detail.children) {
-      newChild.addEventListener("click", () => {
-        console.warn("fe");
-      });
+      newChild.addEventListener("click", () => {});
     }
     return;
   }

@@ -11,9 +11,7 @@ export function init(): Unsubscribe {
 
   const h2s = document.querySelectorAll("h2");
   for (const el of h2s) {
-    el.addEventListener("click", () => {
-      console.log("clicked");
-    });
+    el.addEventListener("click", () => {});
   }
 
   return (): void => {
