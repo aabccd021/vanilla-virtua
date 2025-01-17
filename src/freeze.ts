@@ -174,17 +174,7 @@ async function freezeOnNavigateOrPopstate(url: RelPath): Promise<void> {
   }
 
   window.addEventListener(
-    "beforeunload",
-    () => {
-      freezePage(url);
-    },
-    {
-      signal: abortController.signal,
-    },
-  );
-
-  window.addEventListener(
-    "test:beforeunload",
+    "pagehide",
     () => {
       freezePage(url);
     },
