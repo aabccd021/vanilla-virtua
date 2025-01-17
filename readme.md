@@ -1,5 +1,7 @@
 # Todo
 
+- handle disabled bfcache
+- handle typescript
 - innerhtml instead of outerhtml
 - support non module scripts
 - assert `/static` is not in sessionStorage

@@ -13,7 +13,7 @@
     "enabled": true
   },
   "files": {
-    "ignore": ["tests/**/*.ts"]
+    "ignore": ["tests/**"]
   },
   "javascript": {
     "globals": ["Bun"]
