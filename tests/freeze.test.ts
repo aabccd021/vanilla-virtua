@@ -126,25 +126,31 @@ for (const param of params) {
     for (const step of param.steps) {
       if (step === "gs") {
         await page.goto("static.html");
+        await expect(page.getByTestId("main")).toHaveText("Static");
       } else if (step === "gd") {
         await page.goto("dynamic.html");
+        await expect(page.getByTestId("main")).toHaveText("Dynamic");
       } else if (step === "gi") {
         await page.goto("increment.html");
+        await page.waitForSelector("[data-testid=main]");
       } else if (step === "cs") {
         await page.getByText("Static").click();
+        await expect(page.getByTestId("main")).toHaveText("Static");
       } else if (step === "cd") {
         await page.getByText("Dynamic").click();
+        await expect(page.getByTestId("main")).toHaveText("Dynamic");
       } else if (step === "ci") {
         await page.getByText("Increment").click();
+        await page.waitForSelector("[data-testid=main]");
       } else if (step === "gb") {
         await page.goBack();
+        await page.waitForSelector("[data-testid=main]");
       } else if (step === "re") {
         await page.reload();
+        await page.waitForSelector("[data-testid=main]");
       } else {
         throw new Error(`Absurd: ${step}`);
       }
-
-      await page.waitForSelector("[data-testid=main]");
 
       // console.log(step);
       // const value = await page.evaluate(() =>
