@@ -1,5 +1,4 @@
 // import { afterAll, test } from "bun:test";
-import * as fs from "node:fs";
 import { type Page, chromium, expect, test } from "@playwright/test";
 
 const __dirname = new URL(".", import.meta.url).pathname;
@@ -58,100 +57,131 @@ async function getPage(): Promise<Page> {
   return page;
 }
 
-type Step = "gs" | "gd" | "gi" | "cs" | "cd" | "ci" | "gb" | "re";
+const params: string[][] = [
+  ["gi_1"],
+  ["gs", "ci_1"],
 
-type Param = {
-  steps: Step[];
-  expected: string;
-};
+  ["gs", "ci_1", "cs", "ci_2"],
+  ["gs", "ci_1", "gs", "ci_2"],
+  ["gs", "ci_1", "bs"],
+  ["gs", "ci_1", "cd", "ci_2"],
+  ["gs", "ci_1", "gd", "ci_2"],
 
-const params: Param[] = [
-  { expected: "Static", steps: ["gs"] },
-  { expected: "Dynamic", steps: ["gd"] },
-  { expected: "1", steps: ["gi"] },
-  { expected: "1", steps: ["gs", "ci"] },
+  ["gi_1", "cs", "ci_2"],
+  ["gi_1", "gs", "ci_2"],
+  ["gi_1", "cd", "ci_2"],
+  ["gi_1", "gd", "ci_2"],
 
-  { expected: "2", steps: ["gs", "ci", "cs", "ci"] },
-  { expected: "2", steps: ["gs", "ci", "gs", "ci"] },
-  { expected: "2", steps: ["gs", "ci", "gb", "ci"] },
-  { expected: "2", steps: ["gs", "ci", "cd", "ci"] },
-  { expected: "2", steps: ["gs", "ci", "gd", "ci"] },
+  ["gs", "ci_1", "ri_1"],
+  ["gi_1", "ri_1"],
 
-  { expected: "2", steps: ["gi", "cs", "ci"] },
-  { expected: "2", steps: ["gi", "gs", "ci"] },
-  { expected: "2", steps: ["gi", "cd", "ci"] },
-  { expected: "2", steps: ["gi", "gd", "ci"] },
+  ["gs", "ci_1", "cs", "ci_2", "cs", "ci_3"],
+  ["gs", "ci_1", "cs", "ci_2", "gs", "ci_3"],
+  ["gs", "ci_1", "cs", "ci_2", "bs", "ci_3"],
+  ["gs", "ci_1", "cs", "ci_2", "cd", "ci_3"],
+  ["gs", "ci_1", "cs", "ci_2", "gd", "ci_3"],
 
-  { expected: "1", steps: ["gs", "ci", "re"] },
-  { expected: "1", steps: ["gi", "re"] },
+  ["gs", "ci_1", "gs", "ci_2", "cs", "ci_3"],
+  ["gs", "ci_1", "gs", "ci_2", "gs", "ci_3"],
+  ["gs", "ci_1", "gs", "ci_2", "bs", "ci_3"],
+  ["gs", "ci_1", "gs", "ci_2", "cd", "ci_3"],
+  ["gs", "ci_1", "gs", "ci_2", "gd", "ci_3"],
 
-  { expected: "3", steps: ["gs", "ci", "cs", "ci", "cs", "ci"] },
-  { expected: "3", steps: ["gs", "ci", "cs", "ci", "gs", "ci"] },
-  { expected: "3", steps: ["gs", "ci", "cs", "ci", "gb", "ci"] },
-  { expected: "3", steps: ["gs", "ci", "cs", "ci", "cd", "ci"] },
-  { expected: "3", steps: ["gs", "ci", "cs", "ci", "gd", "ci"] },
+  ["gs", "ci_1", "bs", "ci_2", "cs", "ci_3"],
+  ["gs", "ci_1", "bs", "ci_2", "gs", "ci_3"],
+  ["gs", "ci_1", "bs", "ci_2", "bs", "ci_3"],
+  ["gs", "ci_1", "bs", "ci_2", "cd", "ci_3"],
+  ["gs", "ci_1", "bs", "ci_2", "gd", "ci_3"],
 
-  { expected: "3", steps: ["gs", "ci", "gs", "ci", "cs", "ci"] },
-  { expected: "3", steps: ["gs", "ci", "gs", "ci", "gs", "ci"] },
-  { expected: "3", steps: ["gs", "ci", "gs", "ci", "gb", "ci"] },
-  { expected: "3", steps: ["gs", "ci", "gs", "ci", "cd", "ci"] },
-  { expected: "3", steps: ["gs", "ci", "gs", "ci", "gd", "ci"] },
+  ["gs", "ci_1", "cd", "ci_2", "cs", "ci_3"],
+  ["gs", "ci_1", "cd", "ci_2", "gs", "ci_3"],
+  ["gs", "ci_1", "cd", "ci_2", "bd", "ci_3"],
+  ["gs", "ci_1", "cd", "ci_2", "cd", "ci_3"],
+  ["gs", "ci_1", "cd", "ci_2", "gd", "ci_3"],
 
-  { expected: "3", steps: ["gs", "ci", "gb", "ci", "cs", "ci"] },
-  { expected: "3", steps: ["gs", "ci", "gb", "ci", "gs", "ci"] },
-  { expected: "3", steps: ["gs", "ci", "gb", "ci", "gb", "ci"] },
-  { expected: "3", steps: ["gs", "ci", "gb", "ci", "cd", "ci"] },
-  { expected: "3", steps: ["gs", "ci", "gb", "ci", "gd", "ci"] },
-
-  { expected: "3", steps: ["gs", "ci", "cd", "ci", "cs", "ci"] },
-  { expected: "3", steps: ["gs", "ci", "cd", "ci", "gs", "ci"] },
-  { expected: "3", steps: ["gs", "ci", "cd", "ci", "gb", "ci"] },
-  { expected: "3", steps: ["gs", "ci", "cd", "ci", "cd", "ci"] },
-  { expected: "3", steps: ["gs", "ci", "cd", "ci", "gd", "ci"] },
-
-  { expected: "3", steps: ["gs", "ci", "gd", "ci", "cs", "ci"] },
-  { expected: "3", steps: ["gs", "ci", "gd", "ci", "gs", "ci"] },
-  { expected: "3", steps: ["gs", "ci", "gd", "ci", "gb", "ci"] },
-  { expected: "3", steps: ["gs", "ci", "gd", "ci", "cd", "ci"] },
-  { expected: "3", steps: ["gs", "ci", "gd", "ci", "gd", "ci"] },
+  ["gs", "ci_1", "gd", "ci_2", "cs", "ci_3"],
+  ["gs", "ci_1", "gd", "ci_2", "gs", "ci_3"],
+  ["gs", "ci_1", "gd", "ci_2", "bd", "ci_3"],
+  ["gs", "ci_1", "gd", "ci_2", "cd", "ci_3"],
+  ["gs", "ci_1", "gd", "ci_2", "gd", "ci_3"],
 ];
 
-for (const param of params) {
-  const testName = param.steps.join("-");
-  test(testName, async () => {
+async function handleStep(page: Page, step: string): Promise<void> {
+  if (step.at(0) === "g") {
+    if (step.at(1) === "s") {
+      await page.goto("static.html");
+      await expect(page.getByTestId("main")).toHaveText("Static");
+      return;
+    }
+    if (step.at(1) === "d") {
+      await page.goto("dynamic.html");
+      await expect(page.getByTestId("main")).toHaveText("Dynamic");
+      return;
+    }
+    if (step.at(1) === "i") {
+      await page.goto("increment.html");
+      await expect(page.getByTestId("main")).toHaveText(step.slice(3));
+      return;
+    }
+  }
+  if (step.at(0) === "c") {
+    if (step.at(1) === "s") {
+      await page.getByText("Static").click();
+      await expect(page.getByTestId("main")).toHaveText("Static");
+      return;
+    }
+    if (step.at(1) === "d") {
+      await page.getByText("Dynamic").click();
+      await expect(page.getByTestId("main")).toHaveText("Dynamic");
+      return;
+    }
+    if (step.at(1) === "i") {
+      await page.getByText("Increment").click();
+      await expect(page.getByTestId("main")).toHaveText(step.slice(3));
+      return;
+    }
+  }
+  if (step.at(0) === "r") {
+    await page.reload();
+    if (step.at(1) === "s") {
+      await expect(page.getByTestId("main")).toHaveText("Static");
+      return;
+    }
+    if (step.at(1) === "d") {
+      await expect(page.getByTestId("main")).toHaveText("Dynamic");
+      return;
+    }
+    if (step.at(1) === "i") {
+      await expect(page.getByTestId("main")).toHaveText(step.slice(3));
+      return;
+    }
+  }
+  if (step.at(0) === "b") {
+    await page.goBack();
+    if (step.at(1) === "s") {
+      await expect(page.getByTestId("main")).toHaveText("Static");
+      return;
+    }
+    if (step.at(1) === "d") {
+      await expect(page.getByTestId("main")).toHaveText("Dynamic");
+      return;
+    }
+    if (step.at(1) === "i") {
+      await expect(page.getByTestId("main")).toHaveText(step.slice(3));
+      return;
+    }
+  }
+
+  throw new Error(`Unknown step: ${step}`);
+}
+
+for (const steps of params) {
+  test(steps.join(" "), async () => {
     const page = await getPage();
     const errors: Error[] = [];
     page.on("pageerror", (error) => errors.push(error));
-
-    for (const step of param.steps) {
-      if (step === "gs") {
-        await page.goto("static.html");
-        await expect(page.getByTestId("main")).toHaveText("Static");
-      } else if (step === "gd") {
-        await page.goto("dynamic.html");
-        await expect(page.getByTestId("main")).toHaveText("Dynamic");
-      } else if (step === "gi") {
-        await page.goto("increment.html");
-        await page.waitForSelector("[data-testid=main]");
-      } else if (step === "cs") {
-        await page.getByText("Static").click();
-        await expect(page.getByTestId("main")).toHaveText("Static");
-      } else if (step === "cd") {
-        await page.getByText("Dynamic").click();
-        await expect(page.getByTestId("main")).toHaveText("Dynamic");
-      } else if (step === "ci") {
-        await page.getByText("Increment").click();
-        await page.waitForSelector("[data-testid=main]");
-      } else if (step === "gb") {
-        await page.goBack();
-        await page.waitForSelector("[data-testid=main]");
-      } else if (step === "re") {
-        await page.reload();
-        await page.waitForSelector("[data-testid=main]");
-      } else {
-        throw new Error(`Absurd: ${step}`);
-      }
-
+    for (const step of steps) {
+      await handleStep(page, step);
       // console.log(step);
       // const value = await page.evaluate(() =>
       //   sessionStorage.getItem("freeze-cache"),
@@ -159,7 +189,6 @@ for (const param of params) {
       // console.log(JSON.parse(value));
     }
     expect(errors).toHaveLength(0);
-    await expect(page.getByTestId("main")).toHaveText(param.expected);
     await page.close();
   });
 }
