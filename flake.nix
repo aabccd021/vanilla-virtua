@@ -15,9 +15,8 @@
         projectRootFile = "flake.nix";
         programs.prettier.enable = true;
         programs.nixpkgs-fmt.enable = true;
-
         programs.biome.enable = true;
-
+        programs.shfmt.enable = true;
         settings.formatter.prettier.priority = 1;
         settings.formatter.biome.priority = 2;
       };
