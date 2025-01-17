@@ -133,6 +133,8 @@ const params: string[][] = [
   ["gs", "ci_1", "gd", "ci_2", "bd", "ci_3", "ri_1"],
   ["gs", "ci_1", "gd", "ci_2", "cd", "ci_3", "ri_1"],
   ["gs", "ci_1", "gd", "ci_2", "gd", "ci_3", "ri_1"],
+
+  ["gs", "ci_1", "cs", "ci_2", "gi_1", "ri_1"],
 ];
 
 async function handleStep(page: Page, step: string): Promise<void> {
