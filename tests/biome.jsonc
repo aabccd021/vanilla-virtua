@@ -12,6 +12,9 @@
   "organizeImports": {
     "enabled": true
   },
+  "javascript": {
+    "globals": ["Bun"]
+  },
   "linter": {
     "enabled": true,
     "rules": {
@@ -29,7 +32,8 @@
         "useLiteralKeys": "off"
       },
       "suspicious": {
-        "all": true
+        "all": true,
+        "noConsole": "off"
       },
       "correctness": {
         "all": true,
