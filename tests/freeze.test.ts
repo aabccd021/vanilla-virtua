@@ -96,7 +96,7 @@ const params: Param[] = [
   // { expected: "3", steps: ["gs", "ci", "gs", "ci", "gd", "ci"] },
 
   { expected: "3", steps: ["gs", "ci", "gb", "ci", "cs", "ci"] },
-  // { expected: "3", steps: ["gs", "ci", "gb", "ci", "gs", "ci"] },
+  { expected: "3", steps: ["gs", "ci", "gb", "ci", "gs", "ci"] },
   // { expected: "3", steps: ["gs", "ci", "gb", "ci", "gb", "ci"] },
   { expected: "3", steps: ["gs", "ci", "gb", "ci", "cd", "ci"] },
   // { expected: "3", steps: ["gs", "ci", "gb", "ci", "gd", "ci"] },
@@ -114,10 +114,14 @@ const params: Param[] = [
   // { expected: "3", steps: ["gs", "ci", "gd", "ci", "gd", "ci"] },
 ];
 
+// gi-gb-gi
+
 for (const param of params) {
   const testName = param.steps.join("-");
   test(testName, async () => {
     const page = await getPage();
+    const errors: Error[] = [];
+    page.on("pageerror", (error) => errors.push(error));
     for (const step of param.steps) {
       let path = "";
       if (step === "gs") {
@@ -149,13 +153,16 @@ for (const param of params) {
         await page.waitForURL(`http://domain/${path}`);
       }
       await page.waitForLoadState("load");
+      // await page.waitForSelector("[data-testid=main]");
       // console.log(step);
       // const value = await page.evaluate(() =>
       //   sessionStorage.getItem("freeze-cache"),
       // );
       // console.log(JSON.parse(value));
     }
-    expect(await page.getByTestId("main").textContent()).toBe(param.expected);
+    // expect(await page.getByTestId("main").textContent()).toBe(param.expected);
+    // expect(errors).toHaveLength(0);
+    await expect(page.getByTestId("main")).toHaveText(param.expected);
     await page.close();
   });
 }
