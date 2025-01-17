@@ -94,7 +94,7 @@ for (const param of params) {
       } else {
         throw new Error(`Absurd: ${step}`);
       }
-      await page.waitForLoadState("networkidle");
+      await page.waitForLoadState("load");
       // console.log(step);
       // const value = await page.evaluate(() =>
       //   sessionStorage.getItem("freeze-cache"),
