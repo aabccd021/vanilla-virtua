@@ -96,6 +96,17 @@ test("isi", async () => {
   await page.close();
 });
 
+test("isibi", async () => {
+  const page = await getPage();
+  await page.goto("increment.html");
+  await page.getByText("Static").click();
+  await page.getByText("Increment").click();
+  await page.goBack();
+  await page.getByText("Increment").click();
+  expect(await page.getByTestId("main").textContent()).toBe("3");
+  await page.close();
+});
+
 afterAll(async () => {
   await browser.close();
 });
