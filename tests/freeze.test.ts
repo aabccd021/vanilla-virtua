@@ -31,8 +31,8 @@ const test = baseTest.extend({
   //   baseURL: "http://domain",
   // },
   baseURL: "http://domain",
-  context: async ({ context }, run) => {
-    await context.route("**/*", async (route, request) => {
+  context: async ({ context }, run): Promise<void> => {
+    await context.route("**/*", (route, request) => {
       const urlPath = new URL(request.url()).pathname;
       return route.fulfill({ path: `${fixtureDir}${urlPath}` });
     });
