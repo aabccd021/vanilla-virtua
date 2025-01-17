@@ -26,24 +26,18 @@ const params: string[][] = [
     "cd",
     "cs",
     "cd",
-    // "bs",
-    // "bd",
-    // "bs",
-    // "bd",
-    // "bs",
-    // "bd",
-    // "bs",
+    "bs",
+    "bd",
+    "bs",
+    "bd",
+    "bs",
+    "bd",
+    "bs",
   ],
 
   ["gi_1", "cs", "bi_2"],
 
-  // [
-  //   "gi_1",
-  //   "cs",
-  //   "ci_2",
-  // "bs",
-  // "bi_1"
-  // ],
+  ["gi_1", "cs", "ci_2", "bs", "bi_1"],
 
   [
     "gi_1",
@@ -188,12 +182,14 @@ async function handleStep(page: Page, step: string): Promise<void> {
     await page.goBack();
 
     // I don't know why but this is the behavior in my browser
-    await page.evaluate(() =>
-      window.dispatchEvent(new CustomEvent("beforeunload")),
-    );
-    await page.evaluate(() =>
-      window.dispatchEvent(new CustomEvent("pageshow")),
-    );
+    try {
+      await page.evaluate(() =>
+        window.dispatchEvent(new CustomEvent("beforeunload")),
+      );
+      await page.evaluate(() =>
+        window.dispatchEvent(new CustomEvent("pageshow")),
+      );
+    } catch {}
 
     if (step.at(1) === "s") {
       await expect(page.getByTestId("main")).toHaveText("Static");
