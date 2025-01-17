@@ -63,7 +63,7 @@ async function getPage(): Promise<Page> {
 //   console.log(v);
 // }
 
-type Step = "gs" | "gd" | "gi" | "cs" | "cd" | "ci" | "back";
+type Step = "gs" | "gd" | "gi" | "cs" | "cd" | "ci" | "gb";
 
 type Param = {
   steps: Step[];
@@ -71,11 +71,12 @@ type Param = {
 };
 
 const params: Param[] = [
-  { steps: ["gs"], expected: "Static" },
-  { steps: ["gd"], expected: "Dynamic" },
-  { steps: ["gi"], expected: "1" },
-  { steps: ["gs", "gi"], expected: "1" },
-  { steps: ["gs", "gi", "back", "gi"], expected: "1" },
+  { expected: "Static", steps: ["gs"] },
+  { expected: "Dynamic", steps: ["gd"] },
+  { expected: "1", steps: ["gi"] },
+  { expected: "1", steps: ["gs", "ci"] },
+  // { expected: "3", steps: ["gs", "ci", "gb", "ci"] },
+  { expected: "3", steps: ["gs", "ci", "cs", "ci"] },
 ];
 
 for (const param of params) {
@@ -102,7 +103,7 @@ for (const param of params) {
       if (step === "ci") {
         await page.getByText("Increment").click();
       }
-      if (step === "back") {
+      if (step === "gb") {
         await page.goBack();
       }
     }
