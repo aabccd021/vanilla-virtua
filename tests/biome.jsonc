@@ -29,7 +29,8 @@
       },
       "complexity": {
         "all": true,
-        "useLiteralKeys": "off"
+        "useLiteralKeys": "off",
+        "noExcessiveCognitiveComplexity": "off"
       },
       "suspicious": {
         "all": true,

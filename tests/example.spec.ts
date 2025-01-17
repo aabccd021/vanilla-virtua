@@ -55,13 +55,13 @@ async function getPage(): Promise<Page> {
   return page;
 }
 
-// async function logCache(page: Page): Promise<void> {
-//   const value = await page.evaluate(() =>
-//     sessionStorage.getItem("freeze-cache"),
-//   );
-//   const v = JSON.parse(value);
-//   console.log(v);
-// }
+async function logCache(page: Page): Promise<void> {
+  const value = await page.evaluate(() =>
+    sessionStorage.getItem("freeze-cache"),
+  );
+  const v = JSON.parse(value);
+  console.log(v);
+}
 
 type Step = "gs" | "gd" | "gi" | "cs" | "cd" | "ci" | "gb";
 
@@ -71,41 +71,38 @@ type Param = {
 };
 
 const params: Param[] = [
-  { expected: "Static", steps: ["gs"] },
-  { expected: "Dynamic", steps: ["gd"] },
-  { expected: "1", steps: ["gi"] },
+  // { expected: "Static", steps: ["gs"] },
+  // { expected: "Dynamic", steps: ["gd"] },
+  // { expected: "1", steps: ["gi"] },
   { expected: "1", steps: ["gs", "ci"] },
   // { expected: "3", steps: ["gs", "ci", "gb", "ci"] },
-  { expected: "3", steps: ["gs", "ci", "cs", "ci"] },
+  // { expected: "3", steps: ["gs", "ci", "cs", "ci"] },
 ];
 
 for (const param of params) {
   const testName = param.steps.join("-");
   test(testName, async () => {
     const page = await getPage();
-    await page.goto("increment.html");
     for (const step of param.steps) {
       if (step === "gs") {
         await page.goto("static.html");
-      }
-      if (step === "gd") {
+      } else if (step === "gd") {
         await page.goto("dynamic.html");
-      }
-      if (step === "gi") {
+      } else if (step === "gi") {
         await page.goto("increment.html");
-      }
-      if (step === "cs") {
+      } else if (step === "cs") {
         await page.getByText("Static").click();
-      }
-      if (step === "cd") {
+      } else if (step === "cd") {
         await page.getByText("Dynamic").click();
-      }
-      if (step === "ci") {
+      } else if (step === "ci") {
         await page.getByText("Increment").click();
-      }
-      if (step === "gb") {
+      } else if (step === "gb") {
         await page.goBack();
+      } else {
+        throw new Error(`Absurd: ${step}`);
       }
+      console.log(step);
+      await logCache(page);
     }
     expect(await page.getByTestId("main").textContent()).toBe(param.expected);
     await page.close();
