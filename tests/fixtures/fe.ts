@@ -1,4 +1,11 @@
-import type { InfiniteEvent } from "./event.ts";
+export type InfiniteEvent =
+  | {
+      readonly type: "newChildren";
+      readonly children: Element[];
+    }
+  | {
+      readonly type: "unsubscribe";
+    };
 
 function onInfiniteEvent(event: CustomEventInit<InfiniteEvent>): void {
   if (event.detail?.type === "unsubscribe") {
@@ -7,7 +14,9 @@ function onInfiniteEvent(event: CustomEventInit<InfiniteEvent>): void {
   }
   if (event.detail?.type === "newChildren") {
     for (const newChild of event.detail.children) {
-      newChild.addEventListener("click", () => {});
+      newChild.addEventListener("click", () => {
+        alert("Clicked!");
+      });
     }
     return;
   }
