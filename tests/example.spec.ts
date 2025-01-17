@@ -50,8 +50,8 @@ async function getPage(): Promise<Page> {
     }
     return route.fulfill({ path: `${fixtureDir}${urlPath}` });
   });
-  page.on("console", (msg) => console.log(`PAGE LOG: ${msg.text()}`));
-  page.on("pageerror", (error) => console.error(`PAGE ERROR: ${error}`));
+  // page.on("console", (msg) => console.log(`PAGE LOG: ${msg.text()}`));
+  // page.on("pageerror", (error) => console.error(`PAGE ERROR: ${error}`));
   return page;
 }
 
@@ -87,7 +87,7 @@ test("increment", async () => {
   await page.close();
 });
 
-test.only("isi", async () => {
+test("isi", async () => {
   const page = await getPage();
   await page.goto("increment.html");
   await page.getByText("Static").click();
