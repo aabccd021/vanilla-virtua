@@ -3,7 +3,9 @@ import { type Page, chromium, expect, test } from "@playwright/test";
 const __dirname = new URL(".", import.meta.url).pathname;
 const fixtureDir = `${__dirname}/fixtures`;
 
-const browser = await chromium.launch();
+const browser = await chromium.launch({
+  channel: "chromium",
+});
 
 async function getPage(): Promise<Page> {
   const page = await browser.newPage({
