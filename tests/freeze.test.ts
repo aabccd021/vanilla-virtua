@@ -5,6 +5,7 @@ const fixtureDir = `${__dirname}/fixtures`;
 
 const browser = await chromium.launch({
   channel: "chromium",
+  // ignoreDefaultArgs: ['--disable-back-forward-cache'],
 });
 
 async function getPage(): Promise<Page> {
@@ -19,6 +20,12 @@ async function getPage(): Promise<Page> {
 }
 
 const params: string[][] = [
+  [
+    "gi_1",
+    "cs",
+    // "bi_2"
+  ],
+
   [
     "gs",
     "ci_1",
@@ -47,12 +54,6 @@ const params: string[][] = [
     "bd",
     "bd",
     "bd",
-  ],
-
-  [
-    "gi_1",
-    "cs",
-    // "bi_2"
   ],
 
   [
