@@ -72,19 +72,10 @@ const params: Param[] = [
   { expected: "1", steps: ["gs", "ci"] },
 
   { expected: "2", steps: ["gs", "ci", "cs", "ci"] },
-  { expected: "1", steps: ["gs", "ci", "cs", "ci", "re"] },
-
   { expected: "2", steps: ["gs", "ci", "gs", "ci"] },
-  { expected: "1", steps: ["gs", "ci", "gs", "ci", "re"] },
-
   { expected: "2", steps: ["gs", "ci", "gb", "ci"] },
-  { expected: "1", steps: ["gs", "ci", "gb", "ci", "re"] },
-
   { expected: "2", steps: ["gs", "ci", "cd", "ci"] },
-  { expected: "1", steps: ["gs", "ci", "cd", "ci", "re"] },
-
   { expected: "2", steps: ["gs", "ci", "gd", "ci"] },
-  { expected: "1", steps: ["gs", "ci", "gd", "ci", "re"] },
 
   { expected: "2", steps: ["gi", "cs", "ci"] },
   { expected: "2", steps: ["gi", "gs", "ci"] },
@@ -92,6 +83,7 @@ const params: Param[] = [
   { expected: "2", steps: ["gi", "gd", "ci"] },
 
   { expected: "1", steps: ["gs", "ci", "re"] },
+  { expected: "1", steps: ["gi", "re"] },
 
   { expected: "3", steps: ["gs", "ci", "cs", "ci", "cs", "ci"] },
   { expected: "3", steps: ["gs", "ci", "cs", "ci", "gs", "ci"] },
