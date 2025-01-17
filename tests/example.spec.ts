@@ -4,9 +4,7 @@ import * as fs from "node:fs/promises";
 const srcDir = `${import.meta.dir}/../src`;
 
 const srcFiles = await fs.readdir(srcDir);
-
 const entrypoints = srcFiles.map((file) => `${srcDir}/${file}`);
-
 const buildResult = await Bun.build({
   entrypoints,
   root: srcDir,
@@ -19,15 +17,12 @@ if (!buildResult.success) {
 }
 
 const jsMap = new Map<string, string>();
-
 for (const output of buildResult.outputs) {
   const path = output.path.slice(1);
   jsMap.set(path, await output.text());
 }
 
-const browser = await chromium.launch({
-  headless: false,
-});
+const browser = await chromium.launch();
 const page = await browser.newPage({ baseURL: "http://domain" });
 await page.route("**/*", (route, request) => {
   const urlPath = new URL(request.url()).pathname;
@@ -44,12 +39,9 @@ await page.route("**/*", (route, request) => {
 });
 
 await page.goto("ssr.html");
-
-page.on("console", (msg) => console.log("PAGE LOG:", msg.text()));
-
 expect(await page.title()).toBe("SSR");
-const dyn = page.getByTestId("dyn");
-console.log(await dyn.textContent());
-// expect().toHaveText("foo");
+expect(await page.getByTestId("dyn").textContent()).toBe(
+  "this is dynamically added",
+);
 
 await browser.close();
