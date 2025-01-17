@@ -43,13 +43,11 @@ async function getPage(): Promise<Page> {
   return page;
 }
 
-test("SSR", async () => {
+test("static", async () => {
   const page = await getPage();
-  await page.goto("ssr.html");
-  expect(page).toHaveTitle("SSR");
-  expect(await page.getByTestId("dyn").textContent()).toBe(
-    "this is dynamically added",
-  );
+  await page.goto("static.html");
+  expect(page).toHaveTitle("Static");
+  expect(await page.getByTestId("static").textContent()).toBe("Static");
   await page.close();
 });
 
