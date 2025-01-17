@@ -58,6 +58,8 @@ async function getPage(): Promise<Page> {
 }
 
 const params: string[][] = [
+  ["gi_1", "cs", "bi_1"],
+
   [
     "gs",
     "cd",
