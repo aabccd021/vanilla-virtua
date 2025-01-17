@@ -3,6 +3,7 @@ import * as fs from "node:fs/promises";
 import { type Page, chromium, expect } from "@playwright/test";
 
 const srcDir = `${import.meta.dir}/../src`;
+const fixtureDir = `${import.meta.dir}/fixtures`;
 
 const srcFiles = await fs.readdir(srcDir);
 const entrypoints = srcFiles.map((file) => `${srcDir}/${file}`);
@@ -36,9 +37,7 @@ async function getPage(): Promise<Page> {
         contentType: "application/javascript",
       });
     }
-    return route.fulfill({
-      path: `${import.meta.dir}/fixtures${urlPath}`,
-    });
+    return route.fulfill({ path: `${fixtureDir}${urlPath}` });
   });
   return page;
 }
