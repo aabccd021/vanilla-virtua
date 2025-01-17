@@ -1,38 +1,23 @@
-type RelPath = { pathname: string; search: string };
-
-type Page = {
-  cacheKey: string;
-  content: string;
-  title: string;
-  scroll: number;
-  scripts: string[];
-};
-
-// dereference location and make it immutable
-function currentUrl(): RelPath {
+// src/freeze.ts
+function currentUrl() {
   return {
     pathname: location.pathname,
     search: location.search,
   };
 }
-
-function getPageCache(): Page[] {
-  return JSON.parse(sessionStorage.getItem("freeze-cache") ?? "[]") as Page[];
+function getPageCache() {
+  return JSON.parse(sessionStorage.getItem("freeze-cache") ?? "[]");
 }
-
-function getCachedPage(url: RelPath): Page | null {
+function getCachedPage(url) {
   const pageCache = getPageCache();
-
   for (const item of pageCache) {
     if (item.cacheKey === url.pathname + url.search) {
       return item;
     }
   }
-
   return null;
 }
-
-function bindAnchors(currentUrl: RelPath): void {
+function bindAnchors(currentUrl2) {
   const anchors = document.body.querySelectorAll("a");
   for (const anchor of anchors) {
     anchor.addEventListener(
@@ -44,7 +29,7 @@ function bindAnchors(currentUrl: RelPath): void {
         if (cached) {
           event.preventDefault();
           if (shouldFreeze()) {
-            freezePage(currentUrl);
+            freezePage(currentUrl2);
           }
           restorePage(cached, url);
           return;
@@ -54,61 +39,44 @@ function bindAnchors(currentUrl: RelPath): void {
     );
   }
 }
-
-type Unsub = (() => void) | undefined;
-
-const unsubscribeScripts = new Set<Unsub>();
-
-async function restorePage(cached: Page, url: RelPath): Promise<void> {
+const unsubscribeScripts = new Set();
+async function restorePage(cached, url) {
   document.body.outerHTML = cached.content;
-
   const titleElt = document.querySelector("title");
   if (titleElt) {
     titleElt.innerHTML = cached.title;
   } else {
     window.document.title = cached.title;
   }
-
   window.setTimeout(() => window.scrollTo(0, cached.scroll), 0);
-
   subscribedScripts.clear();
   for (const script of cached.scripts) {
     subscribedScripts.add(script);
   }
-
   if (url.pathname === "/") {
     throw new Error("no");
   }
-
   await initPage(url);
-
   history.pushState({ freeze: true }, "", url.pathname + url.search);
 }
-
-function shouldFreeze(): boolean {
+function shouldFreeze() {
   return document.body.hasAttribute("data-freeze");
 }
-
-async function initPage(url: RelPath): Promise<void> {
+async function initPage(url) {
   bindAnchors(url);
   if (shouldFreeze()) {
     await freezeOnNavigateOrPopstate(url);
   }
 }
-
-const subscribedScripts = new Set<string>();
-
-function freezePage(url: RelPath): void {
+const subscribedScripts = new Set();
+function freezePage(url) {
   for (const unsub of unsubscribeScripts) {
     unsub?.();
   }
   unsubscribeScripts.clear();
-
   const content = document.body.outerHTML;
   const title = document.title;
-
   const scripts = Array.from(subscribedScripts);
-
   const pageCache = getPageCache();
   const cacheKey = url.pathname + url.search;
   for (let i = 0; i < pageCache.length; i++) {
@@ -117,66 +85,48 @@ function freezePage(url: RelPath): void {
       break;
     }
   }
-
-  const newPage: Page = {
+  const newPage = {
     content,
     title,
     scripts,
     cacheKey,
     scroll: window.scrollY,
   };
-
   pageCache.push(newPage);
-
-  // keep trying to save the cache until it succeeds or is empty
   while (pageCache.length > 0) {
     try {
       sessionStorage.setItem("freeze-cache", JSON.stringify(pageCache));
       break;
     } catch {
-      pageCache.shift(); // shrink the cache and retry
+      pageCache.shift();
     }
   }
 }
-
 let abortController = new AbortController();
-
-async function freezeOnNavigateOrPopstate(url: RelPath): Promise<void> {
+async function freezeOnNavigateOrPopstate(url) {
   abortController.abort();
   abortController = new AbortController();
-
   window.addEventListener(
     "freeze:subscribe",
-    (e: CustomEventInit<string>) => {
+    (e) => {
       if (e.detail) {
         subscribedScripts.add(e.detail);
       }
     },
     { signal: abortController.signal },
   );
-
-  // trigger `window.addEventListener("freeze:page-loaded")`
-  await Promise.all(
-    subscribedScripts.values().map((src): Promise<unknown> => import(src)),
-  );
-
+  await Promise.all(subscribedScripts.values().map((src) => import(src)));
   window.dispatchEvent(new CustomEvent("freeze:page-loaded"));
-
   const inits = await Promise.all(
-    subscribedScripts
-      .values()
-      .map((src): Promise<{ init: () => Unsub }> => import(src)),
+    subscribedScripts.values().map((src) => import(src)),
   );
-
   for (const init of inits) {
     const unsub = init.init();
     unsubscribeScripts.add(unsub);
   }
-
   window.addEventListener("beforeunload", () => freezePage(url), {
     signal: abortController.signal,
   });
-
   window.addEventListener(
     "popstate",
     (event) => {
@@ -194,7 +144,6 @@ async function freezeOnNavigateOrPopstate(url: RelPath): Promise<void> {
     { signal: abortController.signal },
   );
 }
-
 window.addEventListener("pageshow", () => {
   initPage(currentUrl());
 });

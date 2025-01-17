@@ -1,6 +1,4 @@
-type Unsubscribe = (() => void) | undefined;
-
-export function init(): Unsubscribe {
+export function init() {
   const incrementElt = document.querySelector("[data-testid=main]");
   if (incrementElt === null) {
     throw new Error("Absurd");

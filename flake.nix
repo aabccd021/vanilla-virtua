@@ -37,6 +37,7 @@
         '';
         buildInputs = [
           pkgs.bun
+          pkgs.nodejs
           pkgs.biome
           pkgs.typescript
         ];

@@ -24,7 +24,6 @@ dist-ssr
 *.sw?
 
 .direnv
-*.js
 /test-results/
 /playwright-report/
 /blob-report/
