@@ -1,20 +1,20 @@
-import { test, expect } from "@playwright/test";
+import path from "node:path";
+import { chromium, expect } from "@playwright/test";
 
-test("has title", async ({ page }) => {
-  await page.goto("https://playwright.dev/");
+const browser = await chromium.launch();
 
-  // Expect a title "to contain" a substring.
-  await expect(page).toHaveTitle(/Playwright/);
-});
+const page = await browser.newPage({ baseURL: "http://domain" });
+await page.route("**/*", (route, request) =>
+  route.fulfill({
+    path: path.join(
+      import.meta.dir,
+      "fixtures",
+      new URL(request.url()).pathname,
+    ),
+  }),
+);
 
-test("get started link", async ({ page }) => {
-  await page.goto("https://playwright.dev/");
+await page.goto("ssr.html");
+expect(await page.title()).toBe("SSR");
 
-  // Click the get started link.
-  await page.getByRole("link", { name: "Get started" }).click();
-
-  // Expects page to have a heading with the name of Installation.
-  await expect(
-    page.getByRole("heading", { name: "Installation" }),
-  ).toBeVisible();
-});
+await browser.close();

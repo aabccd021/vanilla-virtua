@@ -24,7 +24,6 @@
       devShell.x86_64-linux = pkgs.mkShellNoCC {
         shellHook = ''
           export PLAYWRIGHT_BROWSERS_PATH=${pkgs.playwright-driver.browsers-chromium}
-          # export PLAYWRIGHT_SKIP_VALIDATE_HOST_REQUIREMENTS=true
         '';
         buildInputs = [
           pkgs.bun

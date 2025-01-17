@@ -12,12 +12,6 @@
   "organizeImports": {
     "enabled": true
   },
-  "files": {
-    "ignore": ["tests/**/*.ts"]
-  },
-  "javascript": {
-    "globals": ["Bun"]
-  },
   "linter": {
     "enabled": true,
     "rules": {
@@ -32,7 +26,6 @@
       },
       "complexity": {
         "all": true,
-        "noExcessiveCognitiveComplexity": "off",
         "useLiteralKeys": "off"
       },
       "suspicious": {
@@ -40,13 +33,16 @@
       },
       "correctness": {
         "all": true,
+        "noNodejsModules": "off"
       },
       "nursery": {
         "all": true,
         "noSecrets": "off"
       },
       "style": {
-        "all": true
+        "all": true,
+        "noNamespaceImport": "off",
+        "useNamingConvention": "off"
       }
     }
   }
