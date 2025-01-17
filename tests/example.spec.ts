@@ -1,6 +1,6 @@
-import { chromium, expect, Page } from "@playwright/test";
+import { afterAll, test } from "bun:test";
 import * as fs from "node:fs/promises";
-import { test, afterAll } from "bun:test";
+import { type Page, chromium, expect } from "@playwright/test";
 
 const srcDir = `${import.meta.dir}/../src`;
 
