@@ -87,7 +87,7 @@ const params: Param[] = [
   // { expected: "3", steps: ["gs", "ci", "cs", "ci", "gs", "ci"] },
   { expected: "3", steps: ["gs", "ci", "cs", "ci", "gb", "ci"] },
   { expected: "3", steps: ["gs", "ci", "cs", "ci", "cd", "ci"] },
-  // { expected: "3", steps: ["gs", "ci", "cs", "ci", "gd", "ci"] },
+  { expected: "3", steps: ["gs", "ci", "cs", "ci", "gd", "ci"] },
 
   { expected: "3", steps: ["gs", "ci", "gs", "ci", "cs", "ci"] },
   // { expected: "3", steps: ["gs", "ci", "gs", "ci", "gs", "ci"] },
@@ -119,24 +119,34 @@ for (const param of params) {
   test(testName, async () => {
     const page = await getPage();
     for (const step of param.steps) {
+      let path = "";
       if (step === "gs") {
         await page.goto("static.html");
+        path = "static.html";
       } else if (step === "gd") {
         await page.goto("dynamic.html");
+        path = "dynamic.html";
       } else if (step === "gi") {
         await page.goto("increment.html");
+        path = "increment.html";
       } else if (step === "cs") {
         await page.getByText("Static").click();
+        path = "static.html";
       } else if (step === "cd") {
         await page.getByText("Dynamic").click();
+        path = "dynamic.html";
       } else if (step === "ci") {
         await page.getByText("Increment").click();
+        path = "increment.html";
       } else if (step === "gb") {
         await page.goBack();
       } else if (step === "re") {
         await page.reload();
       } else {
         throw new Error(`Absurd: ${step}`);
+      }
+      if (path !== "") {
+        await page.waitForURL(`http://domain/${path}`);
       }
       await page.waitForLoadState("load");
       // console.log(step);
