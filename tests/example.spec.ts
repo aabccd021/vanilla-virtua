@@ -14,8 +14,6 @@ const fixtureJsFiles = fs
 
 const buildResult = await Bun.build({
   entrypoints: [...srcFiles, ...fixtureJsFiles],
-  root: srcDir,
-  minify: true,
 });
 
 if (!buildResult.success) {
@@ -25,9 +23,15 @@ if (!buildResult.success) {
 
 const jsMap = new Map<string, string>();
 for (const output of buildResult.outputs) {
-  const path = output.path.slice(1);
-  jsMap.set(path, await output.text());
+  // get last path
+  const path = output.path.split("/").pop();
+  if (path === undefined) {
+    throw new Error(`Absurd: ${output.path}`);
+  }
+  jsMap.set(`/${path}`, await output.text());
 }
+
+console.log(jsMap.keys());
 
 const browser = await chromium.launch();
 
