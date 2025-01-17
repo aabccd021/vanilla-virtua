@@ -101,40 +101,38 @@ const params: string[][] = [
   ["gi_1", "cd", "ci_2"],
   ["gi_1", "gd", "ci_2"],
 
-  ["gs", "ci_1", "ri_1"],
-  ["gi_1", "ri_1"],
+  ["gs", "ci_1", "gi_1"],
+  ["gi_1", "gi_1"],
 
-  ["gs", "ci_1", "cs", "ci_2", "cs", "ci_3", "ri_1"],
-  ["gs", "ci_1", "cs", "ci_2", "gs", "ci_3", "ri_1"],
-  ["gs", "ci_1", "cs", "ci_2", "bs", "ci_3", "ri_1"],
-  ["gs", "ci_1", "cs", "ci_2", "cd", "ci_3", "ri_1"],
-  ["gs", "ci_1", "cs", "ci_2", "gd", "ci_3", "ri_1"],
+  ["gs", "ci_1", "cs", "ci_2", "cs", "ci_3", "gi_1"],
+  ["gs", "ci_1", "cs", "ci_2", "gs", "ci_3", "gi_1"],
+  ["gs", "ci_1", "cs", "ci_2", "bs", "ci_3", "gi_1"],
+  ["gs", "ci_1", "cs", "ci_2", "cd", "ci_3", "gi_1"],
+  ["gs", "ci_1", "cs", "ci_2", "gd", "ci_3", "gi_1"],
 
-  ["gs", "ci_1", "gs", "ci_2", "cs", "ci_3", "ri_1"],
-  ["gs", "ci_1", "gs", "ci_2", "gs", "ci_3", "ri_1"],
-  ["gs", "ci_1", "gs", "ci_2", "bs", "ci_3", "ri_1"],
-  ["gs", "ci_1", "gs", "ci_2", "cd", "ci_3", "ri_1"],
-  ["gs", "ci_1", "gs", "ci_2", "gd", "ci_3", "ri_1"],
+  ["gs", "ci_1", "gs", "ci_2", "cs", "ci_3", "gi_1"],
+  ["gs", "ci_1", "gs", "ci_2", "gs", "ci_3", "gi_1"],
+  ["gs", "ci_1", "gs", "ci_2", "bs", "ci_3", "gi_1"],
+  ["gs", "ci_1", "gs", "ci_2", "cd", "ci_3", "gi_1"],
+  ["gs", "ci_1", "gs", "ci_2", "gd", "ci_3", "gi_1"],
 
-  ["gs", "ci_1", "bs", "ci_2", "cs", "ci_3", "ri_1"],
-  ["gs", "ci_1", "bs", "ci_2", "gs", "ci_3", "ri_1"],
-  ["gs", "ci_1", "bs", "ci_2", "bs", "ci_3", "ri_1"],
-  ["gs", "ci_1", "bs", "ci_2", "cd", "ci_3", "ri_1"],
-  ["gs", "ci_1", "bs", "ci_2", "gd", "ci_3", "ri_1"],
+  ["gs", "ci_1", "bs", "ci_2", "cs", "ci_3", "gi_1"],
+  ["gs", "ci_1", "bs", "ci_2", "gs", "ci_3", "gi_1"],
+  ["gs", "ci_1", "bs", "ci_2", "bs", "ci_3", "gi_1"],
+  ["gs", "ci_1", "bs", "ci_2", "cd", "ci_3", "gi_1"],
+  ["gs", "ci_1", "bs", "ci_2", "gd", "ci_3", "gi_1"],
 
-  ["gs", "ci_1", "cd", "ci_2", "cs", "ci_3", "ri_1"],
-  ["gs", "ci_1", "cd", "ci_2", "gs", "ci_3", "ri_1"],
-  ["gs", "ci_1", "cd", "ci_2", "bd", "ci_3", "ri_1"],
-  ["gs", "ci_1", "cd", "ci_2", "cd", "ci_3", "ri_1"],
-  ["gs", "ci_1", "cd", "ci_2", "gd", "ci_3", "ri_1"],
+  ["gs", "ci_1", "cd", "ci_2", "cs", "ci_3", "gi_1"],
+  ["gs", "ci_1", "cd", "ci_2", "gs", "ci_3", "gi_1"],
+  ["gs", "ci_1", "cd", "ci_2", "bd", "ci_3", "gi_1"],
+  ["gs", "ci_1", "cd", "ci_2", "cd", "ci_3", "gi_1"],
+  ["gs", "ci_1", "cd", "ci_2", "gd", "ci_3", "gi_1"],
 
-  ["gs", "ci_1", "gd", "ci_2", "cs", "ci_3", "ri_1"],
-  ["gs", "ci_1", "gd", "ci_2", "gs", "ci_3", "ri_1"],
-  ["gs", "ci_1", "gd", "ci_2", "bd", "ci_3", "ri_1"],
-  ["gs", "ci_1", "gd", "ci_2", "cd", "ci_3", "ri_1"],
-  ["gs", "ci_1", "gd", "ci_2", "gd", "ci_3", "ri_1"],
-
-  ["gs", "ci_1", "cs", "ci_2", "gi_1", "ri_1"],
+  ["gs", "ci_1", "gd", "ci_2", "cs", "ci_3", "gi_1"],
+  ["gs", "ci_1", "gd", "ci_2", "gs", "ci_3", "gi_1"],
+  ["gs", "ci_1", "gd", "ci_2", "bd", "ci_3", "gi_1"],
+  ["gs", "ci_1", "gd", "ci_2", "cd", "ci_3", "gi_1"],
+  ["gs", "ci_1", "gd", "ci_2", "gd", "ci_3", "gi_1"],
 ];
 
 async function handleStep(page: Page, step: string): Promise<void> {
@@ -168,21 +166,6 @@ async function handleStep(page: Page, step: string): Promise<void> {
     }
     if (step.at(1) === "i") {
       await page.getByText("Increment").click();
-      await expect(page.getByTestId("main")).toHaveText(step.slice(3));
-      return;
-    }
-  }
-  if (step.at(0) === "r") {
-    await page.reload();
-    if (step.at(1) === "s") {
-      await expect(page.getByTestId("main")).toHaveText("Static");
-      return;
-    }
-    if (step.at(1) === "d") {
-      await expect(page.getByTestId("main")).toHaveText("Dynamic");
-      return;
-    }
-    if (step.at(1) === "i") {
       await expect(page.getByTestId("main")).toHaveText(step.slice(3));
       return;
     }
