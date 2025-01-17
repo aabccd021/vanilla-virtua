@@ -63,49 +63,52 @@ async function getPage(): Promise<Page> {
 //   console.log(v);
 // }
 
-test("static", async () => {
-  const page = await getPage();
-  await page.goto("static.html");
-  expect(page).toHaveTitle("Static");
-  expect(await page.getByTestId("main").textContent()).toBe("Static");
-  await page.close();
-});
+type Step = "gs" | "gd" | "gi" | "cs" | "cd" | "ci" | "back";
 
-test("dynamic", async () => {
-  const page = await getPage();
-  await page.goto("dynamic.html");
-  expect(await page.title()).toBe("Dynamic");
-  expect(await page.getByTestId("main").textContent()).toBe("Dynamic");
-  await page.close();
-});
+type Param = {
+  steps: Step[];
+  expected: string;
+};
 
-test("increment", async () => {
-  const page = await getPage();
-  await page.goto("increment.html");
-  expect(await page.title()).toBe("Increment");
-  expect(await page.getByTestId("main").textContent()).toBe("1");
-  await page.close();
-});
+const params: Param[] = [
+  { steps: ["gs"], expected: "Static" },
+  { steps: ["gd"], expected: "Dynamic" },
+  { steps: ["gi"], expected: "1" },
+  { steps: ["gs", "gi"], expected: "1" },
+  { steps: ["gs", "gi", "back", "gi"], expected: "1" },
+];
 
-test("isi", async () => {
-  const page = await getPage();
-  await page.goto("increment.html");
-  await page.getByText("Static").click();
-  await page.getByText("Increment").click();
-  expect(await page.getByTestId("main").textContent()).toBe("2");
-  await page.close();
-});
-
-test("isibi", async () => {
-  const page = await getPage();
-  await page.goto("increment.html");
-  await page.getByText("Static").click();
-  await page.getByText("Increment").click();
-  await page.goBack();
-  await page.getByText("Increment").click();
-  expect(await page.getByTestId("main").textContent()).toBe("3");
-  await page.close();
-});
+for (const param of params) {
+  const testName = param.steps.join("-");
+  test(testName, async () => {
+    const page = await getPage();
+    await page.goto("increment.html");
+    for (const step of param.steps) {
+      if (step === "gs") {
+        await page.goto("static.html");
+      }
+      if (step === "gd") {
+        await page.goto("dynamic.html");
+      }
+      if (step === "gi") {
+        await page.goto("increment.html");
+      }
+      if (step === "cs") {
+        await page.getByText("Static").click();
+      }
+      if (step === "cd") {
+        await page.getByText("Dynamic").click();
+      }
+      if (step === "ci") {
+        await page.getByText("Increment").click();
+      }
+      if (step === "back") {
+        await page.goBack();
+      }
+    }
+    expect(await page.getByTestId("main").textContent()).toBe(param.expected);
+  });
+}
 
 afterAll(async () => {
   await browser.close();
