@@ -55,8 +55,6 @@ async function getPage(): Promise<Page> {
   return page;
 }
 
-async function logCache(page: Page): Promise<void> {}
-
 type Step = "gs" | "gd" | "gi" | "cs" | "cd" | "ci" | "gb";
 
 type Param = {
@@ -69,8 +67,8 @@ const params: Param[] = [
   { expected: "Dynamic", steps: ["gd"] },
   { expected: "1", steps: ["gi"] },
   { expected: "1", steps: ["gs", "ci"] },
-  // { expected: "3", steps: ["gs", "ci", "gb", "ci"] },
-  // { expected: "3", steps: ["gs", "ci", "cs", "ci"] },
+  // { expected: "2", steps: ["gs", "ci", "gb", "ci"] },
+  { expected: "2", steps: ["gs", "ci", "cs", "ci"] },
 ];
 
 for (const param of params) {
