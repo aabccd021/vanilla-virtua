@@ -82,9 +82,8 @@ const params: Param[] = [
   { expected: "2", steps: ["gi", "cd", "ci"] },
   { expected: "2", steps: ["gi", "gd", "ci"] },
 
-  // should be 2?
-  // { expected: "1", steps: ["gi", "gb", "gi"] },
   { expected: "1", steps: ["gs", "ci", "re"] },
+  { expected: "1", steps: ["gs", "ci", "cs", "ci", "re"] },
 
   { expected: "3", steps: ["gs", "ci", "cs", "ci", "cs", "ci"] },
   { expected: "3", steps: ["gs", "ci", "cs", "ci", "gs", "ci"] },
