@@ -23,7 +23,6 @@ if (!buildResult.success) {
 
 const jsMap = new Map<string, string>();
 for (const output of buildResult.outputs) {
-  // get last path
   const path = output.path.split("/").pop();
   if (path === undefined) {
     throw new Error(`Absurd: ${output.path}`);
