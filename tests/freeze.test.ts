@@ -158,7 +158,6 @@ for (const param of params) {
       // console.log({ step, path });
       // await page.waitForURL(`http://domain/${path}`);
       console.log(`${step}: waiting load`);
-      await page.waitForLoadState("load");
       console.log(`${step}: waiting main`);
       await page.waitForSelector("[data-testid=main]");
       console.log(`${step}: done`);
