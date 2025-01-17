@@ -39,7 +39,7 @@ await page.route("**/*", (route, request) => {
 });
 
 await page.goto("ssr.html");
-expect(page).toHaveTitle("SR");
+expect(page).toHaveTitle("SSR");
 expect(await page.getByTestId("dyn").textContent()).toBe(
   "this is dynamically added",
 );
