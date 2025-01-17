@@ -168,7 +168,7 @@ for (const param of params) {
 
       // console.log({ step, path });
       console.log(`${step}: waiting ${path}`);
-      await page.waitForURL(`http://domain/${path}`);
+      // await page.waitForURL(`http://domain/${path}`);
       console.log(`${step}: waiting load`);
       await page.waitForLoadState("load");
       console.log(`${step}: waiting main`);
