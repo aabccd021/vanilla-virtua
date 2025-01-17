@@ -1,14 +1,19 @@
 import { afterAll, test } from "bun:test";
-import * as fs from "node:fs/promises";
+import * as fs from "node:fs";
 import { type Page, chromium, expect } from "@playwright/test";
 
 const srcDir = `${import.meta.dir}/../src`;
 const fixtureDir = `${import.meta.dir}/fixtures`;
 
-const srcFiles = await fs.readdir(srcDir);
-const entrypoints = srcFiles.map((file) => `${srcDir}/${file}`);
+const srcFiles = fs.readdirSync(srcDir).map((file) => `${srcDir}/${file}`);
+
+const fixtureJsFiles = fs
+  .readdirSync(fixtureDir)
+  .filter((file) => file.endsWith(".js"))
+  .map((file) => `${fixtureDir}/${file}`);
+
 const buildResult = await Bun.build({
-  entrypoints,
+  entrypoints: [...srcFiles, ...fixtureJsFiles],
   root: srcDir,
   minify: true,
 });
