@@ -55,13 +55,7 @@ async function getPage(): Promise<Page> {
   return page;
 }
 
-async function logCache(page: Page): Promise<void> {
-  const value = await page.evaluate(() =>
-    sessionStorage.getItem("freeze-cache"),
-  );
-  const v = JSON.parse(value);
-  console.log(v);
-}
+async function logCache(page: Page): Promise<void> {}
 
 type Step = "gs" | "gd" | "gi" | "cs" | "cd" | "ci" | "gb";
 
@@ -71,9 +65,9 @@ type Param = {
 };
 
 const params: Param[] = [
-  // { expected: "Static", steps: ["gs"] },
-  // { expected: "Dynamic", steps: ["gd"] },
-  // { expected: "1", steps: ["gi"] },
+  { expected: "Static", steps: ["gs"] },
+  { expected: "Dynamic", steps: ["gd"] },
+  { expected: "1", steps: ["gi"] },
   { expected: "1", steps: ["gs", "ci"] },
   // { expected: "3", steps: ["gs", "ci", "gb", "ci"] },
   // { expected: "3", steps: ["gs", "ci", "cs", "ci"] },
@@ -101,8 +95,12 @@ for (const param of params) {
       } else {
         throw new Error(`Absurd: ${step}`);
       }
-      console.log(step);
-      await logCache(page);
+      // console.log(step);
+      // const value = await page.evaluate(() =>
+      //   sessionStorage.getItem("freeze-cache"),
+      // );
+      // const v = JSON.parse(value);
+      // console.log(v);
     }
     expect(await page.getByTestId("main").textContent()).toBe(param.expected);
     await page.close();
