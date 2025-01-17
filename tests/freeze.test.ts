@@ -229,10 +229,13 @@ async function handleStep(page: Page, step: string): Promise<void> {
 for (const steps of params) {
   test(steps.join(" "), async () => {
     const page = await getPage();
+
     const errors: Error[] = [];
     page.on("pageerror", (error) => errors.push(error));
+
     const consoleMessages: string[] = [];
     page.on("console", (msg) => consoleMessages.push(msg.text()));
+
     for (const step of steps) {
       await handleStep(page, step);
       // console.log(step);
