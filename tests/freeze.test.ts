@@ -19,31 +19,18 @@ async function getPage(): Promise<Page> {
 const params: string[][] = [
   [
     "gs",
-    "cd",
+    "ci_1",
     "cs",
-    "cd",
+    "ci_2",
     "cs",
-    "cd",
+    "ci_3",
     "cs",
-    "cd",
+    "ci_4",
     "bs",
-    "bd",
-    "bs",
-    "bd",
-    "bs",
-    "bd",
-    "bs",
+    // "bi_2",
+    // "bs",
+    // "bi_2",
   ],
-
-  ["gi_1", "cs", "bi_2"],
-
-  ["gi_1", "cs", "ci_2", "bs", "bi_2"],
-
-  ["gi_1", "cs", "ci_2", "cs", "bi_2"],
-
-  ["gi_1", "cs", "ci_2", "bs", "ci_3", "bs", "bi_2"],
-
-  ["gi_1", "cs", "ci_2", "cs", "ci_3", "cs", "bi_2"],
 
   [
     "gs",
@@ -61,18 +48,63 @@ const params: string[][] = [
   ],
 
   [
-    "gs",
-    "ci_1",
+    "gi_1",
+    "cs",
+    // "bi_2"
+  ],
+
+  [
+    "gi_1",
+    "cs",
+    "ci_2",
+    "bs",
+    // "bi_2"
+  ],
+
+  [
+    "gi_1",
+    "cs",
+    "ci_2",
+    "cs",
+    // "bi_2"
+  ],
+
+  [
+    "gi_1",
+    "cs",
+    "ci_2",
+    "bs",
+    "ci_3",
+    "bs",
+    // "bi_2"
+  ],
+
+  [
+    "gi_1",
     "cs",
     "ci_2",
     "cs",
     "ci_3",
     "cs",
-    "ci_4",
+    // "bi_2"
+  ],
+
+  [
+    "gs",
+    "cd",
+    "cs",
+    "cd",
+    "cs",
+    "cd",
+    "cs",
+    "cd",
     "bs",
-    "bi_2",
+    "bd",
     "bs",
-    "bi_2",
+    "bd",
+    "bs",
+    "bd",
+    "bs",
   ],
 
   ["gi_1"],
@@ -110,11 +142,11 @@ const params: string[][] = [
   ["gs", "ci_1", "gs", "ci_2", "cd", "ci_3", "gi_1"],
   ["gs", "ci_1", "gs", "ci_2", "gd", "ci_3", "gi_1"],
 
-  // ["gs", "ci_1", "bs", "ci_2", "cs", "ci_3", "gi_1"],
-  // ["gs", "ci_1", "bs", "ci_2", "gs", "ci_3", "gi_1"],
-  // ["gs", "ci_1", "bs", "ci_2", "bs", "ci_3", "gi_1"],
-  // ["gs", "ci_1", "bs", "ci_2", "cd", "ci_3", "gi_1"],
-  // ["gs", "ci_1", "bs", "ci_2", "gd", "ci_3", "gi_1"],
+  ["gs", "ci_1", "bs", "ci_2", "cs", "ci_3", "gi_1"],
+  ["gs", "ci_1", "bs", "ci_2", "gs", "ci_3", "gi_1"],
+  ["gs", "ci_1", "bs", "ci_2", "bs", "ci_3", "gi_1"],
+  ["gs", "ci_1", "bs", "ci_2", "cd", "ci_3", "gi_1"],
+  ["gs", "ci_1", "bs", "ci_2", "gd", "ci_3", "gi_1"],
 
   ["gs", "ci_1", "cd", "ci_2", "cs", "ci_3", "gi_1"],
   ["gs", "ci_1", "cd", "ci_2", "gs", "ci_3", "gi_1"],
@@ -168,14 +200,14 @@ async function handleStep(page: Page, step: string): Promise<void> {
     await page.goBack();
 
     // I don't know why but this is the behavior in my browser
-    try {
-      await page.evaluate(() =>
-        window.dispatchEvent(new CustomEvent("beforeunload")),
-      );
-      await page.evaluate(() =>
-        window.dispatchEvent(new CustomEvent("pageshow")),
-      );
-    } catch {}
+    // try {
+    //   await page.evaluate(() =>
+    //     window.dispatchEvent(new CustomEvent("beforeunload")),
+    //   );
+    //   await page.evaluate(() =>
+    //     window.dispatchEvent(new CustomEvent("pageshow")),
+    //   );
+    // } catch {}
 
     if (step.at(1) === "s") {
       await expect(page.getByTestId("main")).toHaveText("Static");

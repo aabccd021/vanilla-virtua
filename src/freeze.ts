@@ -173,9 +173,25 @@ async function freezeOnNavigateOrPopstate(url: RelPath): Promise<void> {
     unsubscribeScripts.add(unsub);
   }
 
-  window.addEventListener("beforeunload", () => freezePage(url), {
-    signal: abortController.signal,
-  });
+  window.addEventListener(
+    "beforeunload",
+    () => {
+      freezePage(url);
+    },
+    {
+      signal: abortController.signal,
+    },
+  );
+
+  window.addEventListener(
+    "test:beforeunload",
+    () => {
+      freezePage(url);
+    },
+    {
+      signal: abortController.signal,
+    },
+  );
 
   window.addEventListener(
     "popstate",
