@@ -1,9 +1,4 @@
-import {
-  type Page,
-  chromium,
-  expect,
-  test as baseTest,
-} from "@playwright/test";
+import { type Page, test as baseTest, expect } from "@playwright/test";
 
 const __dirname = new URL(".", import.meta.url).pathname;
 const fixtureDir = `${__dirname}/fixtures`;
