@@ -96,6 +96,12 @@ const params: string[][] = [
   ["gs", "ci_1", "cd", "ci_2"],
   ["gs", "ci_1", "gd", "ci_2"],
 
+  ["gd", "ci_1", "cs", "ci_2"],
+  ["gd", "ci_1", "gs", "ci_2"],
+  ["gd", "ci_1", "bd"],
+  ["gd", "ci_1", "cd", "ci_2"],
+  ["gd", "ci_1", "gd", "ci_2"],
+
   ["gi_1", "cs", "ci_2"],
   ["gi_1", "gs", "ci_2"],
   ["gi_1", "cd", "ci_2"],
