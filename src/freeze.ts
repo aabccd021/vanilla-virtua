@@ -175,7 +175,8 @@ async function freezeOnNavigateOrPopstate(url: RelPath): Promise<void> {
 
   window.addEventListener(
     "pagehide",
-    () => {
+    (_event) => {
+      // console.log("pagehide", event.persisted, url.pathname);
       freezePage(url);
     },
     {
@@ -201,6 +202,7 @@ async function freezeOnNavigateOrPopstate(url: RelPath): Promise<void> {
   );
 }
 
-window.addEventListener("pageshow", () => {
+window.addEventListener("pageshow", (_event) => {
+  // console.log("pageshow", event.persisted, currentUrl().pathname);
   initPage(currentUrl());
 });

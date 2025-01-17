@@ -1,30 +1,52 @@
-import { type Page, chromium, expect, test } from "@playwright/test";
+import {
+  type Page,
+  chromium,
+  expect,
+  test as baseTest,
+} from "@playwright/test";
 
 const __dirname = new URL(".", import.meta.url).pathname;
 const fixtureDir = `${__dirname}/fixtures`;
 
-const browser = await chromium.launch({
-  channel: "chromium",
-  // ignoreDefaultArgs: ['--disable-back-forward-cache'],
+// const browser = await chromium.launch({
+//   channel: "chromium",
+// ignoreDefaultArgs: ['--disable-back-forward-cache'],
+// });
+//
+// async function getPage(): Promise<Page> {
+//   const page = await browser.newPage({
+//     baseURL: "http://domain",
+//   });
+//   await page.route("**/*", (route, request) => {
+//     const urlPath = new URL(request.url()).pathname;
+//     return route.fulfill({ path: `${fixtureDir}${urlPath}` });
+//   });
+//   return page;
+// }
+
+// test.beforeEach(async ({ context }) => {
+//   await context.route("**/*", async (route, request) => {
+//    const urlPath = new URL(request.url()).pathname;
+//    return route.fulfill({ path: `${fixtureDir}${urlPath}` });
+//  });
+// })
+
+const test = baseTest.extend({
+  // use: {
+  //   baseURL: "http://domain",
+  // },
+  baseURL: "http://domain",
+  context: async ({ context }, run) => {
+    await context.route("**/*", async (route, request) => {
+      const urlPath = new URL(request.url()).pathname;
+      return route.fulfill({ path: `${fixtureDir}${urlPath}` });
+    });
+    run(context);
+  },
 });
 
-async function getPage(): Promise<Page> {
-  const page = await browser.newPage({
-    baseURL: "http://domain",
-  });
-  await page.route("**/*", (route, request) => {
-    const urlPath = new URL(request.url()).pathname;
-    return route.fulfill({ path: `${fixtureDir}${urlPath}` });
-  });
-  return page;
-}
-
 const params: string[][] = [
-  [
-    "gi_1",
-    "cs",
-    // "bi_2"
-  ],
+  // ["gi_1", "cs", "bi_2"],
 
   [
     "gs",
@@ -230,8 +252,8 @@ async function handleStep(page: Page, step: string): Promise<void> {
 }
 
 for (const steps of params) {
-  test(steps.join(" "), async () => {
-    const page = await getPage();
+  test(steps.join(" "), async ({ page }) => {
+    // const page = await getPage();
 
     const errors: Error[] = [];
     page.on("pageerror", (error) => errors.push(error));
@@ -239,7 +261,10 @@ for (const steps of params) {
     const consoleMessages: string[] = [];
     page.on("console", (msg) => consoleMessages.push(msg.text()));
 
+    // page.on("console", (msg) => console.log(msg.text()));
+
     for (const step of steps) {
+      // console.log(step);
       await handleStep(page, step);
       // console.log(step);
       // const value = await page.evaluate(() =>
@@ -252,7 +277,3 @@ for (const steps of params) {
     await page.close();
   });
 }
-
-test.afterAll(async () => {
-  await browser.close();
-});
