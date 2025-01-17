@@ -124,8 +124,6 @@ for (const param of params) {
     const errors: Error[] = [];
     page.on("pageerror", (error) => errors.push(error));
 
-    const history: string[] = [];
-
     console.log(`\n\n${testName}`);
 
     for (const step of param.steps) {
@@ -133,41 +131,31 @@ for (const param of params) {
 
       if (step === "gs") {
         await page.goto("static.html");
-        history.push("static.html");
       } else if (step === "gd") {
         await page.goto("dynamic.html");
-        history.push("dynamic.html");
       } else if (step === "gi") {
         await page.goto("increment.html");
-        history.push("increment.html");
       } else if (step === "cs") {
         console.log("click static");
         await page.getByText("Static").click();
         console.log("clicked static");
-        history.push("static.html");
       } else if (step === "cd") {
         console.log("click dynamic");
         await page.getByText("Dynamic").click();
         console.log("clicked dynamic");
-        history.push("dynamic.html");
       } else if (step === "ci") {
         console.log("click increment");
         await page.getByText("Increment").click();
         console.log("clicked increment");
-        history.push("increment.html");
       } else if (step === "gb") {
         await page.goBack();
-        history.pop();
       } else if (step === "re") {
         await page.reload();
       } else {
         throw new Error(`Absurd: ${step}`);
       }
 
-      const path = history.at(-1);
-
       // console.log({ step, path });
-      console.log(`${step}: waiting ${path}`);
       // await page.waitForURL(`http://domain/${path}`);
       console.log(`${step}: waiting load`);
       await page.waitForLoadState("load");
