@@ -31,8 +31,6 @@ for (const output of buildResult.outputs) {
   jsMap.set(`/${path}`, await output.text());
 }
 
-console.log(jsMap.keys());
-
 const browser = await chromium.launch();
 
 async function getPage(): Promise<Page> {
