@@ -98,8 +98,7 @@ for (const param of params) {
       const value = await page.evaluate(() =>
         sessionStorage.getItem("freeze-cache"),
       );
-      const v = JSON.parse(value);
-      console.log(v);
+      console.log(JSON.parse(value));
     }
     expect(await page.getByTestId("main").textContent()).toBe(param.expected);
     await page.close();
