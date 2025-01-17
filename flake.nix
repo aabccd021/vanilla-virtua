@@ -6,7 +6,7 @@
     treefmt-nix.url = "github:numtide/treefmt-nix";
   };
 
-  outputs = { nixpkgs, treefmt-nix, ... }:
+  outputs = { self, nixpkgs, treefmt-nix }:
 
     let
       pkgs = nixpkgs.legacyPackages.x86_64-linux;
@@ -21,17 +21,17 @@
         settings.formatter.biome.priority = 2;
       };
 
-      test = pkgs.runCommandNoCCLocal "test" { } ''
-        cp ${./tests} .
-        ${pkgs.bun}/bin/bun example.spec.ts
-      '';
-
     in
 
     {
 
+      checks.x86_64-linux = {
+        formatting = treefmtEval.config.build.check self;
+      };
+
       formatter.x86_64-linux = treefmtEval.config.build.wrapper;
-      devShell.x86_64-linux = pkgs.mkShellNoCC {
+
+      devShells.x86_64-linux.default = pkgs.mkShellNoCC {
         shellHook = ''
           export PLAYWRIGHT_BROWSERS_PATH=${pkgs.playwright-driver.browsers-chromium}
         '';
