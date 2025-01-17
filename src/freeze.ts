@@ -42,6 +42,7 @@ function bindAnchors(currentUrl: RelPath): void {
         const url = { pathname: urlRaw.pathname, search: urlRaw.search };
         const cached = getCachedPage(url);
         if (cached) {
+          console.log(`client navigation to ${url.pathname}`);
           event.preventDefault();
           if (shouldFreeze()) {
             freezePage(currentUrl);
@@ -64,6 +65,7 @@ async function restorePage(cached: Page, url: RelPath): Promise<void> {
 
   const titleElt = document.querySelector("title");
   if (titleElt) {
+    console.log("restorePage", url.pathname);
     titleElt.innerHTML = cached.title;
   } else {
     window.document.title = cached.title;
@@ -89,6 +91,7 @@ function shouldFreeze(): boolean {
 }
 
 function initPage(url: RelPath): void {
+  console.log(`initPage ${url.pathname}`);
   bindAnchors(url);
   if (shouldFreeze()) {
     freezeOnNavigateOrPopstate(url);

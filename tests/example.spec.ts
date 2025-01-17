@@ -22,24 +22,6 @@ if (!mjsBuildResult.success) {
   throw new Error("Build failed");
 }
 
-// const fixtureTs = fs
-//   .readdirSync(fixtureDir)
-//   .filter((file) => file.endsWith(".ts"))
-//   .map((file) => `${fixtureDir}/${file}`);
-//
-// const jsBuildResult = await Bun.build({
-//   entrypoints: fixtureTs,
-//   format: "iife",
-//   target: "browser"
-// });
-//
-// if (!jsBuildResult.success) {
-//   console.error(jsBuildResult.logs);
-//   throw new Error("Build failed");
-// }
-
-// const buildResults = [...mjsBuildResult.outputs, ...jsBuildResult.outputs];
-
 const buildResults = mjsBuildResult.outputs;
 
 const jsMap = new Map<string, string>();
@@ -68,7 +50,17 @@ async function getPage(): Promise<Page> {
     }
     return route.fulfill({ path: `${fixtureDir}${urlPath}` });
   });
+  page.on("console", (msg) => console.log(`PAGE LOG: ${msg.text()}`));
+  page.on("pageerror", (error) => console.error(`PAGE ERROR: ${error}`));
   return page;
+}
+
+async function logCache(page: Page): Promise<void> {
+  const value = await page.evaluate(() =>
+    sessionStorage.getItem("freeze-cache"),
+  );
+  const v = JSON.parse(value);
+  console.log(v);
 }
 
 test("static", async () => {
@@ -95,13 +87,15 @@ test("increment", async () => {
   await page.close();
 });
 
-// test("increment 2", async () => {
-//   const page = await getPage();
-//   await page.goto("increment.html");
-//   await page.reload();
-//   expect(await page.getByTestId("increment").textContent()).toBe("2");
-//   await page.close();
-// });
+test.only("isi", async () => {
+  const page = await getPage();
+  await page.goto("increment.html");
+  await page.getByText("Static").click();
+  await logCache(page);
+  await page.getByText("Increment").click();
+  expect(await page.getByTestId("increment").textContent()).toBe("2");
+  await page.close();
+});
 
 afterAll(async () => {
   await browser.close();
