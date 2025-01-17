@@ -1,5 +1,6 @@
-import { chromium, expect } from "@playwright/test";
+import { chromium, expect, Page } from "@playwright/test";
 import * as fs from "node:fs/promises";
+import { test, afterAll } from "bun:test";
 
 const srcDir = `${import.meta.dir}/../src`;
 
@@ -23,25 +24,35 @@ for (const output of buildResult.outputs) {
 }
 
 const browser = await chromium.launch();
-const page = await browser.newPage({ baseURL: "http://domain" });
-await page.route("**/*", (route, request) => {
-  const urlPath = new URL(request.url()).pathname;
-  const js = jsMap.get(urlPath);
-  if (js) {
+
+async function getPage(): Promise<Page> {
+  const page = await browser.newPage({ baseURL: "http://domain" });
+  await page.route("**/*", (route, request) => {
+    const urlPath = new URL(request.url()).pathname;
+    const js = jsMap.get(urlPath);
+    if (js) {
+      return route.fulfill({
+        body: js,
+        contentType: "application/javascript",
+      });
+    }
     return route.fulfill({
-      body: js,
-      contentType: "application/javascript",
+      path: `${import.meta.dir}/fixtures${urlPath}`,
     });
-  }
-  return route.fulfill({
-    path: `${import.meta.dir}/fixtures${urlPath}`,
   });
+  return page;
+}
+
+test("SSR", async () => {
+  const page = await getPage();
+  await page.goto("ssr.html");
+  expect(page).toHaveTitle("SSR");
+  expect(await page.getByTestId("dyn").textContent()).toBe(
+    "this is dynamically added",
+  );
+  await page.close();
 });
 
-await page.goto("ssr.html");
-expect(page).toHaveTitle("SSR");
-expect(await page.getByTestId("dyn").textContent()).toBe(
-  "this is dynamically added",
-);
-
-await browser.close();
+afterAll(async () => {
+  await browser.close();
+});
