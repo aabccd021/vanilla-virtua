@@ -108,6 +108,7 @@ for (const param of params) {
       }
     }
     expect(await page.getByTestId("main").textContent()).toBe(param.expected);
+    await page.close();
   });
 }
 
