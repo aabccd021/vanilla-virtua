@@ -67,7 +67,7 @@ test("static", async () => {
   const page = await getPage();
   await page.goto("static.html");
   expect(page).toHaveTitle("Static");
-  expect(await page.getByTestId("static").textContent()).toBe("Static");
+  expect(await page.getByTestId("main").textContent()).toBe("Static");
   await page.close();
 });
 
@@ -75,7 +75,7 @@ test("dynamic", async () => {
   const page = await getPage();
   await page.goto("dynamic.html");
   expect(await page.title()).toBe("Dynamic");
-  expect(await page.getByTestId("dynamic").textContent()).toBe("Dynamic");
+  expect(await page.getByTestId("main").textContent()).toBe("Dynamic");
   await page.close();
 });
 
@@ -83,7 +83,7 @@ test("increment", async () => {
   const page = await getPage();
   await page.goto("increment.html");
   expect(await page.title()).toBe("Increment");
-  expect(await page.getByTestId("increment").textContent()).toBe("1");
+  expect(await page.getByTestId("main").textContent()).toBe("1");
   await page.close();
 });
 
@@ -92,7 +92,7 @@ test("isi", async () => {
   await page.goto("increment.html");
   await page.getByText("Static").click();
   await page.getByText("Increment").click();
-  expect(await page.getByTestId("increment").textContent()).toBe("2");
+  expect(await page.getByTestId("main").textContent()).toBe("2");
   await page.close();
 });
 
