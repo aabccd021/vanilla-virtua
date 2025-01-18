@@ -1,26 +1,8 @@
 import { runTest } from "./util.ts";
 
 const params: string[][] = [
-  // enable when playwright 1.49.0 is released on nixpkgs
-  // ["gi_1", "cs", "bi_2"],
-
   ["gs", "ci_1"],
-
-  [
-    "gs",
-    "ci_1",
-    "cs",
-    "ci_2",
-    "cs",
-    "ci_3",
-    "cs",
-    "ci_4",
-    "bs",
-    // "bi_2",
-    // "bs",
-    // "bi_2",
-  ],
-
+  ["gs", "ci_1", "cs", "ci_2", "cs", "ci_3", "cs", "ci_4", "bs"],
   [
     "gs",
     "cd",
@@ -35,42 +17,10 @@ const params: string[][] = [
     "bd",
     "bd",
   ],
-
-  [
-    "gi_1",
-    "cs",
-    "ci_2",
-    "bs",
-    // "bi_2"
-  ],
-
-  [
-    "gi_1",
-    "cs",
-    "ci_2",
-    "cs",
-    // "bi_2"
-  ],
-
-  [
-    "gi_1",
-    "cs",
-    "ci_2",
-    "bs",
-    "ci_3",
-    "bs",
-    // "bi_2"
-  ],
-
-  [
-    "gi_1",
-    "cs",
-    "ci_2",
-    "cs",
-    "ci_3",
-    "cs",
-    // "bi_2"
-  ],
+  ["gi_1", "cs", "ci_2", "bs"],
+  ["gi_1", "cs", "ci_2", "cs"],
+  ["gi_1", "cs", "ci_2", "bs", "ci_3", "bs"],
+  ["gi_1", "cs", "ci_2", "cs", "ci_3", "cs"],
 
   ["gi_1"],
 
