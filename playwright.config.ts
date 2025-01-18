@@ -4,7 +4,7 @@ export default defineConfig({
   testDir: "./tests",
   fullyParallel: true,
   // workers: 1,
-  // maxFailures: 1,
+  maxFailures: 3,
   use: {
     baseURL: "http://domain",
   },
