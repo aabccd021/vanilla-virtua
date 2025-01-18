@@ -5,7 +5,8 @@
   "type": "module",
   "module": "src/index.ts",
   "devDependencies": {
-    "@playwright/test": "1.47.2"
+    "@playwright/test": "1.47.2",
+    "@types/node": "^22.10.7"
   },
   "dependencies": {
     "virtua": "git@github.com:aabccd021/virtua.git#74d552d9ff43f93b4529787a359fc6f73e3bd62b"

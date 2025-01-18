@@ -1,17 +1,13 @@
-import { type Page, test as baseTest, expect } from "@playwright/test";
+import { type Page, test, expect } from "@playwright/test";
 
 const __dirname = new URL(".", import.meta.url).pathname;
 const fixtureDir = `${__dirname}/fixtures`;
 
-const test = baseTest.extend({
-  baseURL: "http://domain",
-  context: async ({ context }, run): Promise<void> => {
-    await context.route("**/*", (route, request) => {
-      const urlPath = new URL(request.url()).pathname;
-      return route.fulfill({ path: `${fixtureDir}${urlPath}` });
-    });
-    run(context);
-  },
+test.beforeEach(async ({ context }) => {
+  await context.route("**/*", (route, request) => {
+    const urlPath = new URL(request.url()).pathname;
+    return route.fulfill({ path: `${fixtureDir}${urlPath}` });
+  });
 });
 
 const params: string[][] = [
