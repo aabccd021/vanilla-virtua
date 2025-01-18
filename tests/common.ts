@@ -1,5 +1,3 @@
-import { runTest } from "./util.ts";
-
 export const params: string[][] = [
   ["gd"],
   ["gs"],

@@ -1,4 +1,4 @@
-import { type Page, test, expect } from "@playwright/test";
+import { type Page, expect, test } from "@playwright/test";
 
 function expectClicked(consoleMessages: string[], message: string) {
   expect(consoleMessages.filter((msg) => msg === message)).toHaveLength(1);
