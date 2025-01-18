@@ -5,7 +5,7 @@ export default defineConfig({
   fullyParallel: true,
   // workers: 1,
   // maxFailures: 1,
-  retries: 2,
+  retries: 1,
   use: {
     baseURL: "http://domain",
   },
