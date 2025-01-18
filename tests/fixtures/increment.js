@@ -8,7 +8,7 @@ export function init() {
   incrementElt.textContent = String(count);
 
   incrementElt.addEventListener("click", () => {
-    console.log("clicked");
+    console.log("increment");
   });
 
   return undefined;

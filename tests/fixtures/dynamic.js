@@ -5,7 +5,7 @@ export function init() {
   document.body.appendChild(h1);
 
   h1.addEventListener("click", () => {
-    console.log("clicked");
+    console.log("dynamic");
   });
 
   return () => {
