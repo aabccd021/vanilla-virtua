@@ -1,5 +1,3 @@
-import { runTest } from "./util.ts";
-
 export const params: string[][] = [
   // ["gi_1", "cs", "bi_2"],
   //
@@ -69,5 +67,3 @@ export const params: string[][] = [
   //   // "bi_2"
   // ],
 ];
-
-runTest(params);

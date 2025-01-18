@@ -1,7 +1,7 @@
 import { type Page, expect, test } from "@playwright/test";
 
 function expectClicked(consoleMessages: string[], message: string) {
-  expect(consoleMessages.filter((msg) => msg === message)).toHaveLength(1);
+  expect(consoleMessages.filter((msg) => msg === message)).toEqual([message]);
 }
 
 async function handleStep(page: Page, step: string, consoleMessages: string[]) {
@@ -9,6 +9,8 @@ async function handleStep(page: Page, step: string, consoleMessages: string[]) {
     if (step.at(1) === "s") {
       await page.goto("static.html");
       await expect(page.getByTestId("main")).toHaveText("Static");
+      await page.getByTestId("main").click();
+      expectClicked(consoleMessages, "click static");
       return;
     }
     if (step.at(1) === "d") {
@@ -30,6 +32,8 @@ async function handleStep(page: Page, step: string, consoleMessages: string[]) {
     if (step.at(1) === "s") {
       await page.getByText("Static").click();
       await expect(page.getByTestId("main")).toHaveText("Static");
+      await page.getByTestId("main").click();
+      expectClicked(consoleMessages, "click static");
       return;
     }
     if (step.at(1) === "d") {
@@ -53,6 +57,8 @@ async function handleStep(page: Page, step: string, consoleMessages: string[]) {
 
     if (step.at(1) === "s") {
       await expect(page.getByTestId("main")).toHaveText("Static");
+      await page.getByTestId("main").click();
+      expectClicked(consoleMessages, "click static");
       return;
     }
     if (step.at(1) === "d") {
@@ -82,7 +88,7 @@ export function runTest(params: string[][], attribute?: "fail") {
       let consoleMessages: string[] = [];
       page.on("console", (msg) => consoleMessages.push(msg.text()));
 
-      // page.on('console', (msg) => console.log('PAGE LOG:', msg.text()));
+      // page.on("console", (msg) => console.log("PAGE LOG:", msg.text()));
 
       for (const step of steps) {
         // console.log(step);

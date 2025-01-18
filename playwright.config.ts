@@ -1,16 +1,18 @@
 import { defineConfig, devices } from "@playwright/test";
 
+// const timeout = 1_000_000;
+const timeout = 5_000;
+
 export default defineConfig({
   testDir: "./tests",
   fullyParallel: true,
   maxFailures: 1,
+  // workers: 1,
   use: {
     baseURL: "http://localhost:8080",
   },
-  timeout: 5_000,
-  // expect: {
-  //   timeout: 100_000,
-  // },
+  timeout,
+  expect: { timeout },
   projects: [
     {
       name: "chromium-bfcache",
