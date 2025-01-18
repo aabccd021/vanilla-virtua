@@ -1,7 +1,26 @@
 export const params: string[][] = [
+  ["gi_1", "cs", "ci_2", "bs", "bi_3"],
+  ["gi_1", "cs", "ci_2", "bs", "ci_3", "bs", "bi_4"],
+
   ["gi_1", "cs", "bi_2"],
   ["gi_1", "cs", "ci_2", "cs", "bi_3"],
   ["gi_1", "cs", "ci_2", "cs", "ci_3", "cs", "bi_4"],
+
+  [
+    "gs",
+    "ci_1",
+    "cs",
+    "ci_2",
+    "cs",
+    "ci_3",
+    "cs",
+    "ci_4",
+    "bs",
+    "bi_5",
+    "bi_5",
+    "bi_6",
+    "bi_6",
+  ],
 
   ["gd", "ci_1", "bd"],
   ["gs", "ci_1", "bs", "ci_2"],
@@ -34,6 +53,25 @@ export const params: string[][] = [
     "bd",
     "bd",
   ],
+
+  [
+    "gs",
+    "cd",
+    "cs",
+    "cd",
+    "cs",
+    "cd",
+    "cs",
+    "cd",
+    "bs",
+    "bd",
+    "bd",
+    "bd",
+    "bd",
+    "bd",
+    "bd",
+  ],
+
   ["gi_1", "cs", "ci_2", "bs"],
   ["gi_1", "cs", "ci_2", "cs"],
   ["gi_1", "cs", "ci_2", "bs", "ci_3", "bs"],

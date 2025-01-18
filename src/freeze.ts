@@ -204,8 +204,9 @@ async function freezeOnNavigateOrPopstate(url: RelPath): Promise<void> {
   );
 }
 
-function log(..._messages: unknown[]): void {
-  const _epochLastDigits = Date.now().toString().slice(-5);
+function log(...messages: unknown[]): void {
+  const epochLastDigits = Date.now().toString().slice(-5);
+  console.log(epochLastDigits, ...messages);
 }
 
 log("freeze.ts");
@@ -215,7 +216,10 @@ window.addEventListener("pageshow", (event) => {
   log("pageshow", event.persisted, url.pathname);
   const navType = performance.getEntriesByType("navigation")[0]?.type;
   log(navType);
-  if (navType === "back_forward") {
+  const shouldRestore =
+    (!event.persisted && navType === "back_forward") ||
+    (event.persisted && navType === "navigate");
+  if (shouldRestore) {
     const cached = getCachedPage(url);
     if (cached) {
       restorePage(cached, url);

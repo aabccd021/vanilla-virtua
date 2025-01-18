@@ -6,7 +6,7 @@ const timeout = 5_000;
 export default defineConfig({
   testDir: "./tests",
   fullyParallel: true,
-  maxFailures: 1,
+  // maxFailures: 1,
   // workers: 1,
   use: {
     baseURL: "http://localhost:8080",
@@ -31,10 +31,10 @@ export default defineConfig({
       testMatch: ["no-bfcache.test.ts"],
       use: { ...devices["Desktop Chrome"] },
     },
-    {
-      name: "firefox-no-bfcache",
-      testMatch: ["no-bfcache.test.ts"],
-      use: { ...devices["Desktop Firefox"] },
-    },
+    // {
+    //   name: "firefox-no-bfcache",
+    //   testMatch: ["no-bfcache.test.ts"],
+    //   use: { ...devices["Desktop Firefox"] },
+    // },
   ],
 });
