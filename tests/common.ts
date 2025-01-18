@@ -1,5 +1,6 @@
 export const params: string[][] = [
   ["gd", "ci_1", "bd"],
+  ["gs", "ci_1", "bs", "ci_2"],
   [
     "gs",
     "cd",
