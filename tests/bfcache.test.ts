@@ -1,73 +1,8 @@
 import { runTest } from "./util.ts";
+import * as common from "./common.ts";
+import * as bfcache from "./bfcache.ts";
+import * as noBfcache from "./no-bfcache.ts";
 
-const params: string[][] = [
-  // ["gi_1", "cs", "bi_2"],
-  //
-  // [
-  //   "gs",
-  //   "ci_1",
-  //   "cs",
-  //   "ci_2",
-  //   "cs",
-  //   "ci_3",
-  //   "cs",
-  //   "ci_4",
-  //   "bs",
-  //   // "bi_2",
-  //   // "bs",
-  //   // "bi_2",
-  // ],
-  //
-  // [
-  //   "gs",
-  //   "cd",
-  //   "ci_1",
-  //   "cd",
-  //   "ci_2",
-  //   "cd",
-  //   "ci_3",
-  //   "cd",
-  //   "ci_4",
-  //   "bd",
-  //   "bd",
-  //   "bd",
-  // ],
-  //
-  // [
-  //   "gi_1",
-  //   "cs",
-  //   "ci_2",
-  //   "bs",
-  //   // "bi_2"
-  // ],
-  //
-  // [
-  //   "gi_1",
-  //   "cs",
-  //   "ci_2",
-  //   "cs",
-  //   // "bi_2"
-  // ],
-  //
-  // [
-  //   "gi_1",
-  //   "cs",
-  //   "ci_2",
-  //   "bs",
-  //   "ci_3",
-  //   "bs",
-  //   // "bi_2"
-  // ],
-  //
-  // [
-  //   "gi_1",
-  //   "cs",
-  //   "ci_2",
-  //   "cs",
-  //   "ci_3",
-  //   "cs",
-  //   // "bi_2"
-  // ],
-];
-
-runTest(params);
+runTest(common.params);
+runTest(bfcache.params);
+runTest(noBfcache.params, "fail");

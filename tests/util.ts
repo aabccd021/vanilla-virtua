@@ -72,9 +72,10 @@ async function handleStep(page: Page, step: string, consoleMessages: string[]) {
   throw new Error(`Unknown step: ${step}`);
 }
 
-export function runTest(params: string[][]) {
+export function runTest(params: string[][], attribute?: "fail") {
   for (const steps of params) {
-    test(steps.join(" "), async ({ page }) => {
+    const tester = attribute === "fail" ? test.fail : test;
+    tester(steps.join(" "), async ({ page }) => {
       const errors: Error[] = [];
       page.on("pageerror", (error) => errors.push(error));
 
