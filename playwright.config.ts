@@ -3,28 +3,37 @@ import { defineConfig, devices } from "@playwright/test";
 export default defineConfig({
   testDir: "./tests",
   fullyParallel: true,
-  maxFailures: 1,
+  // workers: 1,
+  // maxFailures: 1,
   use: {
     baseURL: "http://domain",
   },
-  // timeout: 100_000,
+  timeout: 5_000,
   // expect: {
   //   timeout: 100_000,
   // },
   projects: [
     {
-      name: "chromium",
+      name: "chromium-bfcache",
+      testMatch: ["common.test.ts", "bfcache.test.ts"],
       use: {
         ...devices["Desktop Chrome"],
         channel: "chromium",
+        headless: false,
         launchOptions: {
           ignoreDefaultArgs: ["--disable-back-forward-cache"],
         },
       },
     },
-    // {
-    //   name: "firefox",
-    //   use: { ...devices["Desktop Firefox"] },
-    // },
+    {
+      name: "chromium-no-bfcache",
+      testMatch: ["common.test.ts", "no-bfcache.test.ts"],
+      use: { ...devices["Desktop Chrome"] },
+    },
+    {
+      name: "firefox-no-bfcache",
+      testMatch: ["common.test.ts", "no-bfcache.test.ts"],
+      use: { ...devices["Desktop Firefox"] },
+    },
   ],
 });
