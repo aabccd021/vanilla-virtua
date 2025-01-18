@@ -204,7 +204,23 @@ async function freezeOnNavigateOrPopstate(url: RelPath): Promise<void> {
   );
 }
 
-window.addEventListener("pageshow", (_event) => {
-  // console.log("pageshow", event.persisted, currentUrl().pathname);
-  initPage(currentUrl());
+function log(..._messages: unknown[]): void {
+  const _epochLastDigits = Date.now().toString().slice(-5);
+}
+
+log("freeze.ts");
+
+window.addEventListener("pageshow", (event) => {
+  const url = currentUrl();
+  log("pageshow", event.persisted, url.pathname);
+  const navType = performance.getEntriesByType("navigation")[0]?.type;
+  log(navType);
+  if (navType === "back_forward") {
+    const cached = getCachedPage(url);
+    if (cached) {
+      restorePage(cached, url);
+      return;
+    }
+  }
+  initPage(url);
 });

@@ -1,23 +1,10 @@
 export const params: string[][] = [
+  ["gi_1", "cs", "bi_2"],
+  ["gi_1", "cs", "ci_2", "cs", "bi_3"],
+  ["gi_1", "cs", "ci_2", "cs", "ci_3", "cs", "bi_4"],
+
   ["gd", "ci_1", "bd"],
   ["gs", "ci_1", "bs", "ci_2"],
-  [
-    "gs",
-    "cd",
-    "cs",
-    "cd",
-    "cs",
-    "cd",
-    "cs",
-    "cd",
-    "bs",
-    "bd",
-    "bs",
-    "bd",
-    "bs",
-    "bd",
-    "bs",
-  ],
 
   ["gs", "ci_1", "bs"],
   ["gs", "ci_1", "bs", "ci_2", "cs", "ci_3", "gi_1"],
