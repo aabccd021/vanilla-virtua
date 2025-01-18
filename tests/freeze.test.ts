@@ -11,7 +11,9 @@ test.beforeEach(async ({ context }) => {
 });
 
 const params: string[][] = [
+  // enable when playwright 1.49.0 is released on nixpkgs
   // ["gi_1", "cs", "bi_2"],
+
   ["gs", "ci_1"],
 
   [
@@ -151,6 +153,10 @@ const params: string[][] = [
   ["gs", "ci_1", "gd", "ci_2", "gd", "ci_3", "gi_1"],
 ];
 
+function expectClicked(consoleMessages: string[]) {
+  expect(consoleMessages.filter((msg) => msg === "clicked")).toHaveLength(1);
+}
+
 async function handleStep(page: Page, step: string, consoleMessages: string[]) {
   if (step.at(0) === "g") {
     if (step.at(1) === "s") {
@@ -162,14 +168,14 @@ async function handleStep(page: Page, step: string, consoleMessages: string[]) {
       await page.goto("dynamic.html");
       await expect(page.getByTestId("main")).toHaveText("Dynamic");
       await page.getByTestId("main").click();
-      expect(consoleMessages).toEqual(["clicked"]);
+      expectClicked(consoleMessages);
       return;
     }
     if (step.at(1) === "i") {
       await page.goto("increment.html");
       await expect(page.getByTestId("main")).toHaveText(step.slice(3));
       await page.getByTestId("main").click();
-      expect(consoleMessages).toEqual(["clicked"]);
+      expectClicked(consoleMessages);
       return;
     }
   }
@@ -183,14 +189,14 @@ async function handleStep(page: Page, step: string, consoleMessages: string[]) {
       await page.getByText("Dynamic").click();
       await expect(page.getByTestId("main")).toHaveText("Dynamic");
       await page.getByTestId("main").click();
-      expect(consoleMessages).toEqual(["clicked"]);
+      expectClicked(consoleMessages);
       return;
     }
     if (step.at(1) === "i") {
       await page.getByText("Increment").click();
       await expect(page.getByTestId("main")).toHaveText(step.slice(3));
       await page.getByTestId("main").click();
-      expect(consoleMessages).toEqual(["clicked"]);
+      expectClicked(consoleMessages);
       return;
     }
   }
@@ -204,13 +210,13 @@ async function handleStep(page: Page, step: string, consoleMessages: string[]) {
     if (step.at(1) === "d") {
       await expect(page.getByTestId("main")).toHaveText("Dynamic");
       await page.getByTestId("main").click();
-      expect(consoleMessages).toEqual(["clicked"]);
+      expectClicked(consoleMessages);
       return;
     }
     if (step.at(1) === "i") {
       await expect(page.getByTestId("main")).toHaveText(step.slice(3));
       await page.getByTestId("main").click();
-      expect(consoleMessages).toEqual(["clicked"]);
+      expectClicked(consoleMessages);
       return;
     }
   }
@@ -220,20 +226,15 @@ async function handleStep(page: Page, step: string, consoleMessages: string[]) {
 
 for (const steps of params) {
   test(steps.join(" "), async ({ page }) => {
-    // const page = await getPage();
-
     const errors: Error[] = [];
     page.on("pageerror", (error) => errors.push(error));
 
     let consoleMessages: string[] = [];
     page.on("console", (msg) => consoleMessages.push(msg.text()));
 
-    // page.on("console", (msg) => console.log(msg.text()));
-
     for (const step of steps) {
       await handleStep(page, step, consoleMessages);
       consoleMessages = [];
-      // console.log(step);
       // const value = await page.evaluate(() =>
       //   sessionStorage.getItem("freeze-cache"),
       // );

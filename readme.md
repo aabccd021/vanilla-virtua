@@ -1,5 +1,6 @@
 # Todo
 
+- click on static page but no freeze
 - handle disabled bfcache
 - handle typescript
 - innerhtml instead of outerhtml

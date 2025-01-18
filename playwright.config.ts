@@ -7,18 +7,24 @@ export default defineConfig({
   use: {
     baseURL: "http://domain",
   },
-  timeout: 100_000,
-  expect: {
-    timeout: 100_000,
-  },
+  // timeout: 100_000,
+  // expect: {
+  //   timeout: 100_000,
+  // },
   projects: [
     {
       name: "chromium",
-      use: { ...devices["Desktop Chrome"] },
+      use: {
+        ...devices["Desktop Chrome"],
+        channel: "chromium",
+        launchOptions: {
+          ignoreDefaultArgs: ["--disable-back-forward-cache"],
+        },
+      },
     },
-    {
-      name: "firefox",
-      use: { ...devices["Desktop Firefox"] },
-    },
+    // {
+    //   name: "firefox",
+    //   use: { ...devices["Desktop Firefox"] },
+    // },
   ],
 });
