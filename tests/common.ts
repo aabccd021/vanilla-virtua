@@ -3,9 +3,8 @@ function testRedundant(arr1: string[], arr2: string[]): void {
   for (let i = 0; i < smaller.length; i++) {
     if (arr1[i] === arr2[i]) {
       continue;
-    } else {
-      return;
     }
+    return;
   }
   if (arr1.length === arr2.length) {
     return;

@@ -1,5 +1,6 @@
 # Freeze
 
+- use esbuild to polyfill `Array.from`
 - localhost:8080
 - handle typescript
 - innerhtml instead of outerhtml
