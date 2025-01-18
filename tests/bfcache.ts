@@ -18,5 +18,8 @@ export const params: string[][] = [
     "bi_4",
     "bs",
     "bi_3",
+    "bs",
+    "bi_2",
+    "bs",
   ],
 ];
