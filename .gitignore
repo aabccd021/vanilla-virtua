@@ -30,3 +30,4 @@ dist-ssr
 /blob-report/
 /playwright/.cache/
 tests/fixtures/freeze.js
+src/*.js

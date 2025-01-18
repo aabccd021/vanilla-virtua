@@ -12,6 +12,7 @@ test.beforeEach(async ({ context }) => {
 
 const params: string[][] = [
   // ["gi_1", "cs", "bi_2"],
+  ["gs", "ci_1"],
 
   [
     "gs",
@@ -98,7 +99,6 @@ const params: string[][] = [
   ],
 
   ["gi_1"],
-  ["gs", "ci_1"],
 
   ["gs", "ci_1", "cs", "ci_2"],
   ["gs", "ci_1", "gs", "ci_2"],

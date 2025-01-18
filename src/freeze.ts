@@ -34,7 +34,7 @@ function getCachedPage(url: RelPath): Page | null {
 
 function bindAnchors(currentUrl: RelPath): void {
   const anchors = document.body.querySelectorAll("a");
-  for (const anchor of anchors) {
+  for (const anchor of Array.from(anchors)) {
     anchor.addEventListener(
       "click",
       (event) => {
@@ -99,7 +99,7 @@ async function initPage(url: RelPath): Promise<void> {
 const subscribedScripts = new Set<string>();
 
 function freezePage(url: RelPath): void {
-  for (const unsub of unsubscribeScripts) {
+  for (const unsub of Array.from(unsubscribeScripts)) {
     unsub?.();
   }
   unsubscribeScripts.clear();
@@ -157,15 +157,17 @@ async function freezeOnNavigateOrPopstate(url: RelPath): Promise<void> {
 
   // trigger `window.addEventListener("freeze:page-loaded")`
   await Promise.all(
-    subscribedScripts.values().map((src): Promise<unknown> => import(src)),
+    Array.from(subscribedScripts.values()).map(
+      (src): Promise<unknown> => import(src),
+    ),
   );
 
   window.dispatchEvent(new CustomEvent("freeze:page-loaded"));
 
   const inits = await Promise.all(
-    subscribedScripts
-      .values()
-      .map((src): Promise<{ init: () => Unsub }> => import(src)),
+    Array.from(subscribedScripts.values()).map(
+      (src): Promise<{ init: () => Unsub }> => import(src),
+    ),
   );
 
   for (const init of inits) {
