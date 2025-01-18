@@ -7,7 +7,7 @@ export default defineConfig({
   // maxFailures: 1,
   retries: 1,
   use: {
-    baseURL: "http://domain",
+    baseURL: "http://localhost:8080",
   },
   timeout: 5_000,
   // expect: {
