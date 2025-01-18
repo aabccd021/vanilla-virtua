@@ -3,12 +3,12 @@ import { type Page, test, expect } from "@playwright/test";
 const __dirname = new URL(".", import.meta.url).pathname;
 const fixtureDir = `${__dirname}/fixtures`;
 
-test.beforeEach(async ({ context }) => {
-  await context.route("**/*", (route, request) => {
-    const urlPath = new URL(request.url()).pathname;
-    return route.fulfill({ path: `${fixtureDir}${urlPath}` });
-  });
-});
+// test.beforeEach(async ({ context }) => {
+//   await context.route("**/*", (route, request) => {
+//     const urlPath = new URL(request.url()).pathname;
+//     return route.fulfill({ path: `${fixtureDir}${urlPath}` });
+//   });
+// });
 
 function expectClicked(consoleMessages: string[], message: string) {
   expect(consoleMessages.filter((msg) => msg === message)).toHaveLength(1);
