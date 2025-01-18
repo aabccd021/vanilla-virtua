@@ -1,5 +1,9 @@
 console.log("increment.js");
 
+function onClick() {
+  console.log("click increment");
+}
+
 export function init() {
   console.log("increment init");
   const incrementElt = document.querySelector("[data-testid=main]");
@@ -10,11 +14,11 @@ export function init() {
   const count = Number(incrementElt.textContent) + 1;
   incrementElt.textContent = String(count);
 
-  incrementElt.addEventListener("click", () => {
-    console.log("click increment");
-  });
+  incrementElt.addEventListener("click", onClick);
 
-  return undefined;
+  return () => {
+    incrementElt.removeEventListener("click", onClick);
+  };
 }
 
 window.addEventListener(

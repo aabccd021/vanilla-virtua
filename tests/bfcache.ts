@@ -1,5 +1,5 @@
 export const params: string[][] = [
-  // ["gi_1", "cs", "bi_2"],
+  ["gi_1", "cs", "bi_2"],
   //
   // [
   //   "gs",
