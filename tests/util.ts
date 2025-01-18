@@ -58,7 +58,7 @@ async function handleStep(page: Page, step: string, consoleMessages: string[]) {
     }
   }
   if (step.at(0) === "b") {
-    await page.goBack({ waitUntil: "load" });
+    await page.goBack();
 
     if (step.at(1) === "s") {
       await expect(page.getByTestId("main")).toHaveText("Static");
