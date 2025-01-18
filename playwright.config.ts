@@ -6,7 +6,7 @@ const timeout = 5_000;
 export default defineConfig({
   testDir: "./tests",
   fullyParallel: true,
-  // maxFailures: 1,
+  maxFailures: 1,
   // workers: 1,
   use: {
     baseURL: "http://localhost:8080",
