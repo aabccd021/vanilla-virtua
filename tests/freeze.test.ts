@@ -235,7 +235,6 @@ for (const steps of params) {
     // page.on("console", (msg) => console.log(msg.text()));
 
     for (const step of steps) {
-      // console.log(step);
       await handleStep(page, step, consoleMessages);
       consoleMessages = [];
       // console.log(step);
