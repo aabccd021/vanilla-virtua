@@ -29,4 +29,4 @@ dist-ssr
 /playwright-report/
 /blob-report/
 /playwright/.cache/
-/tests/fixtures/freeze.js
+tests/fixtures/freeze.js

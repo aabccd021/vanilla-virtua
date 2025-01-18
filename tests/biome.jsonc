@@ -34,7 +34,8 @@
       },
       "suspicious": {
         "all": true,
-        "noConsole": "off"
+        "noConsole": "off",
+        "noConsoleLog": "off"
       },
       "correctness": {
         "all": true,

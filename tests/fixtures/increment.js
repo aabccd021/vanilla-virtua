@@ -6,6 +6,11 @@ export function init() {
 
   const count = Number(incrementElt.textContent) + 1;
   incrementElt.textContent = String(count);
+
+  incrementElt.addEventListener("click", () => {
+    console.log("clicked");
+  });
+
   return undefined;
 }
 

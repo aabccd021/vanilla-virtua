@@ -155,7 +155,7 @@ const params: string[][] = [
   ["gs", "ci_1", "gd", "ci_2", "gd", "ci_3", "gi_1"],
 ];
 
-async function handleStep(page: Page, step: string): Promise<void> {
+async function handleStep(page: Page, step: string, consoleMessages: string[]) {
   if (step.at(0) === "g") {
     if (step.at(1) === "s") {
       await page.goto("static.html");
@@ -165,11 +165,15 @@ async function handleStep(page: Page, step: string): Promise<void> {
     if (step.at(1) === "d") {
       await page.goto("dynamic.html");
       await expect(page.getByTestId("main")).toHaveText("Dynamic");
+      await page.getByTestId("main").click();
+      expect(consoleMessages).toEqual(["clicked"]);
       return;
     }
     if (step.at(1) === "i") {
       await page.goto("increment.html");
       await expect(page.getByTestId("main")).toHaveText(step.slice(3));
+      await page.getByTestId("main").click();
+      expect(consoleMessages).toEqual(["clicked"]);
       return;
     }
   }
@@ -182,26 +186,20 @@ async function handleStep(page: Page, step: string): Promise<void> {
     if (step.at(1) === "d") {
       await page.getByText("Dynamic").click();
       await expect(page.getByTestId("main")).toHaveText("Dynamic");
+      await page.getByTestId("main").click();
+      expect(consoleMessages).toEqual(["clicked"]);
       return;
     }
     if (step.at(1) === "i") {
       await page.getByText("Increment").click();
       await expect(page.getByTestId("main")).toHaveText(step.slice(3));
+      await page.getByTestId("main").click();
+      expect(consoleMessages).toEqual(["clicked"]);
       return;
     }
   }
   if (step.at(0) === "b") {
     await page.goBack();
-
-    // I don't know why but this is the behavior in my browser
-    // try {
-    //   await page.evaluate(() =>
-    //     window.dispatchEvent(new CustomEvent("beforeunload")),
-    //   );
-    //   await page.evaluate(() =>
-    //     window.dispatchEvent(new CustomEvent("pageshow")),
-    //   );
-    // } catch {}
 
     if (step.at(1) === "s") {
       await expect(page.getByTestId("main")).toHaveText("Static");
@@ -209,10 +207,14 @@ async function handleStep(page: Page, step: string): Promise<void> {
     }
     if (step.at(1) === "d") {
       await expect(page.getByTestId("main")).toHaveText("Dynamic");
+      await page.getByTestId("main").click();
+      expect(consoleMessages).toEqual(["clicked"]);
       return;
     }
     if (step.at(1) === "i") {
       await expect(page.getByTestId("main")).toHaveText(step.slice(3));
+      await page.getByTestId("main").click();
+      expect(consoleMessages).toEqual(["clicked"]);
       return;
     }
   }
@@ -227,14 +229,15 @@ for (const steps of params) {
     const errors: Error[] = [];
     page.on("pageerror", (error) => errors.push(error));
 
-    const consoleMessages: string[] = [];
+    let consoleMessages: string[] = [];
     page.on("console", (msg) => consoleMessages.push(msg.text()));
 
     // page.on("console", (msg) => console.log(msg.text()));
 
     for (const step of steps) {
       // console.log(step);
-      await handleStep(page, step);
+      await handleStep(page, step, consoleMessages);
+      consoleMessages = [];
       // console.log(step);
       // const value = await page.evaluate(() =>
       //   sessionStorage.getItem("freeze-cache"),
