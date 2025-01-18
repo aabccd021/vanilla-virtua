@@ -4,4 +4,22 @@ export const params: string[][] = [
   ["gi_1", "cs", "ci_2", "cs", "bi_1"],
   ["gi_1", "cs", "ci_2", "bs", "ci_3", "bs", "bi_1"],
   ["gi_1", "cs", "ci_2", "cs", "ci_3", "cs", "bi_1"],
+
+  [
+    "gs",
+    "ci_1",
+    "cs",
+    "ci_2",
+    "cs",
+    "ci_3",
+    "cs",
+    "ci_4",
+    "bs",
+    "bi_1",
+    "bs",
+    "bi_1",
+    "bs",
+    "bi_1",
+    "bs",
+  ],
 ];
