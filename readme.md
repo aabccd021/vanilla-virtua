@@ -1,6 +1,7 @@
 # Todo
 
-- click on static page but no freeze
+- localhost:8080
+- test click on static page, but still no `data-freeze`
 - handle disabled bfcache
 - handle typescript
 - innerhtml instead of outerhtml

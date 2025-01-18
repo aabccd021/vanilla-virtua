@@ -1,4 +1,7 @@
+console.log("increment.js");
+
 export function init() {
+  console.log("increment init");
   const incrementElt = document.querySelector("[data-testid=main]");
   if (incrementElt === null) {
     throw new Error("Absurd");
@@ -8,7 +11,7 @@ export function init() {
   incrementElt.textContent = String(count);
 
   incrementElt.addEventListener("click", () => {
-    console.log("increment");
+    console.log("click increment");
   });
 
   return undefined;

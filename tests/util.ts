@@ -1,15 +1,5 @@
 import { type Page, test, expect } from "@playwright/test";
 
-const __dirname = new URL(".", import.meta.url).pathname;
-const fixtureDir = `${__dirname}/fixtures`;
-
-// test.beforeEach(async ({ context }) => {
-//   await context.route("**/*", (route, request) => {
-//     const urlPath = new URL(request.url()).pathname;
-//     return route.fulfill({ path: `${fixtureDir}${urlPath}` });
-//   });
-// });
-
 function expectClicked(consoleMessages: string[], message: string) {
   expect(consoleMessages.filter((msg) => msg === message)).toHaveLength(1);
 }
@@ -25,14 +15,14 @@ async function handleStep(page: Page, step: string, consoleMessages: string[]) {
       await page.goto("dynamic.html");
       await expect(page.getByTestId("main")).toHaveText("Dynamic");
       await page.getByTestId("main").click();
-      expectClicked(consoleMessages, "dynamic");
+      expectClicked(consoleMessages, "click dynamic");
       return;
     }
     if (step.at(1) === "i") {
       await page.goto("increment.html");
       await expect(page.getByTestId("main")).toHaveText(step.slice(3));
       await page.getByTestId("main").click();
-      expectClicked(consoleMessages, "increment");
+      expectClicked(consoleMessages, "click increment");
       return;
     }
   }
@@ -46,20 +36,20 @@ async function handleStep(page: Page, step: string, consoleMessages: string[]) {
       await page.getByText("Dynamic").click();
       await expect(page.getByTestId("main")).toHaveText("Dynamic");
       await page.getByTestId("main").click();
-      expectClicked(consoleMessages, "dynamic");
+      expectClicked(consoleMessages, "click dynamic");
       return;
     }
     if (step.at(1) === "i") {
       await page.getByText("Increment").click();
       await expect(page.getByTestId("main")).toHaveText(step.slice(3));
       await page.getByTestId("main").click();
-      expectClicked(consoleMessages, "increment");
+      expectClicked(consoleMessages, "click increment");
       return;
     }
   }
   if (step.at(0) === "b") {
-    await page.goBack();
-    // await page.goBack({ waitUntil: "commit" });
+    // await page.goBack();
+    await page.goBack({ waitUntil: "commit" });
 
     if (step.at(1) === "s") {
       await expect(page.getByTestId("main")).toHaveText("Static");
@@ -68,13 +58,13 @@ async function handleStep(page: Page, step: string, consoleMessages: string[]) {
     if (step.at(1) === "d") {
       await expect(page.getByTestId("main")).toHaveText("Dynamic");
       await page.getByTestId("main").click();
-      expectClicked(consoleMessages, "dynamic");
+      expectClicked(consoleMessages, "click dynamic");
       return;
     }
     if (step.at(1) === "i") {
       await expect(page.getByTestId("main")).toHaveText(step.slice(3));
       await page.getByTestId("main").click();
-      expectClicked(consoleMessages, "increment");
+      expectClicked(consoleMessages, "click increment");
       return;
     }
   }
@@ -91,10 +81,11 @@ export function runTest(params: string[][]) {
       let consoleMessages: string[] = [];
       page.on("console", (msg) => consoleMessages.push(msg.text()));
 
+      // page.on('console', (msg) => console.log('PAGE LOG:', msg.text()));
+
       for (const step of steps) {
         // console.log(step);
         await handleStep(page, step, consoleMessages);
-        // console.log(JSON.stringify(consoleMessages, null, 2));
         consoleMessages = [];
         // const value = await page.evaluate(() =>
         //   sessionStorage.getItem("freeze-cache"),
