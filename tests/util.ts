@@ -1,7 +1,13 @@
 import { type Page, expect, test } from "@playwright/test";
 
-function expectClicked(consoleMessages: string[], message: string) {
-  expect(consoleMessages.filter((msg) => msg === message)).toEqual([message]);
+async function expectClicked(
+  page: Page,
+  consoleMessages: string[],
+  message: string,
+) {
+  consoleMessages.length = 0;
+  await page.getByTestId("main").click();
+  expect(consoleMessages).toEqual([message]);
 }
 
 async function handleStep(page: Page, step: string, consoleMessages: string[]) {
@@ -9,22 +15,19 @@ async function handleStep(page: Page, step: string, consoleMessages: string[]) {
     if (step.at(1) === "s") {
       await page.goto("static.html");
       await expect(page.getByTestId("main")).toHaveText("Static");
-      await page.getByTestId("main").click();
-      expectClicked(consoleMessages, "click static");
+      await expectClicked(page, consoleMessages, "click static");
       return;
     }
     if (step.at(1) === "d") {
       await page.goto("dynamic.html");
       await expect(page.getByTestId("main")).toHaveText("Dynamic");
-      await page.getByTestId("main").click();
-      expectClicked(consoleMessages, "click dynamic");
+      await expectClicked(page, consoleMessages, "click dynamic");
       return;
     }
     if (step.at(1) === "i") {
       await page.goto("increment.html");
       await expect(page.getByTestId("main")).toHaveText(step.slice(3));
-      await page.getByTestId("main").click();
-      expectClicked(consoleMessages, "click increment");
+      await expectClicked(page, consoleMessages, "click increment");
       return;
     }
   }
@@ -32,22 +35,19 @@ async function handleStep(page: Page, step: string, consoleMessages: string[]) {
     if (step.at(1) === "s") {
       await page.getByText("Static").click();
       await expect(page.getByTestId("main")).toHaveText("Static");
-      await page.getByTestId("main").click();
-      expectClicked(consoleMessages, "click static");
+      await expectClicked(page, consoleMessages, "click static");
       return;
     }
     if (step.at(1) === "d") {
       await page.getByText("Dynamic").click();
       await expect(page.getByTestId("main")).toHaveText("Dynamic");
-      await page.getByTestId("main").click();
-      expectClicked(consoleMessages, "click dynamic");
+      await expectClicked(page, consoleMessages, "click dynamic");
       return;
     }
     if (step.at(1) === "i") {
       await page.getByText("Increment").click();
       await expect(page.getByTestId("main")).toHaveText(step.slice(3));
-      await page.getByTestId("main").click();
-      expectClicked(consoleMessages, "click increment");
+      await expectClicked(page, consoleMessages, "click increment");
       return;
     }
   }
@@ -57,20 +57,17 @@ async function handleStep(page: Page, step: string, consoleMessages: string[]) {
 
     if (step.at(1) === "s") {
       await expect(page.getByTestId("main")).toHaveText("Static");
-      await page.getByTestId("main").click();
-      expectClicked(consoleMessages, "click static");
+      await expectClicked(page, consoleMessages, "click static");
       return;
     }
     if (step.at(1) === "d") {
       await expect(page.getByTestId("main")).toHaveText("Dynamic");
-      await page.getByTestId("main").click();
-      expectClicked(consoleMessages, "click dynamic");
+      await expectClicked(page, consoleMessages, "click dynamic");
       return;
     }
     if (step.at(1) === "i") {
       await expect(page.getByTestId("main")).toHaveText(step.slice(3));
-      await page.getByTestId("main").click();
-      expectClicked(consoleMessages, "click increment");
+      await expectClicked(page, consoleMessages, "click increment");
       return;
     }
   }
