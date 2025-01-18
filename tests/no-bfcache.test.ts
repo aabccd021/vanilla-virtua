@@ -1,7 +1,7 @@
 import { runTest } from "./util.ts";
 
 const params: string[][] = [
-  // ["gd"],
+  ["gd"],
   ["gd", "ci_1"],
   ["gd", "ci_1", "bd"],
   [
