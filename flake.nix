@@ -25,6 +25,12 @@
           trap 'cd $(pwd)' EXIT
           repo_root=$(git rev-parse --show-toplevel)
           cd "$repo_root" || exit
+          ${pkgs.esbuild}/bin/esbuild ./vil.ts \
+            --target=es6 \
+            --format=esm \
+            --bundle \
+            --minify \
+            --outfile=./fixtures/vil.js
           ${pkgs.nodejs}/bin/npm install
           ${pkgs.typescript}/bin/tsc
           ${pkgs.biome}/bin/biome check --fix --error-on-warnings

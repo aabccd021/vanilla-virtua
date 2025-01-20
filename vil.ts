@@ -64,7 +64,7 @@ type Storage = {
   scrollOffset: number;
 };
 
-async function initInfinite(cache?: Storage): Promise<void> {
+export async function initInfinite(cache?: Storage): Promise<void> {
   const root = document.body.querySelector("[data-infinite-root]");
   if (!(root instanceof HTMLElement)) {
     return;
@@ -123,13 +123,5 @@ async function initInfinite(cache?: Storage): Promise<void> {
     sessionStorage.setItem(`cache-${listId}`, JSON.stringify(storage));
   });
 }
-
-window.dispatchEvent(new CustomEvent<string>("infsub", { detail: import.meta.url }));
-
-window.dispatchEvent(
-  new CustomEvent<InfiniteEvent>("infinite", {
-    detail: { type: "unsubscribe" },
-  }),
-);
 
 initInfinite();
