@@ -7,13 +7,14 @@
   },
   "formatter": {
     "enabled": true,
-    "indentStyle": "space"
+    "indentStyle": "space",
+    "lineWidth": 120
   },
   "organizeImports": {
     "enabled": true
   },
   "files": {
-    "ignore": ["tests/**", "playwright.config.ts"]
+    "ignore": ["fixtures/freeze.js"]
   },
   "linter": {
     "enabled": true,
@@ -33,17 +34,21 @@
         "useLiteralKeys": "off"
       },
       "suspicious": {
-        "all": true
+        "all": true,
+        "noConsole": "off"
       },
       "correctness": {
         "all": true
       },
       "nursery": {
         "all": true,
-        "noSecrets": "off"
+        "noProcessEnv": "off"
       },
       "style": {
-        "all": true
+        "all": true,
+        "useNamingConvention": "off",
+        "noDefaultExport": "off",
+        "noNamespaceImport": "off"
       }
     }
   }

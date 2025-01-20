@@ -38,19 +38,11 @@ export interface Context {
 
 export function appendChildren(context: Context, newChildren: Element[]): void {
   context.state.children = context.state.children.concat(newChildren);
-  context.store.$update(ACTION_ITEMS_LENGTH_CHANGE, [
-    context.state.children.length,
-    false,
-  ]);
+  context.store.$update(ACTION_ITEMS_LENGTH_CHANGE, [context.state.children.length, false]);
   render(context);
 }
 
-function newChild(
-  context: Context,
-  idx: number,
-  top: string,
-  newChildData: ChildData[],
-): Element {
+function newChild(context: Context, idx: number, top: string, newChildData: ChildData[]): Element {
   const child = context.state.children[idx];
   if (child === undefined) {
     throw new Error(`Absurd: child is undefined at index ${idx}`);
@@ -89,14 +81,7 @@ interface InitResult {
   container: HTMLElement;
 }
 
-export function init({
-  root: oldRoot,
-  as,
-  itemSize,
-  overscan,
-  cache,
-  item,
-}: VirtualizerProps): InitResult {
+export function init({ root: oldRoot, as, itemSize, overscan, cache, item }: VirtualizerProps): InitResult {
   const children = Array.from(oldRoot.children);
 
   const container = document.createElement(as ?? "div");
@@ -119,14 +104,7 @@ export function init({
 
   root.appendChild(container);
 
-  const store = createVirtualStore(
-    children.length,
-    itemSize,
-    overscan,
-    undefined,
-    cache,
-    !itemSize,
-  );
+  const store = createVirtualStore(children.length, itemSize, overscan, undefined, cache, !itemSize);
 
   const resizer = createResizer(store, false);
   resizer.$observeRoot(root);
@@ -184,11 +162,7 @@ function _render(context: Context): void {
 
   const [startIdx, endIdx] = store.$getRange();
   const newChildData: ChildData[] = [];
-  for (
-    let newChildIdx = startIdx, j = endIdx;
-    newChildIdx <= j;
-    newChildIdx++
-  ) {
+  for (let newChildIdx = startIdx, j = endIdx; newChildIdx <= j; newChildIdx++) {
     const oldChildDataMaybe: ChildData | undefined = state.childData[0];
     const top = `${store.$getItemOffset(newChildIdx)}px`;
 

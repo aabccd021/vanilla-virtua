@@ -28,9 +28,7 @@ function infiniteScroll(
       trigger.removeAttribute("data-infinite-trigger");
     }
 
-    const newTriggers = newRoot.querySelectorAll(
-      `[data-infinite-trigger="${listId}"]`,
-    );
+    const newTriggers = newRoot.querySelectorAll(`[data-infinite-trigger="${listId}"]`);
 
     const newChildren = Array.from(newRoot.children);
 
@@ -42,9 +40,7 @@ function infiniteScroll(
 
     appendChildren(context, newChildren);
 
-    const newNext = newDoc.querySelector<HTMLAnchorElement>(
-      `a[data-infinite-next="${listId}"]`,
-    );
+    const newNext = newDoc.querySelector<HTMLAnchorElement>(`a[data-infinite-next="${listId}"]`);
     if (newNext === null) {
       next.remove();
       return;
@@ -79,9 +75,7 @@ async function initInfinite(cache?: Storage): Promise<void> {
     throw new Error("List ID not found");
   }
 
-  const next = document.body.querySelector<HTMLAnchorElement>(
-    `a[data-infinite-next="${listId}"]`,
-  );
+  const next = document.body.querySelector<HTMLAnchorElement>(`a[data-infinite-next="${listId}"]`);
   if (next === null) {
     throw new Error("Next not found");
   }
@@ -130,9 +124,7 @@ async function initInfinite(cache?: Storage): Promise<void> {
   });
 }
 
-window.dispatchEvent(
-  new CustomEvent<string>("infsub", { detail: import.meta.url }),
-);
+window.dispatchEvent(new CustomEvent<string>("infsub", { detail: import.meta.url }));
 
 window.dispatchEvent(
   new CustomEvent<InfiniteEvent>("infinite", {
