@@ -31,3 +31,4 @@ dist-ssr
 /playwright/.cache/
 tests/fixtures/freeze.js
 src/*.js
+result

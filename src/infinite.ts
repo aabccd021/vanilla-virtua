@@ -24,7 +24,7 @@ function infiniteScroll(
       return;
     }
 
-    for (const trigger of triggers) {
+    for (const trigger of Array.from(triggers)) {
       trigger.removeAttribute("data-infinite-trigger");
     }
 
@@ -54,7 +54,7 @@ function infiniteScroll(
     infiniteScroll(listId, context, newNext, newTriggers);
   });
 
-  for (const trigger of triggers) {
+  for (const trigger of Array.from(triggers)) {
     observer.observe(trigger);
   }
 }
@@ -93,7 +93,7 @@ async function initInfinite(cache?: Storage): Promise<void> {
 
   render(vList.context);
 
-  for (const attr of root.attributes) {
+  for (const attr of Array.from(root.attributes)) {
     vList.root.setAttribute(attr.name, attr.value);
   }
   root.replaceWith(vList.root);

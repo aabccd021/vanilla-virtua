@@ -113,7 +113,7 @@ export function init({
   root.style.width = "100%";
   root.style.height = "100%";
 
-  for (const attr of oldRoot.attributes) {
+  for (const attr of Array.from(oldRoot.attributes)) {
     root.setAttribute(attr.name, attr.value);
   }
 

@@ -1,6 +1,4 @@
 {
-  description = "A very basic flake";
-
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
     treefmt-nix.url = "github:numtide/treefmt-nix";
@@ -36,7 +34,6 @@
           export PLAYWRIGHT_BROWSERS_PATH=${pkgs.playwright-driver.browsers-chromium}
         '';
         buildInputs = [
-          pkgs.bun
           pkgs.nodejs
           pkgs.biome
           pkgs.typescript

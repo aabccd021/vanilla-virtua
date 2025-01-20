@@ -15,9 +15,6 @@
   "files": {
     "ignore": ["tests/**", "playwright.config.ts"]
   },
-  "javascript": {
-    "globals": ["Bun"]
-  },
   "linter": {
     "enabled": true,
     "rules": {
