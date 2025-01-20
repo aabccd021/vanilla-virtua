@@ -19,6 +19,19 @@
         settings.formatter.biome.priority = 2;
       };
 
+      check = pkgs.writeShellApplication {
+        name = "check";
+        text = ''
+          trap 'cd $(pwd)' EXIT
+          repo_root=$(git rev-parse --show-toplevel)
+          cd "$repo_root" || exit
+          ${pkgs.nodejs}/bin/npm install
+          ${pkgs.typescript}/bin/tsc
+          ${pkgs.biome}/bin/biome check --fix --error-on-warnings
+          ${pkgs.nodejs}/bin/npx playwright test
+        '';
+      };
+
     in
 
     {
@@ -37,7 +50,15 @@
           pkgs.nodejs
           pkgs.biome
           pkgs.typescript
+          pkgs.http-server
         ];
+      };
+
+      apps.x86_64-linux = {
+        check = {
+          type = "app";
+          program = "${check}/bin/check";
+        };
       };
 
     };
