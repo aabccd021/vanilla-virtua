@@ -65,7 +65,7 @@
           pkgs.nodejs
           pkgs.biome
           pkgs.typescript
-          pkgs.http-server
+          pkgs.httplz
         ];
       };
 

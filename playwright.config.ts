@@ -10,11 +10,11 @@ export default defineConfig({
   maxFailures: 1,
   // workers: 1,
   use: {
-    baseURL: "http://127.0.0.1:8080",
+    baseURL: "http://127.0.0.1:8000",
   },
   webServer: {
-    command: `http-server ${__dirname}/fixtures`,
-    url: "http://127.0.0.1:8080",
+    command: `httplz ${__dirname}/fixtures`,
+    url: "http://127.0.0.1:8000",
     timeout: 5_000,
   },
   timeout,
