@@ -62,7 +62,10 @@ var computeOffset = (cache, index) => {
 };
 var computeTotalSize = (cache) => {
   if (!cache._length) return 0;
-  return computeOffset(cache, cache._length - 1) + getItemSize(cache, cache._length - 1);
+  return (
+    computeOffset(cache, cache._length - 1) +
+    getItemSize(cache, cache._length - 1)
+  );
 };
 var findIndex = (cache, offset, low = 0, high = cache._length - 1) => {
   while (low <= high) {
@@ -104,9 +107,13 @@ var estimateDefaultItemSize = (cache, startIndex) => {
   const sorted = sort(measuredSizes);
   const len = sorted.length;
   const mid = (len / 2) | 0;
-  const median = len % 2 === 0 ? (sorted[mid - 1] + sorted[mid]) / 2 : sorted[mid];
+  const median =
+    len % 2 === 0 ? (sorted[mid - 1] + sorted[mid]) / 2 : sorted[mid];
   const prevDefaultItemSize = cache._defaultItemSize;
-  return ((cache._defaultItemSize = median) - prevDefaultItemSize) * max(startIndex - measuredCountBeforeStart, 0);
+  return (
+    ((cache._defaultItemSize = median) - prevDefaultItemSize) *
+    max(startIndex - measuredCountBeforeStart, 0)
+  );
 };
 var initCache = (length, itemSize, snapshot) => {
   return {
@@ -114,7 +121,10 @@ var initCache = (length, itemSize, snapshot) => {
     _sizes:
       snapshot && snapshot[0]
         ? // https://github.com/inokawa/virtua/issues/441
-          fill(snapshot[0].slice(0, min(length, snapshot[0].length)), max(0, length - snapshot[0].length))
+          fill(
+            snapshot[0].slice(0, min(length, snapshot[0].length)),
+            max(0, length - snapshot[0].length),
+          )
         : fill([], length),
     _length: length,
     _computedOffsetIndex: -1,
@@ -137,8 +147,11 @@ var updateCacheLength = (cache, length, isShift) => {
     return cache._defaultItemSize * diff;
   } else {
     cache._offsets.splice(diff);
-    return (isShift ? cache._sizes.splice(0, -diff) : cache._sizes.splice(diff)).reduce(
-      (acc, removed) => acc - (removed === UNCACHED ? cache._defaultItemSize : removed),
+    return (
+      isShift ? cache._sizes.splice(0, -diff) : cache._sizes.splice(diff)
+    ).reduce(
+      (acc, removed) =>
+        acc - (removed === UNCACHED ? cache._defaultItemSize : removed),
       0,
     );
   }
@@ -150,7 +163,9 @@ var getDocumentElement = () => document.documentElement;
 var getCurrentDocument = (node) => node.ownerDocument;
 var getCurrentWindow = (doc) => doc.defaultView;
 var isRTLDocument = /* @__PURE__ */ once(() => {
-  return isBrowser ? getComputedStyle(getDocumentElement()).direction === "rtl" : false;
+  return isBrowser
+    ? getComputedStyle(getDocumentElement()).direction === "rtl"
+    : false;
 });
 var isIOSWebKit = /* @__PURE__ */ once(() => {
   return /iP(hone|od|ad)/.test(navigator.userAgent);
@@ -247,7 +262,10 @@ var createVirtualStore = (
       if (_scrollDirection !== SCROLL_UP) {
         endIndex += max(0, overscan);
       }
-      return (_prevRange = [max(startIndex, 0), min(endIndex, cache._length - 1)]);
+      return (_prevRange = [
+        max(startIndex, 0),
+        min(endIndex, cache._length - 1),
+      ]);
     },
     $findStartIndex: () => findIndex(cache, getVisibleOffset()),
     $findEndIndex: () => findIndex(cache, getVisibleOffset() + viewportSize),
@@ -255,7 +273,10 @@ var createVirtualStore = (
     _hasUnmeasuredItemsInFrozenRange: () => {
       if (!_frozenRange) return false;
       return cache._sizes
-        .slice(max(0, _frozenRange[0] - 1), min(cache._length - 1, _frozenRange[1] + 1) + 1)
+        .slice(
+          max(0, _frozenRange[0] - 1),
+          min(cache._length - 1, _frozenRange[1] + 1) + 1,
+        )
         .includes(UNCACHED);
     },
     $getItemOffset: getItemOffset,
@@ -308,7 +329,10 @@ var createVirtualStore = (
           scrollOffset = payload;
           mutated = UPDATE_SCROLL_EVENT;
           const relativeOffset = getRelativeScrollOffset();
-          if (relativeOffset >= -viewportSize && relativeOffset <= getTotalSize()) {
+          if (
+            relativeOffset >= -viewportSize &&
+            relativeOffset <= getTotalSize()
+          ) {
             mutated += UPDATE_VIRTUAL_STATE;
             shouldSync = distance > viewportSize;
           }
@@ -326,7 +350,9 @@ var createVirtualStore = (
           break;
         }
         case ACTION_ITEM_RESIZE: {
-          const updated = payload.filter(([index, size]) => cache._sizes[index] !== size);
+          const updated = payload.filter(
+            ([index, size]) => cache._sizes[index] !== size,
+          );
           if (!updated.length) {
             break;
           }
@@ -341,7 +367,10 @@ var createVirtualStore = (
                     !isSSR && index < _frozenRange[0]
                   : // Otherwise we should maintain visible position
                     getItemOffset(index) + // https://github.com/inokawa/virtua/issues/385
-                      (_scrollDirection === SCROLL_IDLE && _scrollMode === SCROLL_BY_NATIVE ? getItemSize2(index) : 0) <
+                      (_scrollDirection === SCROLL_IDLE &&
+                      _scrollMode === SCROLL_BY_NATIVE
+                        ? getItemSize2(index)
+                        : 0) <
                     getRelativeScrollOffset())
               ) {
                 acc += size - getItemSize2(index);
@@ -353,7 +382,9 @@ var createVirtualStore = (
             const prevSize = getItemSize2(index);
             const isInitialMeasurement = setItemSize(cache, index, size);
             if (shouldAutoEstimateItemSize) {
-              _totalMeasuredSize += isInitialMeasurement ? size : size - prevSize;
+              _totalMeasuredSize += isInitialMeasurement
+                ? size
+                : size - prevSize;
             }
           }
           if (
@@ -361,7 +392,12 @@ var createVirtualStore = (
             viewportSize && // If the total size is lower than the viewport, the item may be a empty state
             _totalMeasuredSize > viewportSize
           ) {
-            applyJump(estimateDefaultItemSize(cache, findIndex(cache, getVisibleOffset())));
+            applyJump(
+              estimateDefaultItemSize(
+                cache,
+                findIndex(cache, getVisibleOffset()),
+              ),
+            );
             shouldAutoEstimateItemSize = false;
           }
           mutated = UPDATE_VIRTUAL_STATE + UPDATE_SIZE_EVENT;
@@ -444,7 +480,14 @@ var normalizeOffset = (offset, isHorizontal) => {
     return offset;
   }
 };
-var createScrollObserver = (store, viewport, isHorizontal, getScrollOffset, updateScrollOffset, getStartOffset) => {
+var createScrollObserver = (
+  store,
+  viewport,
+  isHorizontal,
+  getScrollOffset,
+  updateScrollOffset,
+  getStartOffset,
+) => {
   const now = Date.now;
   let lastScrollTime = 0;
   let wheeling = false;
@@ -516,7 +559,11 @@ var createScrollObserver = (store, viewport, isHorizontal, getScrollOffset, upda
     _fixScrollJump: () => {
       const [jump, shift] = store._flushJump();
       if (!jump) return;
-      updateScrollOffset(normalizeOffset(jump, isHorizontal), shift, stillMomentumScrolling);
+      updateScrollOffset(
+        normalizeOffset(jump, isHorizontal),
+        shift,
+        stillMomentumScrolling,
+      );
       stillMomentumScrolling = false;
       if (shift && store.$getViewportSize() > store.$getTotalSize()) {
         store.$update(ACTION_SCROLL, getScrollOffset());
@@ -569,14 +616,20 @@ var createScroller = (store, isHorizontal) => {
         }
       }
       viewportElement.scrollTo({
-        [isHorizontal ? "left" : "top"]: normalizeOffset(getTargetOffset(), isHorizontal),
+        [isHorizontal ? "left" : "top"]: normalizeOffset(
+          getTargetOffset(),
+          isHorizontal,
+        ),
         behavior: "smooth",
       });
     } else {
       while (true) {
         const [promise, unsubscribe] = waitForMeasurement();
         try {
-          viewportElement[scrollOffsetKey] = normalizeOffset(getTargetOffset(), isHorizontal);
+          viewportElement[scrollOffsetKey] = normalizeOffset(
+            getTargetOffset(),
+            isHorizontal,
+          );
           store.$update(ACTION_MANUAL_SCROLL);
           await promise;
         } catch (e) {
@@ -630,7 +683,10 @@ var createScroller = (store, isHorizontal) => {
         const scrollOffset = store.$getScrollOffset();
         if (itemOffset < scrollOffset) {
           align = "start";
-        } else if (itemOffset + store.$getItemSize(index) > scrollOffset + store.$getViewportSize()) {
+        } else if (
+          itemOffset + store.$getItemSize(index) >
+          scrollOffset + store.$getViewportSize()
+        ) {
           align = "end";
         } else {
           return;
@@ -711,17 +767,12 @@ var createResizer = (store, isHorizontal) => {
 };
 
 // index.ts
-function appendChildren(context2, newChildren) {
-  context2.state.children = context2.state.children.concat(newChildren);
-  context2.store.$update(ACTION_ITEMS_LENGTH_CHANGE, [context2.state.children.length, false]);
-  render(context2);
-}
-function newChild(context2, idx, top, newChildData) {
-  const child = context2.state.children[idx];
+function newChild(context, idx, top, newChildData) {
+  const child = context.state.children[idx];
   if (child === void 0) {
     throw new Error(`Absurd: child is undefined at index ${idx}`);
   }
-  const element = document.createElement(context2.itemTag ?? "div");
+  const element = document.createElement(context.itemTag ?? "div");
   element.style.position = "absolute";
   element.style.visibility = "visible";
   element.style.top = top;
@@ -733,11 +784,11 @@ function newChild(context2, idx, top, newChildData) {
     hide: false,
     top,
     element,
-    unobserve: context2.resizer.$observeItem(element, idx),
+    unobserve: context.resizer.$observeItem(element, idx),
   });
   return element;
 }
-function init({ children: children2, as, itemSize, overscan, cache, item }) {
+function init({ children, as, itemSize, overscan, cache, item }) {
   const container = document.createElement(as ?? "div");
   container.style.overflowAnchor = "none";
   container.style.flex = "none";
@@ -745,23 +796,30 @@ function init({ children: children2, as, itemSize, overscan, cache, item }) {
   container.style.visibility = "hidden";
   container.style.width = "100%";
   container.dataset["testid"] = "container";
-  for (const child of children2) {
+  for (const child of children) {
     container.appendChild(child);
   }
-  const root2 = document.createElement("div");
-  root2.style.display = "block";
-  root2.style.overflowY = "auto";
-  root2.style.contain = "strict";
-  root2.style.width = "100%";
-  root2.style.height = "100%";
-  root2.dataset["testid"] = "virtualroot";
-  root2.appendChild(container);
-  const store = createVirtualStore(children2.length, itemSize, overscan, void 0, cache, !itemSize);
+  const root = document.createElement("div");
+  root.style.display = "block";
+  root.style.overflowY = "auto";
+  root.style.contain = "strict";
+  root.style.width = "100%";
+  root.style.height = "100%";
+  root.dataset["testid"] = "virtualroot";
+  root.appendChild(container);
+  const store = createVirtualStore(
+    children.length,
+    itemSize,
+    overscan,
+    void 0,
+    cache,
+    !itemSize,
+  );
   const resizer = createResizer(store, false);
-  resizer.$observeRoot(root2);
+  resizer.$observeRoot(root);
   const scroller = createScroller(store, false);
-  scroller.$observe(root2);
-  const context2 = {
+  scroller.$observe(root);
+  const context = {
     container,
     store,
     resizer,
@@ -769,29 +827,29 @@ function init({ children: children2, as, itemSize, overscan, cache, item }) {
     itemTag: item,
     state: {
       childData: [],
-      children: children2,
+      children,
     },
   };
   const unsubscribeStore = store.$subscribe(UPDATE_VIRTUAL_STATE, (_sync) => {
-    render(context2);
+    render(context);
   });
   const dispose = () => {
     unsubscribeStore();
     resizer.$dispose();
     scroller.$dispose();
-    for (const childData of context2.state.childData) {
+    for (const childData of context.state.childData) {
       childData.unobserve();
     }
   };
-  return { context: context2, dispose, root: root2, container };
+  return { context, dispose, root, container };
 }
-function render(context2) {
+function render(context) {
   requestAnimationFrame(() => {
-    _render(context2);
+    _render(context);
   });
 }
-function _render(context2) {
-  const { store, scroller, state, container } = context2;
+function _render(context) {
+  const { store, scroller, state, container } = context;
   const newJumpCount = store.$getJumpCount();
   if (state.jumpCount !== newJumpCount) {
     scroller.$fixScrollJump();
@@ -804,11 +862,15 @@ function _render(context2) {
   }
   const [startIdx, endIdx] = store.$getRange();
   const newChildData = [];
-  for (let newChildIdx = startIdx, j = endIdx; newChildIdx <= j; newChildIdx++) {
+  for (
+    let newChildIdx = startIdx, j = endIdx;
+    newChildIdx <= j;
+    newChildIdx++
+  ) {
     const oldChildDataMaybe = state.childData[0];
     const top = `${store.$getItemOffset(newChildIdx)}px`;
     if (oldChildDataMaybe === void 0) {
-      const childEl = newChild(context2, newChildIdx, top, newChildData);
+      const childEl = newChild(context, newChildIdx, top, newChildData);
       container.appendChild(childEl);
       state.childData.shift();
       continue;
@@ -820,7 +882,7 @@ function _render(context2) {
       state.childData.shift();
       const nextOldChild = state.childData[0];
       if (nextOldChild === void 0) {
-        const childEl = newChild(context2, newChildIdx, top, newChildData);
+        const childEl = newChild(context, newChildIdx, top, newChildData);
         container.appendChild(childEl);
         state.childData.shift();
         break;
@@ -828,7 +890,7 @@ function _render(context2) {
       oldChildData = nextOldChild;
     }
     if (newChildIdx < oldChildData.idx) {
-      const childEl = newChild(context2, newChildIdx, top, newChildData);
+      const childEl = newChild(context, newChildIdx, top, newChildData);
       container.insertBefore(childEl, oldChildData.element);
       continue;
     }
@@ -856,30 +918,45 @@ function _render(context2) {
   state.childData = newChildData;
 }
 
-// main.ts
-var app = document.createElement("div");
-app.style.width = "100%";
-app.style.height = "90dvh";
-document.body.appendChild(app);
-function createChild() {
-  const height = Math.floor(Math.random() * 100) + 20;
-  const el = document.createElement("button");
-  el.textContent = `Height: ${height}px`;
-  el.style.border = "1px solid #ccc";
-  el.style.height = `${height}px`;
-  return el;
+// vil.ts
+function waitAnimationFrame() {
+  return new Promise((resolve) => requestAnimationFrame(() => resolve()));
 }
-var children = Array.from({ length: 30 }, createChild);
-var { context, root } = init({ children });
-app.appendChild(root);
-render(context);
-var count = 0;
-var interval = setInterval(() => {
-  if (count > 10) {
-    clearInterval(interval);
+async function freezePageLoad(cache) {
+  const root = document.body.querySelector("[data-infinite-root]");
+  if (!(root instanceof HTMLElement)) {
     return;
   }
-  const newChildren = Array.from({ length: 10 }, createChild);
-  appendChildren(context, newChildren);
-  count++;
-}, 1e3);
+  const listId = root.dataset["infiniteRoot"];
+  if (listId === void 0) {
+    throw new Error("List ID not found");
+  }
+  const next = document.body.querySelector(`a[data-infinite-next="${listId}"]`);
+  if (next === null) {
+    throw new Error("Next not found");
+  }
+  const triggers = root.querySelectorAll(`[data-infinite-trigger="${listId}"]`);
+  const vList = init({
+    children: Array.from(root.children),
+    cache: cache?.virtuaSnapshot,
+  });
+  await waitAnimationFrame();
+  root.appendChild(vList.root);
+  render(vList.context);
+  if (cache?.scrollOffset) {
+    await waitAnimationFrame();
+    vList.context.scroller.$scrollTo(cache.scrollOffset);
+  }
+  return () => {
+    console.log("unsub");
+    const cache2 = vList.context.store.$getCacheSnapshot();
+    const scrollOffset = vList.context.store.$getScrollOffset();
+    for (const child of vList.context.state.children) {
+      vList.root.appendChild(child);
+    }
+    vList.container.remove();
+    const storage = { virtuaSnapshot: cache2, scrollOffset };
+    sessionStorage.setItem(`cache-${listId}`, JSON.stringify(storage));
+  };
+}
+export { freezePageLoad };

@@ -84,15 +84,20 @@ export async function freezePageLoad(cache?: Storage): Promise<Unsub | undefined
 
   const triggers = root.querySelectorAll(`[data-infinite-trigger="${listId}"]`);
 
-  const vList = vListInit({ root, cache: cache?.virtuaSnapshot });
+  const vList = vListInit({
+    children: Array.from(root.children),
+    cache: cache?.virtuaSnapshot,
+  });
   await waitAnimationFrame();
+
+  root.appendChild(vList.root);
 
   render(vList.context);
 
-  for (const attr of Array.from(root.attributes)) {
-    vList.root.setAttribute(attr.name, attr.value);
-  }
-  root.replaceWith(vList.root);
+  // for (const attr of Array.from(root.attributes)) {
+  //   vList.root.setAttribute(attr.name, attr.value);
+  // }
+  // root.replaceWith(vList.root);
 
   if (cache?.scrollOffset) {
     await waitAnimationFrame();

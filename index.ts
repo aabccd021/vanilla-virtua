@@ -88,6 +88,7 @@ export function init({ children, as, itemSize, overscan, cache, item }: Virtuali
   container.style.position = "relative";
   container.style.visibility = "hidden";
   container.style.width = "100%";
+  container.dataset["testid"] = "container";
   for (const child of children) {
     container.appendChild(child);
   }
@@ -98,6 +99,7 @@ export function init({ children, as, itemSize, overscan, cache, item }: Virtuali
   root.style.contain = "strict";
   root.style.width = "100%";
   root.style.height = "100%";
+  root.dataset["testid"] = "virtualroot";
 
   root.appendChild(container);
 
