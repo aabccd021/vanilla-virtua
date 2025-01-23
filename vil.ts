@@ -1,6 +1,6 @@
 import type { CacheSnapshot } from "virtua/core";
 import type { InfiniteEvent } from "./event.ts";
-import { type Context, appendChildren, init, render } from "./index.ts";
+import { type Context, appendChildren, init as vListInit, render } from "./index.ts";
 
 function infiniteScroll(
   listId: string,
@@ -64,7 +64,9 @@ type Storage = {
   scrollOffset: number;
 };
 
-export async function initInfinite(cache?: Storage): Promise<void> {
+type Unsub = () => void;
+
+export async function init(cache?: Storage): Promise<Unsub | undefined> {
   const root = document.body.querySelector("[data-infinite-root]");
   if (!(root instanceof HTMLElement)) {
     return;
@@ -82,7 +84,7 @@ export async function initInfinite(cache?: Storage): Promise<void> {
 
   const triggers = root.querySelectorAll(`[data-infinite-trigger="${listId}"]`);
 
-  const vList = init({ root, cache: cache?.virtuaSnapshot });
+  const vList = vListInit({ root, cache: cache?.virtuaSnapshot });
   await waitAnimationFrame();
 
   render(vList.context);
@@ -108,7 +110,7 @@ export async function initInfinite(cache?: Storage): Promise<void> {
     }),
   );
 
-  window.addEventListener("beforeunload", () => {
+  return (): void => {
     const cache = vList.context.store.$getCacheSnapshot();
     const scrollOffset = vList.context.store.$getScrollOffset();
 
@@ -121,7 +123,7 @@ export async function initInfinite(cache?: Storage): Promise<void> {
     const storage: Storage = { virtuaSnapshot: cache, scrollOffset };
 
     sessionStorage.setItem(`cache-${listId}`, JSON.stringify(storage));
-  });
+  };
 }
 
-initInfinite();
+init();
