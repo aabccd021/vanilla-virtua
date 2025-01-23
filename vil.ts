@@ -66,7 +66,7 @@ type Storage = {
 
 type Unsub = () => void;
 
-export async function init(cache?: Storage): Promise<Unsub | undefined> {
+export async function freezePageLoad(cache?: Storage): Promise<Unsub | undefined> {
   const root = document.body.querySelector("[data-infinite-root]");
   if (!(root instanceof HTMLElement)) {
     return;
@@ -99,18 +99,19 @@ export async function init(cache?: Storage): Promise<Unsub | undefined> {
     vList.context.scroller.$scrollTo(cache.scrollOffset);
   }
 
-  infiniteScroll(listId, vList.context, next, triggers);
+  // infiniteScroll(listId, vList.context, next, triggers);
 
-  window.dispatchEvent(
-    new CustomEvent<InfiniteEvent>("infinite", {
-      detail: {
-        type: "newChildren",
-        children: vList.context.state.children,
-      },
-    }),
-  );
+  // window.dispatchEvent(
+  //   new CustomEvent<InfiniteEvent>("infinite", {
+  //     detail: {
+  //       type: "newChildren",
+  //       children: vList.context.state.children,
+  //     },
+  //   }),
+  // );
 
   return (): void => {
+    console.log("unsub");
     const cache = vList.context.store.$getCacheSnapshot();
     const scrollOffset = vList.context.store.$getScrollOffset();
 
@@ -125,5 +126,3 @@ export async function init(cache?: Storage): Promise<Unsub | undefined> {
     sessionStorage.setItem(`cache-${listId}`, JSON.stringify(storage));
   };
 }
-
-init();

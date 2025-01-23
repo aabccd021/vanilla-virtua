@@ -66,7 +66,7 @@ function newChild(context: Context, idx: number, top: string, newChildData: Chil
 }
 
 export interface VirtualizerProps {
-  root: HTMLElement;
+  children: Element[];
   overscan?: number;
   itemSize?: number;
   cache?: CacheSnapshot;
@@ -81,26 +81,23 @@ interface InitResult {
   container: HTMLElement;
 }
 
-export function init({ root: oldRoot, as, itemSize, overscan, cache, item }: VirtualizerProps): InitResult {
-  const children = Array.from(oldRoot.children);
-
+export function init({ children, as, itemSize, overscan, cache, item }: VirtualizerProps): InitResult {
   const container = document.createElement(as ?? "div");
   container.style.overflowAnchor = "none";
   container.style.flex = "none";
   container.style.position = "relative";
   container.style.visibility = "hidden";
   container.style.width = "100%";
+  for (const child of children) {
+    container.appendChild(child);
+  }
 
-  const root = document.createElement(oldRoot.tagName);
+  const root = document.createElement("div");
   root.style.display = "block";
   root.style.overflowY = "auto";
   root.style.contain = "strict";
   root.style.width = "100%";
   root.style.height = "100%";
-
-  for (const attr of Array.from(oldRoot.attributes)) {
-    root.setAttribute(attr.name, attr.value);
-  }
 
   root.appendChild(container);
 
