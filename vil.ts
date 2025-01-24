@@ -121,13 +121,7 @@ type FreezeInitEvent = {
   fromCache: boolean;
 };
 
-let initialized = false;
 async function init(event: FreezeInitEvent): Promise<Unsub | undefined> {
-  // const localInitialized = initialized;
-  if (!initialized) {
-    initialized = true;
-  }
-
   const root = document.body.querySelector("[data-infinite-root]");
   if (!(root instanceof HTMLElement)) {
     return;
@@ -174,7 +168,6 @@ async function init(event: FreezeInitEvent): Promise<Unsub | undefined> {
   const cacheKey = listId + location.pathname + location.search;
 
   const cache = event.fromCache ? getListCache(cacheKey) : undefined;
-  // const cache = localInitialized ? getListCache(cacheKey) : undefined;
 
   const vList = vListInit({
     children: Array.from(root.children),
