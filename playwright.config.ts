@@ -10,6 +10,7 @@ export default defineConfig({
   use: {
     baseURL: "http://127.0.0.1:8000",
   },
+  repeatEach: 3,
   webServer: {
     command: "serve",
     url: "http://127.0.0.1:8000",
