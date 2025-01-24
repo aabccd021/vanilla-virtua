@@ -43,7 +43,7 @@ test("Item 0 shown", async ({ page }) => {
 test.only("Item 29 shown after scroll", async ({ page }) => {
   await page.goto("/page1.html");
   const scrollable = await getScrollable(page);
-  console.warn("scrollable", scrollable.innerHTML());
+  console.warn("scrollable", await scrollable.innerHTML());
   await scrollToBottom(scrollable);
   await expect(page.getByText("Item 29")).toBeInViewport();
 });
