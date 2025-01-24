@@ -1,6 +1,5 @@
 import type { CacheSnapshot } from "virtua/core";
-import type { InfiniteEvent } from "./event.ts";
-import { type Context, appendChildren, init as vListInit, render } from "./index.ts";
+import { type Context, appendChildren, render, init as vListInit } from "./index.ts";
 
 function infiniteScroll(
   listId: string,
@@ -111,7 +110,6 @@ export async function freezePageLoad(cache?: Storage): Promise<Unsub | undefined
   // );
 
   return (): void => {
-    console.log("unsub");
     const cache = vList.context.store.$getCacheSnapshot();
     const scrollOffset = vList.context.store.$getScrollOffset();
 

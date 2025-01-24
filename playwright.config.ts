@@ -3,7 +3,7 @@ import { defineConfig, devices } from "@playwright/test";
 // const timeout = 1_000_000;
 const timeout = 5_000;
 
-const __dirname = new URL(".", import.meta.url).pathname;
+const root = new URL(".", import.meta.url).pathname;
 
 export default defineConfig({
   fullyParallel: true,
@@ -13,7 +13,7 @@ export default defineConfig({
     baseURL: "http://127.0.0.1:8000",
   },
   webServer: {
-    command: `httplz ${__dirname}/fixtures`,
+    command: `esbuild ${root}/vil.ts --outdir=${root}/fixtures --bundle --servedir=${root}/fixtures`,
     url: "http://127.0.0.1:8000",
     timeout: 5_000,
   },

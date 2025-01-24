@@ -14,7 +14,7 @@
     "enabled": true
   },
   "files": {
-    "ignore": ["fixtures/vil.js"]
+    "ignore": ["fixtures/vil.js", "fixtures/freeze.mjs"]
   },
   "linter": {
     "enabled": true,
