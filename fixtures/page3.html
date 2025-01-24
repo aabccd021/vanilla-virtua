@@ -1,0 +1,34 @@
+<!doctype html>
+<html>
+  <head>
+    <title>Page 1</title>
+    <style>
+      :root {
+        color-scheme: dark;
+      }
+      li {
+        border: 1px solid #ccc;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+    </style>
+    <script src="/freeze.mjs" type="module"></script>
+    <script src="/vil.js" type="module"></script>
+  </head>
+  <body data-freeze>
+    <h1 data-testid="main">Page 1</h1>
+    <ul data-infinite-root="main-list" style="height: 80dvh; width: 80dvw">
+      <li style="height: 230px">Item 20</li>
+      <li style="height: 126px">Item 21</li>
+      <li style="height: 116px">Item 22</li>
+      <li style="height: 220px">Item 23</li>
+      <li style="height: 235px">Item 24</li>
+      <li style="height: 324px">Item 25</li>
+      <li style="height: 100px">Item 26</li>
+      <li style="height: 211px">Item 27</li>
+      <li style="height: 121px" data-infinite-trigger="main-list">Item 28</li>
+      <li style="height: 224px">Item 29</li>
+    </ul>
+  </body>
+</html>
