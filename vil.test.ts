@@ -193,7 +193,7 @@ test("btm", async ({ page }) => {
   expect(log.pageerrors).toEqual([]);
 });
 
-test("back and forth", async ({ page }) => {
+test("back and forth dynamic", async ({ page }) => {
   await page.goto("/page1.html");
   const log = initLog(page);
 
@@ -252,6 +252,76 @@ test("back and forth", async ({ page }) => {
 
   await page.getByText("Go to dynamic").click();
   await expect(page).toHaveTitle("Dynamic");
+
+  await page.getByText("Go to page 1").click();
+  await expect(page).toHaveTitle("Page 1");
+  await click(page, log, "Item 0");
+  await expect(items.first()).toHaveText("Item 0");
+  await expect(items.last()).toHaveText("Item 7");
+
+  expect(log.consoleMessages).toEqual([]);
+  expect(log.pageerrors).toEqual([]);
+});
+
+test("back and forth static", async ({ page }) => {
+  await page.goto("/page1.html");
+  const log = initLog(page);
+
+  const scrollable = await getScrollable(page);
+  const items = scrollable.getByRole("listitem");
+
+  await expect(page).toHaveTitle("Page 1");
+  await click(page, log, "Item 0");
+  await expect(items.first()).toHaveText("Item 0");
+  await expect(items.last()).toHaveText("Item 7");
+
+  await page.getByText("Go to static").click();
+  await expect(page).toHaveTitle("Static");
+
+  await page.getByText("Go to page 1").click();
+  await expect(page).toHaveTitle("Page 1");
+  await click(page, log, "Item 0");
+  await expect(items.first()).toHaveText("Item 0");
+  await expect(items.last()).toHaveText("Item 7");
+
+  await page.getByText("Go to static").click();
+  await expect(page).toHaveTitle("Static");
+
+  await page.getByText("Go to page 1").click();
+  await expect(page).toHaveTitle("Page 1");
+  await click(page, log, "Item 0");
+  await expect(items.first()).toHaveText("Item 0");
+  await expect(items.last()).toHaveText("Item 7");
+
+  await page.getByText("Go to static").click();
+  await expect(page).toHaveTitle("Static");
+
+  await page.getByText("Go to page 1").click();
+  await expect(page).toHaveTitle("Page 1");
+  await click(page, log, "Item 0");
+  await expect(items.first()).toHaveText("Item 0");
+  await expect(items.last()).toHaveText("Item 7");
+
+  await page.getByText("Go to static").click();
+  await expect(page).toHaveTitle("Static");
+
+  await page.getByText("Go to page 1").click();
+  await expect(page).toHaveTitle("Page 1");
+  await click(page, log, "Item 0");
+  await expect(items.first()).toHaveText("Item 0");
+  await expect(items.last()).toHaveText("Item 7");
+
+  await page.getByText("Go to static").click();
+  await expect(page).toHaveTitle("Static");
+
+  await page.getByText("Go to page 1").click();
+  await expect(page).toHaveTitle("Page 1");
+  await click(page, log, "Item 0");
+  await expect(items.first()).toHaveText("Item 0");
+  await expect(items.last()).toHaveText("Item 7");
+
+  await page.getByText("Go to static").click();
+  await expect(page).toHaveTitle("Static");
 
   await page.getByText("Go to page 1").click();
   await expect(page).toHaveTitle("Page 1");
