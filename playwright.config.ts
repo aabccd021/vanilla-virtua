@@ -7,6 +7,7 @@ export default defineConfig({
   fullyParallel: true,
   maxFailures: 1,
   // workers: 1,
+  retries: 2,
   use: {
     baseURL: "http://127.0.0.1:8000",
   },

@@ -129,9 +129,6 @@ export async function freezePageLoad(): Promise<Unsub | undefined> {
   }
 
   const next = document.body.querySelector<HTMLAnchorElement>(`a[data-infinite-next="${listId}"]`);
-  if (next === null) {
-    return;
-  }
 
   const moduleInitPromises = Array.from(document.querySelectorAll("script"))
     .filter((script) => script.type === "module")
@@ -185,7 +182,9 @@ export async function freezePageLoad(): Promise<Unsub | undefined> {
     vList.context.scroller.$scrollTo(cache.scrollOffset);
   }
 
-  infiniteScroll(listId, unsubs, childInits, vList.context, next, triggers);
+  if (next !== null) {
+    infiniteScroll(listId, unsubs, childInits, vList.context, next, triggers);
+  }
 
   return (): void => {
     const cache = vList.context.store.$getCacheSnapshot();
