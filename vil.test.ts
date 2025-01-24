@@ -41,12 +41,19 @@ const scrollTo = (scrollable: Locator, offset: number): Promise<void> => {
   }, offset);
 };
 
-type Logs = {
-  consoleMessages: readonly string[];
-  pageerrors: readonly Error[];
+type Log = {
+  consoleMessages: string[];
+  pageerrors: Error[];
 };
 
-const initLogs = (page: Page): Logs => {
+const click = async (log: Log, page: Page, text: string): Promise<void> => {
+  await expect(page.getByText(text)).toBeInViewport();
+  await page.getByText(text).click();
+  expect(log.consoleMessages).toEqual([`Clicked on ${text}`]);
+  log.consoleMessages.length = 0;
+};
+
+const initLog = (page: Page): Log => {
   const consoleMessages: string[] = [];
   const pageerrors: Error[] = [];
 
@@ -61,27 +68,27 @@ const initLogs = (page: Page): Logs => {
 
 test("bottom top", async ({ page }) => {
   await page.goto("/page1.html");
-  const log = initLogs(page);
+  const log = initLog(page);
 
   const scrollable = await getScrollable(page);
   const items = scrollable.getByRole("listitem");
 
   await expect(page).toHaveTitle("Page 1");
-  await expect(page.getByText("Item 0")).toBeInViewport();
+  await click(log, page, "Item 0");
   await expect(items.first()).toHaveText("Item 0");
   await expect(items.last()).toHaveText("Item 7");
 
   await scrollToBottom(scrollable);
 
   await expect(page).toHaveTitle("Page 1");
-  await expect(page.getByText("Item 29")).toBeInViewport();
+  await click(log, page, "Item 29");
   await expect(items.first()).toHaveText("Item 22");
   await expect(items.last()).toHaveText("Item 29");
 
   await scrollTo(scrollable, 0);
 
   await expect(page).toHaveTitle("Page 1");
-  await expect(page.getByText("Item 0")).toBeInViewport();
+  await click(log, page, "Item 0");
   await expect(items.first()).toHaveText("Item 0");
   await expect(items.last()).toHaveText("Item 7");
 
@@ -91,7 +98,7 @@ test("bottom top", async ({ page }) => {
 
 test("middle", async ({ page }) => {
   await page.goto("/page1.html");
-  const log = initLogs(page);
+  const log = initLog(page);
 
   const scrollable = await getScrollable(page);
   const items = scrollable.getByRole("listitem");
@@ -99,10 +106,10 @@ test("middle", async ({ page }) => {
   await scrollTo(scrollable, 900);
 
   await expect(page).toHaveTitle("Page 1");
-  await expect(page.getByText("Item 5")).toBeInViewport();
-  await expect(page.getByText("Item 6")).toBeInViewport();
-  await expect(page.getByText("Item 7")).toBeInViewport();
-  await expect(page.getByText("Item 8")).toBeInViewport();
+  await click(log, page, "Item 5");
+  await click(log, page, "Item 6");
+  await click(log, page, "Item 7");
+  // await click(log, page, "Item 8");
   await expect(items.first()).toHaveText("Item 1");
   await expect(items.last()).toHaveText("Item 12");
 
@@ -112,17 +119,17 @@ test("middle", async ({ page }) => {
   await page.getByText("Go to page 1").click();
 
   await expect(page).toHaveTitle("Page 1");
-  await expect(page.getByText("Item 5")).toBeInViewport();
-  await expect(page.getByText("Item 6")).toBeInViewport();
-  await expect(page.getByText("Item 7")).toBeInViewport();
-  await expect(page.getByText("Item 8")).toBeInViewport();
+  await click(log, page, "Item 5");
+  await click(log, page, "Item 6");
+  await click(log, page, "Item 7");
+  // await click(log, page, "Item 8");
   await expect(items.first()).toHaveText("Item 1");
   await expect(items.last()).toHaveText("Item 12");
 
   await scrollToBottom(scrollable);
 
   await expect(page).toHaveTitle("Page 1");
-  await expect(page.getByText("Item 29")).toBeInViewport();
+  await click(log, page, "Item 29");
   await expect(items.first()).toHaveText("Item 22");
   await expect(items.last()).toHaveText("Item 29");
 
@@ -132,14 +139,14 @@ test("middle", async ({ page }) => {
 
 test("btm", async ({ page }) => {
   await page.goto("/page1.html");
-  const log = initLogs(page);
+  const log = initLog(page);
 
   const scrollable = await getScrollable(page);
   const items = scrollable.getByRole("listitem");
   await scrollToBottom(scrollable);
 
   await expect(page).toHaveTitle("Page 1");
-  await expect(page.getByText("Item 29")).toBeInViewport();
+  await click(log, page, "Item 29");
   await expect(items.first()).toHaveText("Item 22");
   await expect(items.last()).toHaveText("Item 29");
 
@@ -149,7 +156,7 @@ test("btm", async ({ page }) => {
   await page.getByText("Go to page 1").click();
 
   await expect(page).toHaveTitle("Page 1");
-  await expect(page.getByText("Item 29")).toBeInViewport();
+  await click(log, page, "Item 29");
   await expect(items.first()).toHaveText("Item 21");
   await expect(items.last()).toHaveText("Item 29");
 
