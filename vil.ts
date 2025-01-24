@@ -7,6 +7,19 @@ type ListCache = {
   scrollOffset: number;
 };
 
+type Unsub = () => void;
+
+type VilInitEvent = {
+  element: Element;
+  listId: string;
+};
+
+type InitChild = (event: VilInitEvent) => Promise<Unsub | undefined> | undefined;
+
+type FreezeInitEvent = {
+  fromCache: boolean;
+};
+
 function getCache(): ListCache[] {
   return JSON.parse(sessionStorage.getItem("vil-cache") ?? "[]") as ListCache[];
 }
@@ -99,19 +112,6 @@ function infiniteScroll(
 function waitAnimationFrame(): Promise<void> {
   return new Promise((resolve) => requestAnimationFrame(() => resolve()));
 }
-
-type Unsub = () => void;
-
-type VilInitEvent = {
-  element: Element;
-  listId: string;
-};
-
-type InitChild = (event: VilInitEvent) => Promise<Unsub | undefined> | undefined;
-
-type FreezeInitEvent = {
-  fromCache: boolean;
-};
 
 async function init(event: FreezeInitEvent): Promise<Unsub | undefined> {
   const root = document.body.querySelector("[data-infinite-root]");
