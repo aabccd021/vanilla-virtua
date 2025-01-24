@@ -24,7 +24,7 @@
         name = "serve";
         text = ''
           root=$(git rev-parse --show-toplevel)
-          esbuild "$root/vil.ts" \
+          ${pkgs.esbuild}/bin/esbuild "$root/vil.ts" \
             --bundle \
             --target=es6 \
             --format=esm \
