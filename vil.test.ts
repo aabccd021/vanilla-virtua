@@ -142,8 +142,8 @@ test("middle", async ({ page }) => {
   await expect(items.first()).toHaveText("Item 1");
   await expect(items.last()).toHaveText("Item 12");
 
-  await page.getByText("Go to lorem").click();
-  await expect(page).toHaveTitle("Lorem");
+  await page.getByText("Go to dynamic").click();
+  await expect(page).toHaveTitle("Dynamic");
 
   await page.getByText("Go to page 1").click();
 
@@ -179,8 +179,8 @@ test("btm", async ({ page }) => {
   // await expect(items.first()).toHaveText("Item 22");
   await expect(items.last()).toHaveText("Item 29");
 
-  await page.getByText("Go to lorem").click();
-  await expect(page).toHaveTitle("Lorem");
+  await page.getByText("Go to dynamic").click();
+  await expect(page).toHaveTitle("Dynamic");
 
   await page.getByText("Go to page 1").click();
 
@@ -205,8 +205,8 @@ test("back and forth", async ({ page }) => {
   await expect(items.first()).toHaveText("Item 0");
   await expect(items.last()).toHaveText("Item 7");
 
-  await page.getByText("Go to lorem").click();
-  await expect(page).toHaveTitle("Lorem");
+  await page.getByText("Go to dynamic").click();
+  await expect(page).toHaveTitle("Dynamic");
 
   await page.getByText("Go to page 1").click();
   await expect(page).toHaveTitle("Page 1");
@@ -214,8 +214,8 @@ test("back and forth", async ({ page }) => {
   await expect(items.first()).toHaveText("Item 0");
   await expect(items.last()).toHaveText("Item 7");
 
-  await page.getByText("Go to lorem").click();
-  await expect(page).toHaveTitle("Lorem");
+  await page.getByText("Go to dynamic").click();
+  await expect(page).toHaveTitle("Dynamic");
 
   await page.getByText("Go to page 1").click();
   await expect(page).toHaveTitle("Page 1");
@@ -223,8 +223,8 @@ test("back and forth", async ({ page }) => {
   await expect(items.first()).toHaveText("Item 0");
   await expect(items.last()).toHaveText("Item 7");
 
-  await page.getByText("Go to lorem").click();
-  await expect(page).toHaveTitle("Lorem");
+  await page.getByText("Go to dynamic").click();
+  await expect(page).toHaveTitle("Dynamic");
 
   await page.getByText("Go to page 1").click();
   await expect(page).toHaveTitle("Page 1");
@@ -232,8 +232,8 @@ test("back and forth", async ({ page }) => {
   await expect(items.first()).toHaveText("Item 0");
   await expect(items.last()).toHaveText("Item 7");
 
-  await page.getByText("Go to lorem").click();
-  await expect(page).toHaveTitle("Lorem");
+  await page.getByText("Go to dynamic").click();
+  await expect(page).toHaveTitle("Dynamic");
 
   await page.getByText("Go to page 1").click();
   await expect(page).toHaveTitle("Page 1");
@@ -241,8 +241,8 @@ test("back and forth", async ({ page }) => {
   await expect(items.first()).toHaveText("Item 0");
   await expect(items.last()).toHaveText("Item 7");
 
-  await page.getByText("Go to lorem").click();
-  await expect(page).toHaveTitle("Lorem");
+  await page.getByText("Go to dynamic").click();
+  await expect(page).toHaveTitle("Dynamic");
 
   await page.getByText("Go to page 1").click();
   await expect(page).toHaveTitle("Page 1");
@@ -250,8 +250,8 @@ test("back and forth", async ({ page }) => {
   await expect(items.first()).toHaveText("Item 0");
   await expect(items.last()).toHaveText("Item 7");
 
-  await page.getByText("Go to lorem").click();
-  await expect(page).toHaveTitle("Lorem");
+  await page.getByText("Go to dynamic").click();
+  await expect(page).toHaveTitle("Dynamic");
 
   await page.getByText("Go to page 1").click();
   await expect(page).toHaveTitle("Page 1");
