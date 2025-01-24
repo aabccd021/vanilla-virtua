@@ -85,6 +85,7 @@ test("middle", async ({ page }) => {
   await expect(page).toHaveTitle("Lorem");
 
   await page.getByText("Go to page 1").click();
+
   await expect(page).toHaveTitle("Page 1");
   await expect(page.getByText("Item 5")).toBeInViewport();
   await expect(page.getByText("Item 6")).toBeInViewport();
@@ -92,4 +93,11 @@ test("middle", async ({ page }) => {
   await expect(page.getByText("Item 8")).toBeInViewport();
   await expect(items.first()).toHaveText("Item 1");
   await expect(items.last()).toHaveText("Item 12");
+
+  await scrollToBottom(scrollable);
+
+  await expect(page).toHaveTitle("Page 1");
+  await expect(page.getByText("Item 29")).toBeInViewport();
+  await expect(items.first()).toHaveText("Item 22");
+  await expect(items.last()).toHaveText("Item 29");
 });
