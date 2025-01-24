@@ -30,4 +30,5 @@ dist-ssr
 /blob-report/
 /playwright/.cache/
 fixtures/vil.js
+fixtures/freeze.js
 result
