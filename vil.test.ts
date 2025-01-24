@@ -66,11 +66,11 @@ test("bottom top", async ({ page }) => {
   const scrollable = await getScrollable(page);
   const items = scrollable.getByRole("listitem");
 
-  // await expect(page).toHaveTitle("Page 1");
-  // await expect(page.getByText("Item 0")).toBeInViewport();
-  // await expect(items.first()).toHaveText("Item 0");
-  // await expect(items.last()).toHaveText("Item 7");
-  //
+  await expect(page).toHaveTitle("Page 1");
+  await expect(page.getByText("Item 0")).toBeInViewport();
+  await expect(items.first()).toHaveText("Item 0");
+  await expect(items.last()).toHaveText("Item 7");
+
   await scrollToBottom(scrollable);
 
   await expect(page).toHaveTitle("Page 1");
