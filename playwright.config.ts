@@ -11,10 +11,11 @@ export default defineConfig({
     baseURL: "http://127.0.0.1:8000",
   },
   webServer: {
-    command: "nix run .#serve",
+    command: "serve",
     url: "http://127.0.0.1:8000",
     timeout: 5_000,
     reuseExistingServer: true,
+    stderr: "ignore",
   },
   timeout,
   expect: { timeout: timeout / 2 },

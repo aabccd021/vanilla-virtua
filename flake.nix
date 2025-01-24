@@ -88,6 +88,7 @@
           pkgs.biome
           pkgs.typescript
           pkgs.esbuild
+          serve
         ];
       };
 
@@ -95,10 +96,6 @@
         check = {
           type = "app";
           program = "${check}/bin/check";
-        };
-        serve = {
-          type = "app";
-          program = "${serve}/bin/serve";
         };
       };
 
