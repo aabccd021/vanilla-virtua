@@ -3,6 +3,7 @@
     "target": "ES2020",
     "module": "ESNext",
     "lib": ["esnext", "DOM"],
+    "checkJs": true,
 
     /* Bundler mode */
     "moduleResolution": "bundler",
