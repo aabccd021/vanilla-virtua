@@ -95,7 +95,7 @@ export async function freezePageLoad(): Promise<Unsub | undefined> {
 
   const next = document.body.querySelector<HTMLAnchorElement>(`a[data-infinite-next="${listId}"]`);
   if (next === null) {
-    throw new Error("Next not found");
+    return;
   }
 
   const triggers = root.querySelectorAll(`[data-infinite-trigger="${listId}"]`);
@@ -108,6 +108,7 @@ export async function freezePageLoad(): Promise<Unsub | undefined> {
     children: Array.from(root.children),
     cache: cache?.virtuaSnapshot,
   });
+
   await waitAnimationFrame();
 
   root.appendChild(vList.root);
@@ -135,10 +136,10 @@ export async function freezePageLoad(): Promise<Unsub | undefined> {
     const scrollOffset = vList.context.store.$getScrollOffset();
 
     for (const child of vList.context.state.children) {
-      vList.root.appendChild(child);
+      root.appendChild(child);
     }
 
-    vList.container.remove();
+    vList.root.remove();
 
     const listsCache = getCache();
     for (let i = 0; i < listsCache.length; i++) {
@@ -148,13 +149,13 @@ export async function freezePageLoad(): Promise<Unsub | undefined> {
       }
     }
 
-    const newList: ListCache = {
+    const newListCache: ListCache = {
       cacheKey,
       virtuaSnapshot: cache,
       scrollOffset,
     };
 
-    listsCache.push(newList);
+    listsCache.push(newListCache);
 
     // keep trying to save the cache until it succeeds or is empty
     while (listsCache.length > 0) {

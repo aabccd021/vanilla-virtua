@@ -86,4 +86,10 @@ test("middle", async ({ page }) => {
 
   await page.getByText("Go to page 1").click();
   await expect(page).toHaveTitle("Page 1");
+  await expect(page.getByText("Item 5")).toBeInViewport();
+  await expect(page.getByText("Item 6")).toBeInViewport();
+  await expect(page.getByText("Item 7")).toBeInViewport();
+  await expect(page.getByText("Item 8")).toBeInViewport();
+  await expect(items.first()).toHaveText("Item 1");
+  await expect(items.last()).toHaveText("Item 12");
 });
