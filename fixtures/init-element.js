@@ -22,6 +22,6 @@ export function vilInitChild(e) {
   );
 
   return () => {
-    abortController.abort();
+    // abortController.abort();
   };
 }
