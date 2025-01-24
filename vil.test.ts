@@ -26,7 +26,7 @@ const scrollToBottom = (scrollable: Locator): Promise<void> => {
           } else {
             onScroll();
           }
-        }, 50);
+        }, 100);
       };
       e.addEventListener("scroll", onScroll);
 
