@@ -35,15 +35,13 @@ const scrollToBottom = (scrollable: Locator): Promise<void> => {
   });
 };
 
-test("Item 0 shown", async ({ page }) => {
+test("overall", async ({ page }) => {
   await page.goto("/page1.html");
   await expect(page.getByText("Item 0")).toBeInViewport();
-});
 
-test.only("Item 29 shown after scroll", async ({ page }) => {
-  await page.goto("/page1.html");
   const scrollable = await getScrollable(page);
   await scrollToBottom(scrollable);
-  console.warn("scrollable", await scrollable.innerHTML());
   await expect(page.getByText("Item 29")).toBeInViewport();
+
+  await expect(scrollable.getByRole("listitem").first()).toHaveText("Item 22");
 });
