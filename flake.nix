@@ -4,10 +4,11 @@
     treefmt-nix.url = "github:numtide/treefmt-nix";
   };
 
-  outputs = { self, nixpkgs, treefmt-nix }:
+  outputs = inputs@{ self, nixpkgs, treefmt-nix }:
 
     let
       pkgs = nixpkgs.legacyPackages.x86_64-linux;
+      lib = pkgs.lib;
 
       treefmtEval = treefmt-nix.lib.evalModule pkgs {
         projectRootFile = "flake.nix";
@@ -38,6 +39,18 @@
         '';
       };
 
+      inputOutPaths = is:
+        lib.lists.unique (lib.lists.flatten (lib.lists.map
+          (input:
+            if lib.attrsets.hasAttr "inputs" input then
+              [ input.outPath (inputOutPaths input.inputs) ]
+            else
+              input.outPath
+          )
+          (lib.attrsets.attrValues is)
+        ));
+
+
       packages = {
         check = check;
         formatting = treefmtEval.config.build.check self;
@@ -58,6 +71,7 @@
       formatter.x86_64-linux = treefmtEval.config.build.wrapper;
 
       devShells.x86_64-linux.default = pkgs.mkShellNoCC {
+        FLAKE_INPUTS = lib.strings.concatStringsSep " " (inputOutPaths inputs);
         shellHook = ''
           export PLAYWRIGHT_BROWSERS_PATH=${pkgs.playwright-driver.browsers-chromium}
         '';
