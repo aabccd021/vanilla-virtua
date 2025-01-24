@@ -16,9 +16,11 @@ export function vilInitChild({ listId, element }) {
     console.warn(`Clicked on ${element.textContent}`);
   });
 
-  element.textContent = `Item ${element.dataset["itemId"]}`;
+  const textContent = element.textContent;
+
+  element.textContent = `${textContent} ${element.dataset["itemId"]}`;
 
   return () => {
-    // abortController.abort();
+    element.textContent = "Item";
   };
 }
