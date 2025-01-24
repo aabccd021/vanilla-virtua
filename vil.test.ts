@@ -35,6 +35,12 @@ const scrollToBottom = (scrollable: Locator): Promise<void> => {
   });
 };
 
+const scrollTo = (scrollable: Locator, offset: number): Promise<void> => {
+  return scrollable.evaluate((e, offset) => {
+    e.scrollTop = offset;
+  }, offset);
+};
+
 test("overall", async ({ page }) => {
   await page.goto("/page1.html");
   const scrollable = await getScrollable(page);
@@ -48,4 +54,9 @@ test("overall", async ({ page }) => {
   await expect(page.getByText("Item 29")).toBeInViewport();
   await expect(items.first()).toHaveText("Item 22");
   await expect(items.last()).toHaveText("Item 29");
+
+  await scrollTo(scrollable, 0);
+  await expect(page.getByText("Item 0")).toBeInViewport();
+  await expect(items.first()).toHaveText("Item 0");
+  await expect(items.last()).toHaveText("Item 7");
 });
