@@ -7,8 +7,7 @@ export function vilInitChild(el) {
   el.addEventListener(
     "click",
     () => {
-      const testId = el.dataset.testid;
-      console.warn(`Clicked on ${testId}`);
+      console.warn(`Clicked on ${el.textContent}`);
     },
     { signal: abortController.signal },
   );
