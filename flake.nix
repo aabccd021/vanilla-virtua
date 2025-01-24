@@ -83,7 +83,7 @@
 
     {
 
-      packages.x86_64-linux = packages;
+      packages.x86_64-linux = gcroot;
 
       checks.x86_64-linux = gcroot;
 
