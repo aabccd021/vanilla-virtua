@@ -32,3 +32,4 @@ dist-ssr
 fixtures/vil.js
 fixtures/freeze.js
 result
+.gcroot
