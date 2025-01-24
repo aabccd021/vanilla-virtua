@@ -1,13 +1,22 @@
 /**
- * @param {Element} el
- * @return {function(): void}
+ * @typedef {Object} VilInitEvent
+ * @property {Element} element
+ * @property {string} listId
  */
-export function vilInitChild(el) {
+
+/**
+ * @param {VilInitEvent} e
+ * @return {{function(): void | void}}
+ */
+export function vilInitChild(e) {
+  if (e.listId !== "main-list") {
+    return;
+  }
   const abortController = new AbortController();
-  el.addEventListener(
+  e.element.addEventListener(
     "click",
     () => {
-      console.warn(`Clicked on ${el.textContent}`);
+      console.warn(`Clicked on ${e.element.textContent}`);
     },
     { signal: abortController.signal },
   );

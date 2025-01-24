@@ -23,8 +23,37 @@ function getListCache(cacheKey: string): ListCache | undefined {
   return undefined;
 }
 
+async function triggerInitChild(listId: string, inits: Init[], children: Element[]): Promise<Unsub[]> {
+  const vilInitPromises = inits.flatMap((init) => {
+    return children.map((child) => {
+      const event: VilInitEvent = {
+        element: child,
+        listId,
+      };
+      return init(event);
+    });
+  });
+
+  const vilInitResult = await Promise.allSettled(vilInitPromises);
+
+  for (const initResult of vilInitResult) {
+    if (initResult.status === "rejected") {
+      console.error(initResult.reason);
+    }
+  }
+
+  const unsubs = vilInitResult
+    .filter((init) => init.status === "fulfilled")
+    .map((init) => init.value)
+    .filter((init) => init !== undefined);
+
+  return unsubs;
+}
+
 function infiniteScroll(
   listId: string,
+  unsubs: Unsub[],
+  childInits: Init[],
   context: Context,
   next: HTMLAnchorElement,
   triggers: NodeListOf<Element>,
@@ -53,11 +82,10 @@ function infiniteScroll(
 
     const newChildren = Array.from(newRoot.children);
 
-    window.dispatchEvent(
-      new CustomEvent("infinite", {
-        detail: { children: newChildren },
-      }),
-    );
+    const newUnsubs = await triggerInitChild(listId, childInits, newChildren);
+    for (const unsub of newUnsubs) {
+      unsubs.push(unsub);
+    }
 
     appendChildren(context, newChildren);
 
@@ -68,7 +96,7 @@ function infiniteScroll(
     }
     next.replaceWith(newNext);
 
-    infiniteScroll(listId, context, newNext, newTriggers);
+    infiniteScroll(listId, unsubs, childInits, context, newNext, newTriggers);
   });
 
   for (const trigger of Array.from(triggers)) {
@@ -81,6 +109,13 @@ function waitAnimationFrame(): Promise<void> {
 }
 
 type Unsub = () => void;
+
+type VilInitEvent = {
+  element: Element;
+  listId: string;
+};
+
+type Init = (event: VilInitEvent) => Promise<Unsub | undefined> | undefined;
 
 export async function freezePageLoad(): Promise<Unsub | undefined> {
   const root = document.body.querySelector("[data-infinite-root]");
@@ -98,11 +133,9 @@ export async function freezePageLoad(): Promise<Unsub | undefined> {
     return;
   }
 
-  const triggers = root.querySelectorAll(`[data-infinite-trigger="${listId}"]`);
-
-  const vilInit = Array.from(document.querySelectorAll("script"))
+  const moduleInitPromises = Array.from(document.querySelectorAll("script"))
     .filter((script) => script.type === "module")
-    .map(async (script) => {
+    .map(async (script): Promise<Init | undefined> => {
       const module = await import(script.src);
       if (
         typeof module === "object" &&
@@ -110,21 +143,27 @@ export async function freezePageLoad(): Promise<Unsub | undefined> {
         "vilInitChild" in module &&
         typeof module.vilInitChild === "function"
       ) {
-        return await module.vilInitChild();
+        return module.vilInitChild;
       }
       return undefined;
     });
 
-  const vilInitResult = await Promise.allSettled(vilInit);
+  const moduleInitResults = await Promise.allSettled(moduleInitPromises);
 
-  const unsubs = vilInitResult
-    .map((unsub) => {
-      if (unsub.status === "fulfilled" && typeof unsub.value === "function") {
-        return unsub.value;
-      }
-      return undefined;
-    })
-    .filter((unsub) => unsub !== undefined);
+  for (const moduleInitResult of moduleInitResults) {
+    if (moduleInitResult.status === "rejected") {
+      console.error(moduleInitResult.reason);
+    }
+  }
+
+  const childInits = moduleInitResults
+    .filter((init) => init.status === "fulfilled")
+    .map((init) => init.value)
+    .filter((init) => init !== undefined);
+
+  const unsubs = await triggerInitChild(listId, childInits, Array.from(root.children));
+
+  const triggers = root.querySelectorAll(`[data-infinite-trigger="${listId}"]`);
 
   const cacheKey = listId + location.pathname + location.search;
 
@@ -146,7 +185,7 @@ export async function freezePageLoad(): Promise<Unsub | undefined> {
     vList.context.scroller.$scrollTo(cache.scrollOffset);
   }
 
-  infiniteScroll(listId, vList.context, next, triggers);
+  infiniteScroll(listId, unsubs, childInits, vList.context, next, triggers);
 
   return (): void => {
     const cache = vList.context.store.$getCacheSnapshot();
