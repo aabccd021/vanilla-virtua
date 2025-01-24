@@ -23,7 +23,7 @@ function getListCache(cacheKey: string): ListCache | undefined {
   return undefined;
 }
 
-async function triggerInitChild(listId: string, inits: Init[], children: Element[]): Promise<Unsub[]> {
+async function triggerInitChild(listId: string, inits: InitChild[], children: Element[]): Promise<Unsub[]> {
   const vilInitPromises = inits.flatMap((init) => {
     return children.map((child) => {
       const event: VilInitEvent = {
@@ -53,7 +53,7 @@ async function triggerInitChild(listId: string, inits: Init[], children: Element
 function infiniteScroll(
   listId: string,
   unsubs: Unsub[],
-  childInits: Init[],
+  childInits: InitChild[],
   context: Context,
   next: HTMLAnchorElement,
   triggers: NodeListOf<Element>,
@@ -115,9 +115,9 @@ type VilInitEvent = {
   listId: string;
 };
 
-type Init = (event: VilInitEvent) => Promise<Unsub | undefined> | undefined;
+type InitChild = (event: VilInitEvent) => Promise<Unsub | undefined> | undefined;
 
-export async function freezePageLoad(): Promise<Unsub | undefined> {
+async function init(): Promise<Unsub | undefined> {
   const root = document.body.querySelector("[data-infinite-root]");
   if (!(root instanceof HTMLElement)) {
     return;
@@ -133,7 +133,7 @@ export async function freezePageLoad(): Promise<Unsub | undefined> {
 
   const moduleInitPromises = Array.from(document.querySelectorAll("script"))
     .filter((script) => script.type === "module")
-    .map(async (script): Promise<Init | undefined> => {
+    .map(async (script): Promise<InitChild | undefined> => {
       const module = await import(script.src);
       if (
         typeof module === "object" &&
@@ -226,3 +226,5 @@ export async function freezePageLoad(): Promise<Unsub | undefined> {
     }
   };
 }
+
+export const freezePageLoad = init;
