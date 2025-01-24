@@ -1,21 +1,18 @@
 /**
- * Type representing an unsubscribe function.
  * @typedef {Function} Unsub
  * @returns {void}
  */
 
 /**
- * Type representing the initialization event for a virtualized list.
  * @typedef {Object} VilInitEvent
- * @property {Element} element - The DOM element associated with the event.
- * @property {string} listId - The ID of the list being initialized.
+ * @property {Element} element
+ * @property {string} listId
  */
 
 /**
- * Type representing a function that initializes a child component.
  * @typedef {Function} InitChild
- * @param {VilInitEvent} event - The initialization event.
- * @returns {Promise<Unsub | undefined> | Unsub | undefined} - A promise that resolves to an unsubscribe function or undefined.
+ * @param {VilInitEvent} event
+ * @returns {Promise<Unsub | undefined> | Unsub | undefined}
  */
 export function vilInitChild({ listId, element }) {
   // assert element is HTMLElement
