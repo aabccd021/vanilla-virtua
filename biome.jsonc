@@ -42,7 +42,8 @@
       },
       "nursery": {
         "all": true,
-        "noProcessEnv": "off"
+        "noProcessEnv": "off",
+        "noSecrets": "off"
       },
       "style": {
         "all": true,
