@@ -128,6 +128,7 @@ export async function freezePageLoad(): Promise<Unsub | undefined> {
     throw new Error("List ID not found");
   }
 
+  const triggers = root.querySelectorAll(`[data-infinite-trigger="${listId}"]`);
   const next = document.body.querySelector<HTMLAnchorElement>(`a[data-infinite-next="${listId}"]`);
 
   const moduleInitPromises = Array.from(document.querySelectorAll("script"))
@@ -159,8 +160,6 @@ export async function freezePageLoad(): Promise<Unsub | undefined> {
     .filter((init) => init !== undefined);
 
   const unsubs = await triggerInitChild(listId, childInits, Array.from(root.children));
-
-  const triggers = root.querySelectorAll(`[data-infinite-trigger="${listId}"]`);
 
   const cacheKey = listId + location.pathname + location.search;
 
