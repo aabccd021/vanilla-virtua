@@ -26,5 +26,6 @@
     "noUnusedParameters": true,
     "strict": true,
     "useUnknownInCatchVariables": true
-  }
+  },
+  "exclude": ["fixtures/vil.js", "fixtures/freeze.js"]
 }
