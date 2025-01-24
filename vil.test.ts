@@ -1,6 +1,6 @@
 import { expect, test } from "@playwright/test";
 
-test("list one", async ({ page }) => {
+test("Item 0 in viewport", async ({ page }) => {
   await page.goto("/page1.html");
-  await expect(page).toHaveTitle("Page 1");
+  await expect(page.getByText("Item 0")).toBeInViewport();
 });
