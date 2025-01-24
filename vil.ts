@@ -24,14 +24,7 @@ function getListCache(cacheKey: string): ListCache | undefined {
 }
 
 async function triggerInitChild(listId: string, inits: InitChild[], children: Element[]): Promise<Unsub[]> {
-  const vilInitPromises = inits.flatMap((init) =>
-    children.map((child) =>
-      init({
-        element: child,
-        listId,
-      }),
-    ),
-  );
+  const vilInitPromises = inits.flatMap((init) => children.map((child) => init({ element: child, listId })));
 
   const vilInitResult = await Promise.allSettled(vilInitPromises);
 
