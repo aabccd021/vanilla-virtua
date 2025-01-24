@@ -65,7 +65,7 @@ type Storage = {
 
 type Unsub = () => void;
 
-export async function freezePageLoad(cache?: Storage): Promise<Unsub | undefined> {
+export async function freezePageLoad(): Promise<Unsub | undefined> {
   const root = document.body.querySelector("[data-infinite-root]");
   if (!(root instanceof HTMLElement)) {
     return;
@@ -85,7 +85,7 @@ export async function freezePageLoad(cache?: Storage): Promise<Unsub | undefined
 
   const vList = vListInit({
     children: Array.from(root.children),
-    cache: cache?.virtuaSnapshot,
+    // cache: cache?.virtuaSnapshot,
   });
   await waitAnimationFrame();
 
@@ -93,10 +93,10 @@ export async function freezePageLoad(cache?: Storage): Promise<Unsub | undefined
 
   render(vList.context);
 
-  if (cache?.scrollOffset) {
-    await waitAnimationFrame();
-    vList.context.scroller.$scrollTo(cache.scrollOffset);
-  }
+  // if (cache?.scrollOffset) {
+  //   await waitAnimationFrame();
+  //   vList.context.scroller.$scrollTo(cache.scrollOffset);
+  // }
 
   infiniteScroll(listId, vList.context, next, triggers);
 

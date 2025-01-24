@@ -20,6 +20,20 @@
         settings.formatter.biome.priority = 2;
       };
 
+      serve = pkgs.writeShellApplication {
+        name = "serve";
+        text = ''
+          root=$(git rev-parse --show-toplevel)
+          esbuild "$root/vil.ts" \
+            --bundle \
+            --target=es6 \
+            --format=esm \
+            --outdir="$root/fixtures" \
+            --servedir="$root/fixtures" \
+            --watch
+        '';
+      };
+
       check = pkgs.writeShellApplication {
         name = "check";
         text = ''
@@ -82,7 +96,12 @@
           type = "app";
           program = "${check}/bin/check";
         };
+        serve = {
+          type = "app";
+          program = "${serve}/bin/serve";
+        };
       };
+
 
     };
 }
