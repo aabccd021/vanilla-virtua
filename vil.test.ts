@@ -41,8 +41,29 @@ const scrollTo = (scrollable: Locator, offset: number): Promise<void> => {
   }, offset);
 };
 
+type Logs = {
+  consoleMessages: readonly string[];
+  pageerrors: readonly Error[];
+};
+
+const initLogs = (page: Page): Logs => {
+  const consoleMessages: string[] = [];
+  const pageerrors: Error[] = [];
+
+  page.on("console", (msg) => consoleMessages.push(msg.text()));
+  page.on("pageerror", (msg) => pageerrors.push(msg));
+
+  return {
+    consoleMessages,
+    pageerrors,
+  };
+};
+
 test("bottom top", async ({ page }) => {
   await page.goto("/page1.html");
+
+  const logs = initLogs(page);
+
   const scrollable = await getScrollable(page);
   const items = scrollable.getByRole("listitem");
 
@@ -64,10 +85,15 @@ test("bottom top", async ({ page }) => {
   await expect(page.getByText("Item 0")).toBeInViewport();
   await expect(items.first()).toHaveText("Item 0");
   await expect(items.last()).toHaveText("Item 7");
+
+  expect(logs.consoleMessages).toEqual([]);
+  expect(logs.pageerrors).toEqual([]);
 });
 
 test("middle", async ({ page }) => {
   await page.goto("/page1.html");
+  const log1 = initLogs(page);
+
   const scrollable = await getScrollable(page);
   const items = scrollable.getByRole("listitem");
 
@@ -81,10 +107,17 @@ test("middle", async ({ page }) => {
   await expect(items.first()).toHaveText("Item 1");
   await expect(items.last()).toHaveText("Item 12");
 
+  expect(log1.consoleMessages).toEqual([]);
+  expect(log1.pageerrors).toEqual([]);
+
   await page.getByText("Go to lorem").click();
+  const log2 = initLogs(page);
   await expect(page).toHaveTitle("Lorem");
+  expect(log2.consoleMessages).toEqual([]);
+  expect(log2.pageerrors).toEqual([]);
 
   await page.getByText("Go to page 1").click();
+  const log3 = initLogs(page);
 
   await expect(page).toHaveTitle("Page 1");
   await expect(page.getByText("Item 5")).toBeInViewport();
@@ -100,4 +133,7 @@ test("middle", async ({ page }) => {
   await expect(page.getByText("Item 29")).toBeInViewport();
   await expect(items.first()).toHaveText("Item 22");
   await expect(items.last()).toHaveText("Item 29");
+
+  expect(log3.consoleMessages).toEqual([]);
+  expect(log3.pageerrors).toEqual([]);
 });
