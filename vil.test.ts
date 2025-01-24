@@ -46,7 +46,7 @@ type Log = {
   pageerrors: Error[];
 };
 
-const click = async (log: Log, page: Page, text: string): Promise<void> => {
+const click = async (page: Page, log: Log, text: string): Promise<void> => {
   await expect(page.getByText(text)).toBeInViewport();
   await page.getByText(text).click();
   expect(log.consoleMessages).toEqual([`Clicked on ${text}`]);
@@ -74,21 +74,21 @@ test("bottom top", async ({ page }) => {
   const items = scrollable.getByRole("listitem");
 
   await expect(page).toHaveTitle("Page 1");
-  await click(log, page, "Item 0");
+  await click(page, log, "Item 0");
   await expect(items.first()).toHaveText("Item 0");
   await expect(items.last()).toHaveText("Item 7");
 
   await scrollToBottom(scrollable);
 
   await expect(page).toHaveTitle("Page 1");
-  await click(log, page, "Item 29");
+  await click(page, log, "Item 29");
   await expect(items.first()).toHaveText("Item 22");
   await expect(items.last()).toHaveText("Item 29");
 
   await scrollTo(scrollable, 0);
 
   await expect(page).toHaveTitle("Page 1");
-  await click(log, page, "Item 0");
+  await click(page, log, "Item 0");
   await expect(items.first()).toHaveText("Item 0");
   await expect(items.last()).toHaveText("Item 7");
 
@@ -106,10 +106,10 @@ test("middle", async ({ page }) => {
   await scrollTo(scrollable, 900);
 
   await expect(page).toHaveTitle("Page 1");
-  await click(log, page, "Item 5");
-  await click(log, page, "Item 6");
-  await click(log, page, "Item 7");
-  // await click(log, page, "Item 8");
+  await click(page, log, "Item 5");
+  await click(page, log, "Item 6");
+  await click(page, log, "Item 7");
+  // await click(page, log, "Item 8");
   await expect(items.first()).toHaveText("Item 1");
   await expect(items.last()).toHaveText("Item 12");
 
@@ -119,17 +119,17 @@ test("middle", async ({ page }) => {
   await page.getByText("Go to page 1").click();
 
   await expect(page).toHaveTitle("Page 1");
-  await click(log, page, "Item 5");
-  await click(log, page, "Item 6");
-  await click(log, page, "Item 7");
-  // await click(log, page, "Item 8");
+  await click(page, log, "Item 5");
+  await click(page, log, "Item 6");
+  await click(page, log, "Item 7");
+  // await click(page, log, "Item 8");
   await expect(items.first()).toHaveText("Item 1");
   await expect(items.last()).toHaveText("Item 12");
 
   await scrollToBottom(scrollable);
 
   await expect(page).toHaveTitle("Page 1");
-  await click(log, page, "Item 29");
+  await click(page, log, "Item 29");
   await expect(items.first()).toHaveText("Item 22");
   await expect(items.last()).toHaveText("Item 29");
 
@@ -146,7 +146,7 @@ test("btm", async ({ page }) => {
   await scrollToBottom(scrollable);
 
   await expect(page).toHaveTitle("Page 1");
-  await click(log, page, "Item 29");
+  await click(page, log, "Item 29");
   await expect(items.first()).toHaveText("Item 22");
   await expect(items.last()).toHaveText("Item 29");
 
@@ -156,7 +156,7 @@ test("btm", async ({ page }) => {
   await page.getByText("Go to page 1").click();
 
   await expect(page).toHaveTitle("Page 1");
-  await click(log, page, "Item 29");
+  await click(page, log, "Item 29");
   await expect(items.first()).toHaveText("Item 21");
   await expect(items.last()).toHaveText("Item 29");
 
