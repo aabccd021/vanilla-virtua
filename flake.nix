@@ -20,10 +20,20 @@
         settings.formatter.biome.priority = 2;
       };
 
+      freezeJs = pkgs.fetchurl {
+        url = "https://raw.githubusercontent.com/aabccd021/freeze-js/refs/heads/main/freeze.ts";
+        hash = "sha256-+9C4scMQP5xYk6OvevkjzaeFnu6ReTKLuqOWsBR8j6A=";
+      };
+
       serve = pkgs.writeShellApplication {
         name = "serve";
         text = ''
           root=$(git rev-parse --show-toplevel)
+          ${pkgs.esbuild}/bin/esbuild ${freezeJs} \
+            --bundle \
+            --target=es6 \
+            --format=esm \
+            --outfile="$root/fixtures/freeze.js"
           ${pkgs.esbuild}/bin/esbuild "$root/vil.ts" \
             --bundle \
             --target=es6 \
