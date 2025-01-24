@@ -767,6 +767,14 @@ var createResizer = (store, isHorizontal) => {
 };
 
 // index.ts
+function appendChildren(context, newChildren) {
+  context.state.children = context.state.children.concat(newChildren);
+  context.store.$update(ACTION_ITEMS_LENGTH_CHANGE, [
+    context.state.children.length,
+    false,
+  ]);
+  render(context);
+}
 function newChild(context, idx, top, newChildData) {
   const child = context.state.children[idx];
   if (child === void 0) {
@@ -919,6 +927,44 @@ function _render(context) {
 }
 
 // vil.ts
+function infiniteScroll(listId, context, next, triggers) {
+  const observer = new IntersectionObserver(async (entries) => {
+    if (entries.every((entry) => !entry.isIntersecting)) {
+      return;
+    }
+    observer.disconnect();
+    const response = await fetch(next.href);
+    const html = await response.text();
+    const newDoc = new DOMParser().parseFromString(html, "text/html");
+    const newRoot = newDoc.querySelector(`[data-infinite-root="${listId}"]`);
+    if (newRoot === null) {
+      return;
+    }
+    for (const trigger of Array.from(triggers)) {
+      trigger.removeAttribute("data-infinite-trigger");
+    }
+    const newTriggers = newRoot.querySelectorAll(
+      `[data-infinite-trigger="${listId}"]`,
+    );
+    const newChildren = Array.from(newRoot.children);
+    window.dispatchEvent(
+      new CustomEvent("infinite", {
+        detail: { children: newChildren },
+      }),
+    );
+    appendChildren(context, newChildren);
+    const newNext = newDoc.querySelector(`a[data-infinite-next="${listId}"]`);
+    if (newNext === null) {
+      next.remove();
+      return;
+    }
+    next.replaceWith(newNext);
+    infiniteScroll(listId, context, newNext, newTriggers);
+  });
+  for (const trigger of Array.from(triggers)) {
+    observer.observe(trigger);
+  }
+}
 function waitAnimationFrame() {
   return new Promise((resolve) => requestAnimationFrame(() => resolve()));
 }
@@ -947,6 +993,7 @@ async function freezePageLoad(cache) {
     await waitAnimationFrame();
     vList.context.scroller.$scrollTo(cache.scrollOffset);
   }
+  infiniteScroll(listId, vList.context, next, triggers);
   return () => {
     console.log("unsub");
     const cache2 = vList.context.store.$getCacheSnapshot();

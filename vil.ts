@@ -94,17 +94,12 @@ export async function freezePageLoad(cache?: Storage): Promise<Unsub | undefined
 
   render(vList.context);
 
-  // for (const attr of Array.from(root.attributes)) {
-  //   vList.root.setAttribute(attr.name, attr.value);
-  // }
-  // root.replaceWith(vList.root);
-
   if (cache?.scrollOffset) {
     await waitAnimationFrame();
     vList.context.scroller.$scrollTo(cache.scrollOffset);
   }
 
-  // infiniteScroll(listId, vList.context, next, triggers);
+  infiniteScroll(listId, vList.context, next, triggers);
 
   // window.dispatchEvent(
   //   new CustomEvent<InfiniteEvent>("infinite", {
