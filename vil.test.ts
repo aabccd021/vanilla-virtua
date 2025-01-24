@@ -332,3 +332,31 @@ test("back and forth static", async ({ page }) => {
   expect(log.consoleMessages).toEqual([]);
   expect(log.pageerrors).toEqual([]);
 });
+
+test("reload", async ({ page }) => {
+  await page.goto("/page1.html");
+  const log = initLog(page);
+
+  const scrollable = await getScrollable(page);
+  const items = scrollable.getByRole("listitem");
+
+  await expect(page).toHaveTitle("Page 1");
+  await click(page, log, "Item 0");
+  await expect(items.first()).toHaveText("Item 0");
+  await expect(items.last()).toHaveText("Item 7");
+
+  await scrollToBottom(scrollable);
+
+  await expect(page).toHaveTitle("Page 1");
+  await click(page, log, "Item 29");
+  await expect(items.last()).toHaveText("Item 29");
+
+  await page.reload();
+
+  await expect(page).toHaveTitle("Page 1");
+  const scrollable2 = await getScrollable(page);
+  const items2 = scrollable2.getByRole("listitem");
+  await click(page, log, "Item 0");
+  await expect(items2.first()).toHaveText("Item 0");
+  await expect(items2.last()).toHaveText("Item 7");
+});

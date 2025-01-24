@@ -117,7 +117,11 @@ type VilInitEvent = {
 
 type InitChild = (event: VilInitEvent) => Promise<Unsub | undefined> | undefined;
 
-async function init(): Promise<Unsub | undefined> {
+type FreezeInitEvent = {
+  fromCache: boolean;
+};
+
+async function init(event: FreezeInitEvent): Promise<Unsub | undefined> {
   const root = document.body.querySelector("[data-infinite-root]");
   if (!(root instanceof HTMLElement)) {
     return;
@@ -163,7 +167,7 @@ async function init(): Promise<Unsub | undefined> {
 
   const cacheKey = listId + location.pathname + location.search;
 
-  const cache = getListCache(cacheKey);
+  const cache = event.fromCache ? getListCache(cacheKey) : undefined;
 
   const vList = vListInit({
     children: Array.from(root.children),
