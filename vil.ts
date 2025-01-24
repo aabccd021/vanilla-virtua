@@ -100,6 +100,32 @@ export async function freezePageLoad(): Promise<Unsub | undefined> {
 
   const triggers = root.querySelectorAll(`[data-infinite-trigger="${listId}"]`);
 
+  const vilInit = Array.from(document.querySelectorAll("script"))
+    .filter((script) => script.type === "module")
+    .map(async (script) => {
+      const module = await import(script.src);
+      if (
+        typeof module === "object" &&
+        module !== null &&
+        "vilInitChild" in module &&
+        typeof module.vilInitChild === "function"
+      ) {
+        return await module.vilInitChild();
+      }
+      return undefined;
+    });
+
+  const vilInitResult = await Promise.allSettled(vilInit);
+
+  const unsubs = vilInitResult
+    .map((unsub) => {
+      if (unsub.status === "fulfilled" && typeof unsub.value === "function") {
+        return unsub.value;
+      }
+      return undefined;
+    })
+    .filter((unsub) => unsub !== undefined);
+
   const cacheKey = listId + location.pathname + location.search;
 
   const cache = getListCache(cacheKey);
@@ -122,15 +148,6 @@ export async function freezePageLoad(): Promise<Unsub | undefined> {
 
   infiniteScroll(listId, vList.context, next, triggers);
 
-  // window.dispatchEvent(
-  //   new CustomEvent<InfiniteEvent>("infinite", {
-  //     detail: {
-  //       type: "newChildren",
-  //       children: vList.context.state.children,
-  //     },
-  //   }),
-  // );
-
   return (): void => {
     const cache = vList.context.store.$getCacheSnapshot();
     const scrollOffset = vList.context.store.$getScrollOffset();
@@ -140,6 +157,10 @@ export async function freezePageLoad(): Promise<Unsub | undefined> {
     }
 
     vList.root.remove();
+
+    for (const unsub of unsubs) {
+      unsub();
+    }
 
     const listsCache = getCache();
     for (let i = 0; i < listsCache.length; i++) {
