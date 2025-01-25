@@ -147,7 +147,7 @@ export function init({ children, as, itemSize, overscan, cache, item }: Virtuali
   return { context, dispose, root, container };
 }
 
-export function render(context: Context): void {
+function render(context: Context): void {
   requestAnimationFrame(() => {
     _render(context);
   });
