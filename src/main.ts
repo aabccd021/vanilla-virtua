@@ -1,22 +1,29 @@
 import { appendChildren, init } from "./index.ts";
 
-// Create a list item with a random height
-function createListItem() {
-  const height = Math.floor(Math.random() * 100) + 20;
-  const el = document.createElement("div");
-  el.textContent = `Height: ${height}px`;
-  el.style.border = "1px solid #ccc";
-  el.style.height = `${height}px`;
-  return el;
-}
+const heights = [20, 40, 80, 77];
 
-// Initialize vlist with 30 list items
-const children = Array.from({ length: 30 }, createListItem);
-const { context, root } = init({ children });
-document.getElementById("app")!.appendChild(root);
+const createRows = (num: number) => 
+  Array.from({ length: num }).map((_, i) => {
+    const item = document.createElement("div");
+    const height = heights[i % 4];
+    item.style.height = `${height}px`;
+    item.style.borderBottom = "solid 1px #ccc";
+    item.textContent = `Height: ${height}px`;
+    return item;
+  });
 
-// Append 10 more list items every time the button is clicked
-document.getElementById("append")!.addEventListener("click", () => {
-  const newChildren = Array.from({ length: 10 }, createListItem);
-  appendChildren(context, newChildren);
-})
+// Initialize list with 30 items
+const vlist = init({ children: createRows(30) });
+
+// Mount list root
+document
+  .getElementById("app")!
+  .appendChild(vlist.root);
+
+// Append 10 items when button is clicked
+document
+  .getElementById("append-button")!
+  .addEventListener("click", () => {
+    const newRows = createRows(10);
+    appendChildren(vlist.context, newRows);
+  })
