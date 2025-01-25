@@ -8,6 +8,16 @@ import {
   createVirtualStore,
 } from "virtua/core";
 
+export type {
+  VirtualStore,
+  StateVersion,
+  ItemResizeObserver,
+  GridResizer,
+  CacheSnapshot,
+  ScrollToIndexOpts,
+  ItemsRange,
+} from "virtua/core";
+
 type Scroller = ReturnType<typeof createScroller>;
 
 type Resizer = ReturnType<typeof createResizer>;
