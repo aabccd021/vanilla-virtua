@@ -20,7 +20,6 @@ const children = Array.from({ length: 30 }, createChild);
 
 const { context, root } = init({ children });
 app.appendChild(root);
-render(context);
 
 let count = 0;
 const interval = setInterval(() => {
