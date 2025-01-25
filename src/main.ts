@@ -1,4 +1,4 @@
-import { appendChildren, init, render } from "./index.ts";
+import { appendChildren, init } from "./index.ts";
 
 const app = document.createElement("div");
 app.style.width = "100%";
