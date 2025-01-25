@@ -47,7 +47,9 @@ export interface Context {
 }
 
 export function appendChildren(context: Context, newChildren: Element[]): void {
-  context.state.children = context.state.children.concat(newChildren);
+  for (const child of newChildren) {
+    context.state.children.push(child);
+  }
   context.store.$update(ACTION_ITEMS_LENGTH_CHANGE, [context.state.children.length, false]);
   render(context);
 }
