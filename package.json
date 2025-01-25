@@ -4,6 +4,9 @@
   "version": "0.0.1",
   "type": "module",
   "main": "src/index.ts",
+  "files": [
+    "src"
+  ],
   "scripts": {
     "dev": "vite",
     "build": "tsc && vite build",
