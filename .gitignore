@@ -22,14 +22,3 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
-
-
-.direnv
-/test-results/
-/playwright-report/
-/blob-report/
-/playwright/.cache/
-fixtures/vil.js
-fixtures/freeze.js
-result
-.gcroot

@@ -1,9 +1,10 @@
 {
   "compilerOptions": {
     "target": "ES2020",
+    "useDefineForClassFields": true,
     "module": "ESNext",
-    "lib": ["esnext", "DOM"],
-    "checkJs": true,
+    "lib": ["ES2020", "DOM", "DOM.Iterable"],
+    "skipLibCheck": true,
 
     /* Bundler mode */
     "moduleResolution": "bundler",
@@ -13,19 +14,11 @@
     "noEmit": true,
 
     /* Linting */
-    "skipLibCheck": true,
-    "allowUnreachableCode": false,
-    "allowUnusedLabels": false,
-    "noFallthroughCasesInSwitch": true,
-    "noImplicitOverride": true,
-    "noImplicitReturns": true,
-    "noPropertyAccessFromIndexSignature": true,
-    "noUncheckedIndexedAccess": true,
-    "noUncheckedSideEffectImports": true,
+    "strict": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
-    "strict": true,
-    "useUnknownInCatchVariables": true
+    "noFallthroughCasesInSwitch": true,
+    "noUncheckedSideEffectImports": true
   },
-  "exclude": ["fixtures/vil.js", "fixtures/freeze.js"]
+  "include": ["src"]
 }
