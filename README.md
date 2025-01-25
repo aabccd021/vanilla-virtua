@@ -1,6 +1,6 @@
 # vanilla-virtua
 
-Vanilla.js implementation of [virtua](https://github.com/inokawa/virtua)
+[virtua](https://github.com/inokawa/virtua) for vanilla js
 
 # Try it
 
