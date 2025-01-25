@@ -17,6 +17,7 @@ document.getElementById("app")!.appendChild(root);
 
 // Add 10 children every second until we have 100 children
 const interval = setInterval(() => {
+
   if (context.state.children.length > 100) {
     clearInterval(interval);
     return;
