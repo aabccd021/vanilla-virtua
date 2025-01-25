@@ -1,11 +1,12 @@
 import type { CacheSnapshot } from "virtua/core";
-import { type Context, appendChildren, render, init as vListInit } from "./index.ts";
+import { type Context, type InitResult, appendChildren, render, init as vListInit } from "./index.ts";
 
 type ListCache = {
-  cacheKey: string;
   virtuaSnapshot: CacheSnapshot;
   scrollOffset: number;
 };
+
+type Cache = Record<string, ListCache>;
 
 type Unsub = () => void;
 
@@ -17,24 +18,8 @@ type VilInitEvent = {
 type InitChild = (event: VilInitEvent) => Promise<Unsub | undefined> | undefined;
 
 type FreezeInitEvent = {
-  fromCache: boolean;
+  cache?: Cache;
 };
-
-function getCache(): ListCache[] {
-  return JSON.parse(sessionStorage.getItem("vil-cache") ?? "[]") as ListCache[];
-}
-
-function getListCache(cacheKey: string): ListCache | undefined {
-  const pageCache = getCache();
-
-  for (const item of pageCache) {
-    if (item.cacheKey === cacheKey) {
-      return item;
-    }
-  }
-
-  return undefined;
-}
 
 async function triggerInitChild(listId: string, inits: InitChild[], children: Element[]): Promise<Unsub[]> {
   const vilInitPromises = inits.flatMap((init) => children.map((child) => init({ element: child, listId })));
@@ -113,10 +98,17 @@ function waitAnimationFrame(): Promise<void> {
   return new Promise((resolve) => requestAnimationFrame(() => resolve()));
 }
 
-async function init(event: FreezeInitEvent): Promise<Unsub | undefined> {
-  const root = document.body.querySelector("[data-infinite-root]");
+async function initRoot(
+  root: Element,
+  cache: Cache | undefined,
+): Promise<{
+  unsubs: Unsub[];
+  vList: InitResult;
+  root: HTMLElement;
+  listId: string;
+}> {
   if (!(root instanceof HTMLElement)) {
-    return;
+    throw new Error("Root is not an HTMLElement");
   }
 
   const listId = root.dataset["infiniteRoot"];
@@ -157,13 +149,11 @@ async function init(event: FreezeInitEvent): Promise<Unsub | undefined> {
 
   const unsubs = await triggerInitChild(listId, childInits, Array.from(root.children));
 
-  const cacheKey = listId + location.pathname + location.search;
-
-  const cache = event.fromCache ? getListCache(cacheKey) : undefined;
+  const listCache = cache?.[listId];
 
   const vList = vListInit({
     children: Array.from(root.children),
-    cache: cache?.virtuaSnapshot,
+    cache: listCache?.virtuaSnapshot,
   });
 
   await waitAnimationFrame();
@@ -172,54 +162,49 @@ async function init(event: FreezeInitEvent): Promise<Unsub | undefined> {
 
   render(vList.context);
 
-  if (cache?.scrollOffset) {
+  if (listCache?.scrollOffset) {
     await waitAnimationFrame();
-    vList.context.scroller.$scrollTo(cache.scrollOffset);
+    vList.context.scroller.$scrollTo(listCache.scrollOffset);
   }
 
   if (next !== null) {
     infiniteScroll(listId, unsubs, childInits, vList.context, next, triggers);
   }
 
-  return (): void => {
-    const cache = vList.context.store.$getCacheSnapshot();
-    const scrollOffset = vList.context.store.$getScrollOffset();
+  return { unsubs, vList, root, listId };
+}
 
-    for (const child of vList.context.state.children) {
-      root.appendChild(child);
-    }
+async function init({ cache }: FreezeInitEvent): Promise<Unsub | undefined> {
+  const roots = document.body.querySelectorAll("[data-infinite-root]");
 
-    vList.root.remove();
+  const rootInitPromises = Array.from(roots).map((root) => initRoot(root, cache));
+  const rootInitResults = await Promise.allSettled(rootInitPromises);
+  const lists = rootInitResults.filter((result) => result.status === "fulfilled").map((result) => result.value);
 
-    for (const unsub of unsubs) {
-      unsub();
-    }
+  return (): Cache => {
+    const cache: Cache = {};
+    for (const { unsubs, vList, root, listId } of lists) {
+      const virtuaSnapshot = vList.context.store.$getCacheSnapshot();
+      const scrollOffset = vList.context.store.$getScrollOffset();
 
-    const listsCache = getCache();
-    for (let i = 0; i < listsCache.length; i++) {
-      if (listsCache[i]?.cacheKey === cacheKey) {
-        listsCache.splice(i, 1);
-        break;
+      for (const child of vList.context.state.children) {
+        root.appendChild(child);
       }
-    }
 
-    const newListCache: ListCache = {
-      cacheKey,
-      virtuaSnapshot: cache,
-      scrollOffset,
-    };
+      vList.root.remove();
 
-    listsCache.push(newListCache);
-
-    // keep trying to save the cache until it succeeds or is empty
-    while (listsCache.length > 0) {
-      try {
-        sessionStorage.setItem("vil-cache", JSON.stringify(listsCache));
-        break;
-      } catch {
-        listsCache.shift(); // shrink the cache and retry
+      for (const unsub of unsubs) {
+        unsub();
       }
+
+      const newListCache: ListCache = {
+        virtuaSnapshot,
+        scrollOffset,
+      };
+
+      cache[listId] = newListCache;
     }
+    return cache;
   };
 }
 

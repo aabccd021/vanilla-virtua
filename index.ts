@@ -74,7 +74,7 @@ export interface VirtualizerProps {
   item?: keyof HTMLElementTagNameMap;
 }
 
-interface InitResult {
+export interface InitResult {
   context: Context;
   dispose: () => void;
   root: HTMLElement;
