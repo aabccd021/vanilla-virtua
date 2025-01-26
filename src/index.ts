@@ -51,7 +51,6 @@ export function appendChildren(context: Context, newChildren: Element[]): void {
     context.state.children.push(child);
   }
   context.store.$update(ACTION_ITEMS_LENGTH_CHANGE, [context.state.children.length, false]);
-  render(context);
 }
 
 function newChild(context: Context, idx: number, top: string, newChildData: ChildData[]): Element {
@@ -78,7 +77,7 @@ function newChild(context: Context, idx: number, top: string, newChildData: Chil
 }
 
 export interface VirtualizerProps {
-  children: Element[];
+  element: HTMLElement;
   overscan?: number;
   itemSize?: number;
   cache?: CacheSnapshot;
@@ -93,7 +92,8 @@ export interface InitResult {
   container: HTMLElement;
 }
 
-export function init({ children, as, itemSize, overscan, cache, item }: VirtualizerProps): InitResult {
+export function init({ element, as, itemSize, overscan, cache, item }: VirtualizerProps): InitResult {
+  const children = Array.from(element.children);
   const container = document.createElement(as ?? "div");
   container.style.overflowAnchor = "none";
   container.style.flex = "none";
@@ -110,8 +110,9 @@ export function init({ children, as, itemSize, overscan, cache, item }: Virtuali
   root.style.contain = "strict";
   root.style.width = "100%";
   root.style.height = "100%";
-
   root.appendChild(container);
+
+  element.appendChild(root);
 
   const store = createVirtualStore(children.length, itemSize, overscan, undefined, cache, !itemSize);
 
@@ -133,8 +134,13 @@ export function init({ children, as, itemSize, overscan, cache, item }: Virtuali
     },
   };
 
-  const unsubscribeStore = store.$subscribe(UPDATE_VIRTUAL_STATE, (_sync) => {
-    render(context);
+  const unsubscribeStore = store.$subscribe(UPDATE_VIRTUAL_STATE, (sync) => {
+    if (sync) {
+      render(context);
+    }
+    requestAnimationFrame(() => {
+      render(context);
+    })
   });
 
   const dispose = (): void => {
@@ -150,12 +156,6 @@ export function init({ children, as, itemSize, overscan, cache, item }: Virtuali
 }
 
 function render(context: Context): void {
-  requestAnimationFrame(() => {
-    _render(context);
-  });
-}
-
-function _render(context: Context): void {
   const { store, scroller, state, container } = context;
   const newJumpCount = store.$getJumpCount();
   if (state.jumpCount !== newJumpCount) {
