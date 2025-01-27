@@ -78,6 +78,7 @@ function newChild(context: Context, idx: number, top: string, newChildData: Chil
 
 export interface VirtualizerProps {
   element: HTMLElement;
+  scrollOffset?: number;
   overscan?: number;
   itemSize?: number;
   cache?: CacheSnapshot;
@@ -92,7 +93,7 @@ export interface InitResult {
   container: HTMLElement;
 }
 
-export function init({ element, as, itemSize, overscan, cache, item }: VirtualizerProps): InitResult {
+export function init({ element, as, itemSize, overscan, cache, item, scrollOffset }: VirtualizerProps): InitResult {
   const children = Array.from(element.children);
   const container = document.createElement(as ?? "div");
   container.style.overflowAnchor = "none";
@@ -112,8 +113,6 @@ export function init({ element, as, itemSize, overscan, cache, item }: Virtualiz
   root.style.height = "100%";
   root.appendChild(container);
 
-  element.appendChild(root);
-
   const store = createVirtualStore(children.length, itemSize, overscan, undefined, cache, !itemSize);
 
   const resizer = createResizer(store, false);
@@ -121,6 +120,9 @@ export function init({ element, as, itemSize, overscan, cache, item }: Virtualiz
 
   const scroller = createScroller(store, false);
   scroller.$observe(root);
+  if (scrollOffset !== undefined) {
+    scroller.$scrollTo(scrollOffset ?? 0);
+  }
 
   const context: Context = {
     container,
@@ -135,6 +137,7 @@ export function init({ element, as, itemSize, overscan, cache, item }: Virtualiz
   };
   
   render(context);
+  element.appendChild(root);
 
   const unsubscribeStore = store.$subscribe(UPDATE_VIRTUAL_STATE, (sync) => {
     if (sync) {
