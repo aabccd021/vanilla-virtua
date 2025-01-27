@@ -23,15 +23,15 @@ type Scroller = ReturnType<typeof createScroller>;
 type Resizer = ReturnType<typeof createResizer>;
 
 interface ChildData {
-  idx: number;
+  readonly idx: number;
+  readonly element: HTMLElement;
+  readonly unobserve: () => void;
   hide: boolean;
   top: string;
-  element: HTMLElement;
-  unobserve: () => void;
 }
 
 interface State {
-  children: Element[];
+  readonly children: HTMLElement[];
   childData: ChildData[];
   containerHeight?: string;
   jumpCount?: number;
@@ -77,41 +77,37 @@ function newChild(context: Context, idx: number, top: string, newChildData: Chil
 }
 
 export interface VirtualizerProps {
-  element: HTMLElement;
-  scrollOffset?: number;
-  overscan?: number;
-  itemSize?: number;
-  cache?: CacheSnapshot;
-  as?: keyof HTMLElementTagNameMap;
-  item?: keyof HTMLElementTagNameMap;
+  readonly root: HTMLElement;
+  readonly scrollOffset?: number;
+  readonly overscan?: number;
+  readonly itemSize?: number;
+  readonly cache?: CacheSnapshot;
+  readonly as?: keyof HTMLElementTagNameMap;
+  readonly item?: keyof HTMLElementTagNameMap;
 }
 
 export interface InitResult {
-  context: Context;
-  dispose: () => void;
-  root: HTMLElement;
-  container: HTMLElement;
+  readonly context: Context;
+  readonly dispose: () => void;
+  readonly container: HTMLElement;
 }
 
-export function init({ element, as, itemSize, overscan, cache, item, scrollOffset }: VirtualizerProps): InitResult {
-  const children = Array.from(element.children);
-  const container = document.createElement(as ?? "div");
-  container.style.overflowAnchor = "none";
-  container.style.flex = "none";
-  container.style.position = "relative";
-  container.style.visibility = "hidden";
-  container.style.width = "100%";
-  for (const child of children) {
-    container.appendChild(child);
+export function init({ root, itemSize, overscan, cache, item, scrollOffset }: VirtualizerProps): InitResult {
+
+  const container = root.firstChild;
+  if (!(container instanceof HTMLElement)) {
+    console.warn(container)
+    throw new Error("Container element must be HTMLElement");
   }
 
-  const root = document.createElement("div");
-  root.style.display = "block";
-  root.style.overflowY = "auto";
-  root.style.contain = "strict";
-  root.style.width = "100%";
-  root.style.height = "100%";
-  root.appendChild(container);
+  const children = [];
+  for (const child of Array.from(container.children)) {
+    if (!(child instanceof HTMLElement)) {
+      throw new Error("Child element must be HTMLElement");
+    }
+    children.push(child);
+  }
+
 
   const store = createVirtualStore(children.length, itemSize, overscan, undefined, cache, !itemSize);
 
@@ -137,7 +133,7 @@ export function init({ element, as, itemSize, overscan, cache, item, scrollOffse
   };
   
   render(context);
-  element.appendChild(root);
+  // element.appendChild(root);
 
   const unsubscribeStore = store.$subscribe(UPDATE_VIRTUAL_STATE, (sync) => {
     if (sync) {
@@ -157,7 +153,7 @@ export function init({ element, as, itemSize, overscan, cache, item, scrollOffse
     }
   };
 
-  return { context, dispose, root, container };
+  return { context, dispose, container };
 }
 
 function render(context: Context): void {
