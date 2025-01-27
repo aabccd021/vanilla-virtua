@@ -29,13 +29,15 @@ for (const row of initialRows) {
 	container.appendChild(row);
 }
 
-const root = document.getElementById("app")!
+const root = document.createElement("div");
 root.style.display = "block";
 root.style.overflowY = "auto";
 root.style.contain = "strict";
-root.style.width = "90dvw";
-root.style.height = "400px";
+root.style.width = "100%";
+root.style.height = "100%";
 root.appendChild(container);
+
+document.getElementById("app")?.appendChild(root);
 
 const vlist = init({ root });
 

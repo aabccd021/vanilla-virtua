@@ -106,7 +106,7 @@ export function init({
 	item,
 	scrollOffset,
 }: VirtualizerProps): InitResult {
-	const container = root.firstChild;
+	const container = root.firstElementChild;
 	if (!(container instanceof HTMLElement)) {
 		console.warn(container);
 		throw new Error("Container element must be HTMLElement");
