@@ -133,6 +133,8 @@ export function init({ element, as, itemSize, overscan, cache, item }: Virtualiz
       children,
     },
   };
+  
+  render(context);
 
   const unsubscribeStore = store.$subscribe(UPDATE_VIRTUAL_STATE, (sync) => {
     if (sync) {
