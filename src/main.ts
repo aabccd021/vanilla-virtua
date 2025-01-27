@@ -8,9 +8,6 @@ const createRows = () =>
 		const height = heights[i % 4];
 		item.style.height = `${height}px`;
 		item.style.borderBottom = "solid 1px #ccc";
-		item.style.position = "absolute";
-		item.style.width = "100%";
-		item.style.left = "0";
 		item.textContent = `Height: ${height}px`;
 		return item;
 	});
@@ -18,22 +15,12 @@ const createRows = () =>
 // Initialize list with 30 items
 
 const container = document.createElement("div");
-container.style.overflowAnchor = "none";
-container.style.flex = "none";
-container.style.position = "relative";
-container.style.visibility = "hidden";
-container.style.width = "100%";
-
 const initialRows = createRows();
 for (const row of initialRows) {
 	container.appendChild(row);
 }
 
 const root = document.getElementById("root")!;
-root.style.display = "block";
-root.style.overflowY = "auto";
-root.style.contain = "strict";
-root.style.width = "90dvw";
 root.style.height = "400px";
 root.appendChild(container);
 

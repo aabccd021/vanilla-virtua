@@ -71,6 +71,11 @@ function newChild(
 	}
 	item.style.visibility = "visible";
 	item.style.top = top;
+  item.style.borderBottom = "solid 1px #ccc";
+  item.style.position = "absolute";
+  item.style.width = "100%";
+  item.style.left = "0";
+
 	newChildData.push({
 		idx,
 		hide: false,
@@ -106,11 +111,22 @@ export function init({
 	item,
 	scrollOffset,
 }: VirtualizerProps): InitResult {
+	root.style.display = "block";
+	root.style.overflowY = "auto";
+	root.style.contain = "strict";
+	root.style.width = root.style.width ?? "100%";
+	root.style.height = root.style.height ?? "100%";
+
 	const container = root.firstElementChild;
 	if (!(container instanceof HTMLElement)) {
 		console.warn(container);
 		throw new Error("Container element must be HTMLElement");
 	}
+	container.style.overflowAnchor = "none";
+	container.style.flex = "none";
+	container.style.position = "relative";
+	container.style.visibility = "hidden";
+	container.style.width = "100%";
 
 	const children = [];
 	for (const child of Array.from(container.children)) {
