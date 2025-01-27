@@ -46,7 +46,7 @@ export interface Context {
   readonly state: State;
 }
 
-export function appendChildren(context: Context, newChildren: Element[]): void {
+export function appendChildren(context: Context, newChildren: HTMLElement[]): void {
   for (const child of newChildren) {
     context.state.children.push(child);
   }
@@ -93,7 +93,6 @@ export interface InitResult {
 }
 
 export function init({ root, itemSize, overscan, cache, item, scrollOffset }: VirtualizerProps): InitResult {
-
   const container = root.firstChild;
   if (!(container instanceof HTMLElement)) {
     console.warn(container)
@@ -107,7 +106,6 @@ export function init({ root, itemSize, overscan, cache, item, scrollOffset }: Vi
     }
     children.push(child);
   }
-
 
   const store = createVirtualStore(children.length, itemSize, overscan, undefined, cache, !itemSize);
 
@@ -133,7 +131,6 @@ export function init({ root, itemSize, overscan, cache, item, scrollOffset }: Vi
   };
   
   render(context);
-  // element.appendChild(root);
 
   const unsubscribeStore = store.$subscribe(UPDATE_VIRTUAL_STATE, (sync) => {
     if (sync) {
