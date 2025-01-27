@@ -58,22 +58,22 @@ function newChild(context: Context, idx: number, top: string, newChildData: Chil
   if (child === undefined) {
     throw new Error(`Absurd: child is undefined at index ${idx}`);
   }
-  const element = document.createElement(context.itemTag ?? "div");
-  element.style.position = "absolute";
-  element.style.visibility = "visible";
-  element.style.top = top;
-  element.style.width = "100%";
-  element.style.left = "0";
-  element.appendChild(child);
+  // const element = document.createElement(context.itemTag ?? "div");
+  child.style.position = "absolute";
+  child.style.visibility = "visible";
+  child.style.top = top;
+  child.style.width = "100%";
+  child.style.left = "0";
+  // element.appendChild(child);
   newChildData.push({
     idx,
     hide: false,
     top,
-    element,
-    unobserve: context.resizer.$observeItem(element, idx),
+    element: child,
+    unobserve: context.resizer.$observeItem(child, idx),
   });
 
-  return element;
+  return child;
 }
 
 export interface VirtualizerProps {
