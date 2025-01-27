@@ -6,11 +6,52 @@
       :root {
         color-scheme: dark;
       }
+      .root {
+        display: block;
+        overflow-y: auto;
+        contain: strict;
+        width: 90vw;
+        height: 400px;
+      }
+      .container {
+        overflow-anchor: none;
+        flex: none;
+        position: relative;
+        visibility: hidden;
+        width: 100%;
+      }
+      .list-item {
+        border-bottom: 1px solid #ccc;
+        position: absolute;
+        width: 100%;
+        left: 0;
+      }
+
+      /* reset ul */
+      ul {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+      }
     </style>
   </head>
   <body>
-    <div id="app" style="width: 90dvw; height: 400px;">
+    <div id="root" class="root">
+      <ul class="container">
+        <li class="list-item" style="height: 30px">Height: 30px</li>
+        <li class="list-item" style="height: 120px">Height: 120px</li>
+        <li class="list-item" style="height: 80px">Height: 80px</li>
+        <li class="list-item" style="height: 90px">Height: 90px</li>
+        <li class="list-item" style="height: 150px">Height: 150px</li>
+        <li class="list-item" style="height: 220px">Height: 220px</li>
+        <li class="list-item" style="height: 70px">Height: 70px</li>
+        <li class="list-item" style="height: 100px">Height: 100px</li>
+        <li class="list-item" style="height: 50px">Height: 50px</li>
+        <li class="list-item" style="height: 40px">Height: 40px</li>
+        <li class="list-item" style="height: 60px">Height: 60px</li>
+        <li class="list-item" style="height: 110px">Height: 110px</li>
+      </ul>
     </div>
-    <button id="append-button">Append more</button>
+    <!-- <button id="append-button">Append more</button> -->
   </body>
 </html>

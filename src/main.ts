@@ -8,10 +8,10 @@ const createRows = () =>
 		const height = heights[i % 4];
 		item.style.height = `${height}px`;
 		item.style.borderBottom = "solid 1px #ccc";
-		item.textContent = `Height: ${height}px`;
 		item.style.position = "absolute";
 		item.style.width = "100%";
 		item.style.left = "0";
+		item.textContent = `Height: ${height}px`;
 		return item;
 	});
 
@@ -29,7 +29,7 @@ for (const row of initialRows) {
 	container.appendChild(row);
 }
 
-const root = document.getElementById("app")!
+const root = document.getElementById("root")!;
 root.style.display = "block";
 root.style.overflowY = "auto";
 root.style.contain = "strict";
