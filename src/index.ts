@@ -27,7 +27,7 @@ interface ChildData {
   readonly element: HTMLElement;
   readonly unobserve: () => void;
   hide: boolean;
-  top: string;
+  offset: string;
 }
 
 interface State {
@@ -65,7 +65,8 @@ function newChild(
     readonly resizer: Resizer;
   },
   idx: number,
-  top: string,
+  offset: string,
+  hide: boolean,
   newChildData: ChildData[],
 ): Element {
   const item = context.state.children[idx];
@@ -74,14 +75,17 @@ function newChild(
   }
   item.style.position = "absolute";
   item.style[context.isHorizontal ? "height" : "width"] = "100%";
-  item.style[context.isHorizontal ? "top" : "left"] = top;
-  item.style[context.isHorizontal ? (isRTLDocument ? "right" : "left") : "top"] = "0";
-  item.style.visibility = "visible";
+  item.style[context.isHorizontal ? "top" : "left"] = "0px";
+  item.style[context.isHorizontal ? (isRTLDocument ? "right" : "left") : "top"] = offset;
+  item.style.visibility = hide ? "hidden" : "visible";
+  if (context.isHorizontal) {
+    item.style.display = "flex";
+  }
 
   newChildData.push({
     idx,
     hide: false,
-    top,
+    offset,
     element: item,
     unobserve: context.resizer.$observeItem(item, idx),
   });
@@ -165,8 +169,9 @@ export function init({
     resizer,
   };
   for (let i = 0; i < children.length; i++) {
-    const top = `${store.$getItemOffset(i)}px`;
-    newChild(tmpCtx, i, top, childData);
+    const offset = `${store.$getItemOffset(i)}px`;
+    const hide = store.$isUnmeasuredItem(i);
+    newChild(tmpCtx, i, offset, hide, childData);
   }
 
   const context: Context = {
@@ -227,10 +232,11 @@ function render(context: Context): void {
   const newChildData: ChildData[] = [];
   for (let newChildIdx = startIdx; newChildIdx <= endIdx; newChildIdx++) {
     const oldChildDataMaybe: ChildData | undefined = state.childData[0];
-    const top = `${store.$getItemOffset(newChildIdx)}px`;
+    const offset = `${store.$getItemOffset(newChildIdx)}px`;
+    const hide = store.$isUnmeasuredItem(newChildIdx);
 
     if (oldChildDataMaybe === undefined) {
-      const childEl = newChild(context, newChildIdx, top, newChildData);
+      const childEl = newChild(context, newChildIdx, offset, hide, newChildData);
       container.appendChild(childEl);
       state.childData.shift();
       continue;
@@ -244,7 +250,7 @@ function render(context: Context): void {
 
       const nextOldChild = state.childData[0];
       if (nextOldChild === undefined) {
-        const childEl = newChild(context, newChildIdx, top, newChildData);
+        const childEl = newChild(context, newChildIdx, offset, hide, newChildData);
         container.appendChild(childEl);
         state.childData.shift();
         break;
@@ -254,24 +260,23 @@ function render(context: Context): void {
     }
 
     if (newChildIdx < oldChildData.idx) {
-      const childEl = newChild(context, newChildIdx, top, newChildData);
+      const childEl = newChild(context, newChildIdx, offset, hide, newChildData);
       container.insertBefore(childEl, oldChildData.element);
       continue;
     }
 
     if (oldChildData.idx === newChildIdx) {
       const prevHide = oldChildData.hide;
-      const hide = store.$isUnmeasuredItem(newChildIdx);
       if (hide !== prevHide) {
         oldChildData.element.style.position = hide ? "" : "absolute";
         oldChildData.element.style.visibility = hide ? "hidden" : "visible";
         oldChildData.hide = hide;
       }
 
-      const prevTop = oldChildData.top;
-      if (top !== prevTop) {
-        oldChildData.element.style.top = top;
-        oldChildData.top = top;
+      const prevTop = oldChildData.offset;
+      if (offset !== prevTop) {
+        oldChildData.element.style.top = offset;
+        oldChildData.offset = offset;
       }
 
       newChildData.push(oldChildData);
