@@ -54,7 +54,23 @@ export function appendChildren(context: Context, newChildren: HTMLElement[]): vo
   context.store.$update(ACTION_ITEMS_LENGTH_CHANGE, [context.state.children.length, false]);
 }
 
-const isRTLDocument = getComputedStyle(document.documentElement).direction === "rtl";
+const once = <V>(fn: () => V): (() => V) => {
+  let called: undefined | boolean;
+  let cache: V;
+
+  return () => {
+    if (!called) {
+      called = true;
+      cache = fn();
+      console.log("called", cache);
+    }
+    return cache;
+  };
+};
+
+const getDocumentElement = () => document.documentElement;
+
+const isRTLDocument = once(() => getComputedStyle(getDocumentElement()).direction === "rtl");
 
 function newChild(
   context: {
@@ -76,7 +92,7 @@ function newChild(
   item.style.position = "absolute";
   item.style[context.isHorizontal ? "height" : "width"] = "100%";
   item.style[context.isHorizontal ? "top" : "left"] = "0px";
-  item.style[context.isHorizontal ? (isRTLDocument ? "right" : "left") : "top"] = offset;
+  item.style[context.isHorizontal ? (isRTLDocument() ? "right" : "left") : "top"] = offset;
   item.style.visibility = hide ? "hidden" : "visible";
   if (context.isHorizontal) {
     item.style.display = "flex";
