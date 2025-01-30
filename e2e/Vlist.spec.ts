@@ -838,7 +838,7 @@ test.describe("RTL", () => {
     expect(await component.innerText()).toContain("999");
   });
 
-  test.only("horizontally scrollable", async ({ page }) => {
+  test("horizontally scrollable", async ({ page }) => {
     await page.goto(storyUrl("basics-vlist--horizontal.rtl"), {
       waitUntil: "domcontentloaded",
     });
