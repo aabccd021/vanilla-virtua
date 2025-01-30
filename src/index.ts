@@ -111,8 +111,8 @@ function newChild(
 }
 
 export interface VirtualizerProps {
-  readonly container: HTMLElement;
   readonly shift?: boolean;
+  readonly container: HTMLElement;
   readonly scrollOffset?: number;
   readonly overscan?: number;
   readonly itemSize?: number;
