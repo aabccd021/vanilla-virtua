@@ -1,13 +1,13 @@
 {
-	"name": "vanilla-virtua",
-	"private": true,
-	"version": "0.0.1",
-	"type": "module",
-	"dependencies": {
-		"virtua": "github:aabccd021/virtua"
-	},
-	"devDependencies": {
-		"@playwright/test": "1.48.2",
-		"@types/node": "^22.12.0"
-	}
+  "name": "vanilla-virtua",
+  "private": true,
+  "version": "0.0.1",
+  "type": "module",
+  "dependencies": {
+    "virtua": "github:aabccd021/virtua"
+  },
+  "devDependencies": {
+    "@playwright/test": "1.48.2",
+    "@types/node": "^22.12.0"
+  }
 }
