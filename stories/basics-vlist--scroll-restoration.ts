@@ -28,11 +28,10 @@ const restorableList = ({ id }: { id: string }): ResList => {
   if (serialized) {
     try {
       [offset, cache] = JSON.parse(serialized) as [number, CacheSnapshot];
-    } catch (e) {
+    } catch (_e) {
       // ignore
     }
   }
-  console.log({ offset, cache });
 
   const vList = vListInit({
     cache,
@@ -47,7 +46,6 @@ const restorableList = ({ id }: { id: string }): ResList => {
   }
 
   const unsub = () => {
-    console.log("unsub");
     sessionStorage.setItem(
       cacheKey,
       JSON.stringify([vList.context.store.$getScrollOffset(), vList.context.store.$getCacheSnapshot()]),

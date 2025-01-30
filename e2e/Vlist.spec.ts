@@ -21,7 +21,7 @@ import {
   scrollToRight,
   scrollWithTouch,
   storyUrl,
-} from "./utils";
+} from "./utils.ts";
 
 test.describe("smoke", () => {
   test("vertically scrollable", async ({ page }) => {
@@ -373,7 +373,7 @@ test.describe("check if scroll jump compensation works", () => {
       const target = await getTargetItem();
       const button = await target.evaluateHandle((e) => {
         const buttons = e.querySelectorAll("button");
-        return buttons[buttons.length - 1];
+        return buttons.at(-1);
       });
       expect(await button.textContent()).toBe("Resize + Smooth Scroll");
       return button;
@@ -990,7 +990,7 @@ test.describe("check if item shift compensation works", () => {
 
       const [childrenCount, lastItemRectBottom] = await container.evaluate((e) => {
         const children = e.childNodes;
-        return [children.length, (children[children.length - 1] as HTMLElement).getBoundingClientRect().bottom];
+        return [children.length, (children.at(-1) as HTMLElement).getBoundingClientRect().bottom];
       });
       const [isScrollBarVisible, scrollableRectBottom] = await component.evaluate((e) => {
         return [e.scrollHeight > (e as HTMLElement).offsetHeight, e.getBoundingClientRect().bottom];
@@ -1051,7 +1051,7 @@ test.describe("check if item shift compensation works", () => {
 
       const lastItemRectBottom = await container.evaluate((e) => {
         const children = e.childNodes;
-        return (children[children.length - 1] as HTMLElement).getBoundingClientRect().bottom;
+        return (children.at(-1) as HTMLElement).getBoundingClientRect().bottom;
       });
       const [isScrollBarVisible, scrollableRectBottom] = await component.evaluate((e) => {
         return [e.scrollHeight > (e as HTMLElement).offsetHeight, e.getBoundingClientRect().bottom];

@@ -31,7 +31,8 @@
         "noExcessiveCognitiveComplexity": "off"
       },
       "suspicious": {
-        "all": true
+        "all": true,
+        "noSkippedTests": "off"
       },
       "correctness": {
         "all": true

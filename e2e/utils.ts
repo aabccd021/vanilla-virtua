@@ -388,7 +388,9 @@ export const scrollWithTouch = (
     let isScrollStarted = false;
     let isScrollEnded = false;
     const onScroll = () => {
-      if (isScrollEnded) return;
+      if (isScrollEnded) {
+        return;
+      }
 
       if (isMomentumScrolling && !isScrollStarted) {
         touchEnd();
