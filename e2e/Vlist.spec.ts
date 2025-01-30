@@ -817,11 +817,8 @@ test.describe("check if item shift compensation works", () => {
 
 test.describe("RTL", () => {
   test("vertically scrollable", async ({ page }) => {
-    await page.goto(storyUrl("basics-vlist--default"), {
+    await page.goto(storyUrl("basics-vlist--default-rtl"), {
       waitUntil: "domcontentloaded",
-    });
-    await page.evaluate(() => {
-      document.documentElement.dir = "rtl";
     });
 
     const component = await getScrollable(page);
@@ -839,7 +836,7 @@ test.describe("RTL", () => {
   });
 
   test("horizontally scrollable", async ({ page }) => {
-    await page.goto(storyUrl("basics-vlist--horizontal.rtl"), {
+    await page.goto(storyUrl("basics-vlist--horizontal-rtl"), {
       waitUntil: "domcontentloaded",
     });
 
