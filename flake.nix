@@ -39,7 +39,7 @@
 
       devShells.x86_64-linux.default = pkgs.mkShellNoCC {
         shellHook = ''
-          export PLAYWRIGHT_BROWSERS_PATH=${pkgs.playwright-driver.browsers}
+          export PLAYWRIGHT_BROWSERS_PATH=${pkgs.playwright.browsers}
         '';
         buildInputs = [
           pkgs.nodejs
