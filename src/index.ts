@@ -60,7 +60,12 @@ export function appendChildren(
 }
 
 function newChild(
-	context: Context,
+	context: {
+		readonly state: {
+			readonly children: HTMLElement[];
+		};
+		readonly resizer: Resizer;
+	},
 	idx: number,
 	top: string,
 	newChildData: ChildData[],
@@ -124,10 +129,16 @@ export function init({
 	root.style.display = "block";
 	root.style.overflowY = "auto";
 	root.style.contain = "strict";
-	root.style.width = root.style.width ?? "100%";
-	root.style.height = root.style.height ?? "100%";
+	root.style.width =
+		root.style.width === "" || root.style.width === undefined
+			? "100%"
+			: root.style.width;
+	root.style.height =
+		root.style.height === "" || root.style.height === undefined
+			? "100%"
+			: root.style.height;
 
-	const children = [];
+	const children: HTMLElement[] = [];
 	for (const child of Array.from(container.children)) {
 		if (!(child instanceof HTMLElement)) {
 			throw new Error("Child element must be HTMLElement");
@@ -153,6 +164,16 @@ export function init({
 		scroller.$scrollTo(scrollOffset ?? 0);
 	}
 
+	const childData: ChildData[] = [];
+	const tmpCtx = {
+		state: { children },
+		resizer,
+	};
+	for (let i = 0; i < children.length; i++) {
+		const top = `${store.$getItemOffset(i)}px`;
+		newChild(tmpCtx, i, top, childData);
+	}
+
 	const context: Context = {
 		container,
 		store,
@@ -160,7 +181,7 @@ export function init({
 		scroller,
 		itemTag: item,
 		state: {
-			childData: [],
+			childData,
 			children,
 		},
 	};
@@ -204,11 +225,7 @@ function render(context: Context): void {
 
 	const [startIdx, endIdx] = store.$getRange();
 	const newChildData: ChildData[] = [];
-	for (
-		let newChildIdx = startIdx, j = endIdx;
-		newChildIdx <= j;
-		newChildIdx++
-	) {
+	for (let newChildIdx = startIdx; newChildIdx <= endIdx; newChildIdx++) {
 		const oldChildDataMaybe: ChildData | undefined = state.childData[0];
 		const top = `${store.$getItemOffset(newChildIdx)}px`;
 

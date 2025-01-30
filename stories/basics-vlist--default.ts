@@ -17,4 +17,9 @@ const vList = vListInit({
 	children: createRows(1000),
 });
 
-document.body.appendChild(vList.root);
+const storyBookRoot = document.getElementById("storybook-root");
+if (storyBookRoot === null) {
+	throw new Error("Root element not found");
+}
+
+storyBookRoot.appendChild(vList.root);

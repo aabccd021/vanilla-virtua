@@ -13,7 +13,9 @@ export function init({
 }): InitResult {
 	const container = document.createElement("div");
 	for (const child of children ?? []) {
-		container.appendChild(child);
+		const item = document.createElement("div");
+		item.appendChild(child);
+		container.appendChild(item);
 	}
 
 	const root = document.createElement("div");
