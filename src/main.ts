@@ -24,7 +24,7 @@ const root = document.getElementById("root")!;
 root.style.height = "400px";
 root.appendChild(container);
 
-const vlist = init({ root });
+const vlist = init({ container });
 
 // Append 30 items when button is clicked
 document.getElementById("append-button")?.addEventListener("click", () => {

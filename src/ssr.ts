@@ -1,7 +1,7 @@
 import { init, appendChildren } from "./index.ts";
 
-const root = document.getElementById("root")!;
-const vlist = init({ root });
+const container = document.getElementById("container")!;
+const vlist = init({ container });
 
 const heights = [20, 40, 80, 77];
 
