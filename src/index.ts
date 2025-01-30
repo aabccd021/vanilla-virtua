@@ -33,11 +33,12 @@ interface ChildData {
 interface State {
   readonly children: HTMLElement[];
   childData: ChildData[];
-  containerHeight?: string;
+  totalSize?: string;
   jumpCount?: number;
 }
 
 export interface Context {
+  readonly isHorizontal: boolean;
   readonly container: HTMLElement;
   readonly store: VirtualStore;
   readonly resizer: Resizer;
@@ -53,8 +54,11 @@ export function appendChildren(context: Context, newChildren: HTMLElement[]): vo
   context.store.$update(ACTION_ITEMS_LENGTH_CHANGE, [context.state.children.length, false]);
 }
 
+const isRTLDocument = getComputedStyle(document.documentElement).direction === "rtl";
+
 function newChild(
   context: {
+    readonly isHorizontal: boolean;
     readonly state: {
       readonly children: HTMLElement[];
     };
@@ -68,11 +72,11 @@ function newChild(
   if (item === undefined) {
     throw new Error(`Absurd: child is undefined at index ${idx}`);
   }
-  item.style.visibility = "visible";
-  item.style.top = top;
   item.style.position = "absolute";
-  item.style.width = "100%";
-  item.style.left = "0";
+  item.style[context.isHorizontal ? "height" : "width"] = "100%";
+  item.style[context.isHorizontal ? "top" : "left"] = top;
+  item.style[context.isHorizontal ? (isRTLDocument ? "right" : "left") : "top"] = "0";
+  item.style.visibility = "visible";
 
   newChildData.push({
     idx,
@@ -93,6 +97,7 @@ export interface VirtualizerProps {
   readonly cache?: CacheSnapshot;
   readonly as?: keyof HTMLElementTagNameMap;
   readonly item?: keyof HTMLElementTagNameMap;
+  readonly horizontal?: boolean;
 }
 
 export interface InitResult {
@@ -101,20 +106,35 @@ export interface InitResult {
   readonly container: HTMLElement;
 }
 
-export function init({ container, itemSize, overscan, cache, item, scrollOffset }: VirtualizerProps): InitResult {
+export function init({
+  horizontal,
+  container,
+  itemSize,
+  overscan,
+  cache,
+  item,
+  scrollOffset,
+}: VirtualizerProps): InitResult {
+  const isHorizontal = !!horizontal;
+
   container.style.overflowAnchor = "none";
   container.style.flex = "none";
   container.style.position = "relative";
   container.style.visibility = "hidden";
-  container.style.width = "100%";
+
+  if (isHorizontal) {
+    container.style.height = "100%";
+  } else {
+    container.style.width = "100%";
+  }
 
   const root = container.parentElement;
   if (!(root instanceof HTMLElement)) {
     throw new Error("Root is not an HTMLElement");
   }
 
-  root.style.display = "block";
-  root.style.overflowY = "auto";
+  root.style.display = isHorizontal ? "block" : "inline-block";
+  root.style[isHorizontal ? "overflowX" : "overflowY"] = "auto";
   root.style.contain = "strict";
   root.style.width = root.style.width === "" || root.style.width === undefined ? "100%" : root.style.width;
   root.style.height = root.style.height === "" || root.style.height === undefined ? "100%" : root.style.height;
@@ -129,10 +149,10 @@ export function init({ container, itemSize, overscan, cache, item, scrollOffset 
 
   const store = createVirtualStore(children.length, itemSize, overscan, undefined, cache, !itemSize);
 
-  const resizer = createResizer(store, false);
+  const resizer = createResizer(store, isHorizontal);
   resizer.$observeRoot(root);
 
-  const scroller = createScroller(store, false);
+  const scroller = createScroller(store, isHorizontal);
   scroller.$observe(root);
   if (scrollOffset !== undefined) {
     scroller.$scrollTo(scrollOffset ?? 0);
@@ -140,6 +160,7 @@ export function init({ container, itemSize, overscan, cache, item, scrollOffset 
 
   const childData: ChildData[] = [];
   const tmpCtx = {
+    isHorizontal,
     state: { children },
     resizer,
   };
@@ -149,6 +170,7 @@ export function init({ container, itemSize, overscan, cache, item, scrollOffset 
   }
 
   const context: Context = {
+    isHorizontal,
     container,
     store,
     resizer,
@@ -184,17 +206,21 @@ export function init({ container, itemSize, overscan, cache, item, scrollOffset 
 }
 
 function render(context: Context): void {
-  const { store, scroller, state, container } = context;
+  const { store, scroller, state, container, isHorizontal } = context;
   const newJumpCount = store.$getJumpCount();
   if (state.jumpCount !== newJumpCount) {
     scroller.$fixScrollJump();
     state.jumpCount = newJumpCount;
   }
 
-  const newContainerHeight = `${store.$getTotalSize()}px`;
-  if (state.containerHeight !== newContainerHeight) {
-    container.style.height = newContainerHeight;
-    state.containerHeight = newContainerHeight;
+  const newTotalSize = `${store.$getTotalSize()}px`;
+  if (state.totalSize !== newTotalSize) {
+    if (isHorizontal) {
+      container.style.width = newTotalSize;
+    } else {
+      container.style.height = newTotalSize;
+    }
+    state.totalSize = newTotalSize;
   }
 
   const [startIdx, endIdx] = store.$getRange();
