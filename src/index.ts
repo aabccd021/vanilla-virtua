@@ -84,7 +84,7 @@ function newChild(
 
   newChildData.push({
     idx,
-    hide: false,
+    hide,
     offset,
     element: item,
     unobserve: context.resizer.$observeItem(item, idx),
@@ -273,9 +273,13 @@ function render(context: Context): void {
         oldChildData.hide = hide;
       }
 
-      const prevTop = oldChildData.offset;
-      if (offset !== prevTop) {
-        oldChildData.element.style.top = offset;
+      const prevOffset = oldChildData.offset;
+      if (offset !== prevOffset) {
+        if (isHorizontal) {
+          oldChildData.element.style.left = offset;
+        } else {
+          oldChildData.element.style.top = offset;
+        }
         oldChildData.offset = offset;
       }
 
