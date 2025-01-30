@@ -3,16 +3,12 @@
 	"private": true,
 	"version": "0.0.1",
 	"type": "module",
-	"main": "src/index.ts",
-	"files": ["src"],
-	"scripts": {
-		"dev": "vite"
-	},
 	"dependencies": {
 		"virtua": "github:aabccd021/virtua"
 	},
 	"devDependencies": {
-		"typescript": "~5.6.2",
-		"vite": "^6.0.5"
+		"biome": "^0.2.2",
+		"esbuild": "^0.24.2",
+		"typescript": "^5.7.3"
 	}
 }

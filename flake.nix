@@ -40,8 +40,6 @@
       devShells.x86_64-linux.default = pkgs.mkShellNoCC {
         buildInputs = [
           pkgs.nodejs
-          pkgs.biome
-          pkgs.esbuild
         ];
       };
     };
