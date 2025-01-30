@@ -74,7 +74,9 @@ test.describe("smoke", () => {
 
     const initialTotalHeight = await component.evaluate((s) => getComputedStyle(s.childNodes[0] as HTMLElement).height);
 
-    await component.evaluate((s) => (s.style.display = "none"));
+    await component.evaluate((s) => {
+      s.style.display = "none";
+    });
 
     const changedTotalHeight = await component.evaluate((s) => getComputedStyle(s.childNodes[0] as HTMLElement).height);
 

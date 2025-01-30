@@ -12,7 +12,9 @@ export const getScrollable = async (page: Page) => {
 
 export const getVirtualizer = async (page: Page) => {
   const locator = page.locator('*[style*="flex: 0 0 auto"]');
-  await locator.evaluate((e) => (e.style.visibility = "visible"));
+  await locator.evaluate((e) => {
+    e.style.visibility = "visible";
+  });
   await locator.waitFor();
   return locator;
 };
@@ -26,7 +28,9 @@ export const expectInRange = (value: number, { max, min }: { min: number; max: n
 export const approxymate = (v: number): number => Math.round(v / 100) * 100;
 
 export const clearInput = (input: ElementHandle<HTMLElement | SVGElement>) =>
-  input.evaluate((element) => ((element as HTMLInputElement).value = ""));
+  input.evaluate((element) => {
+    (element as HTMLInputElement).value = "";
+  });
 
 export const clearTimer = async (page: Page) => {
   await page.evaluate(() => {
@@ -416,7 +420,9 @@ export const scrollWithTouch = (
     e.addEventListener("scroll", onScroll, { passive: true });
 
     touchStart();
-    return new Promise<void>((r) => (resolve = r));
+    return new Promise<void>((r) => {
+      resolve = r;
+    });
   }, target);
 };
 
