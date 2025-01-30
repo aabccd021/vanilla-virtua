@@ -43,9 +43,6 @@
         '';
         buildInputs = [
           pkgs.nodejs
-          pkgs.typescript
-          pkgs.biome
-          pkgs.esbuild
         ];
       };
     };
