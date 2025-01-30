@@ -1,26 +1,26 @@
-import { test, expect } from "@playwright/test";
+import { expect, test } from "@playwright/test";
 import {
-	storyUrl,
-	getFirstItem,
-	getLastItem,
-	scrollToBottom,
-	scrollToRight,
-	clearInput,
 	approxymate,
-	scrollBy,
-	getScrollTop,
-	getScrollLeft,
-	getScrollBottom,
-	getScrollRight,
-	expectInRange,
-	scrollWithTouch,
-	getFirstItemRtl,
-	scrollToLeft,
-	getVirtualizer,
-	getScrollable,
+	clearInput,
 	clearTimer,
-	scrollTo,
+	expectInRange,
+	getFirstItem,
+	getFirstItemRtl,
+	getLastItem,
+	getScrollBottom,
+	getScrollLeft,
+	getScrollRight,
+	getScrollTop,
+	getScrollable,
+	getVirtualizer,
 	listenScrollCount,
+	scrollBy,
+	scrollTo,
+	scrollToBottom,
+	scrollToLeft,
+	scrollToRight,
+	scrollWithTouch,
+	storyUrl,
 } from "./utils";
 
 test.describe("smoke", () => {
@@ -158,12 +158,10 @@ test.describe("check if it works when children change", () => {
 		// add
 		await page.getByRole("radio", { name: "increase" }).click();
 		await updateButton.click();
-		{
-			// check if an error didn't occur
-			expect(
-				(await page.innerText("body")).toLowerCase().includes("localhost"),
-			).toBeFalsy();
-		}
+		// check if an error didn't occur
+		expect(
+			(await page.innerText("body")).toLowerCase().includes("localhost"),
+		).toBeFalsy();
 	});
 
 	test.skip("recovering when changed a lot after scrolling", async ({
@@ -191,13 +189,10 @@ test.describe("check if it works when children change", () => {
 		// add many
 		await page.getByRole("radio", { name: "increase" }).click();
 		await updateButton.click();
-
-		{
-			// check if an error didn't occur
-			expect(
-				(await page.innerText("body")).toLowerCase().includes("localhost"),
-			).toBeFalsy();
-		}
+		// check if an error didn't occur
+		expect(
+			(await page.innerText("body")).toLowerCase().includes("localhost"),
+		).toBeFalsy();
 	});
 });
 
@@ -309,7 +304,7 @@ test.describe("check if scroll jump compensation works", () => {
 		const getTargetItem = () => {
 			return container.evaluateHandle((e, i) => {
 				return Array.from(e.children).find((c) =>
-					c.textContent!.startsWith(String(i) + "Resize"),
+					c.textContent?.startsWith(`${String(i)}Resize`),
 				)!;
 			}, targetIndex);
 		};
@@ -397,7 +392,7 @@ test.describe("check if scroll jump compensation works", () => {
 		const getTargetItem = () => {
 			return container.evaluateHandle((e, i) => {
 				return Array.from(e.children).find((c) =>
-					c.textContent!.startsWith(String(i) + "Resize"),
+					c.textContent?.startsWith(`${String(i)}Resize`),
 				)!;
 			}, targetIndex);
 		};
@@ -467,11 +462,11 @@ test.describe("check if scroll jump compensation works", () => {
 		await clearTimer(page);
 
 		const button = page.getByRole("button", { name: "submit" });
-		const textarea = (await page.getByRole("textbox"))!;
+		const textarea = page.getByRole("textbox");
 
 		// append small item
 		await button.click();
-		await (await component.elementHandle())!.waitForElementState("stable");
+		await (await component.elementHandle())?.waitForElementState("stable");
 
 		const smallItem = await getLastItem(component);
 		expect(smallItem.text).not.toEqual(initialItem.text);
@@ -483,7 +478,7 @@ test.describe("check if scroll jump compensation works", () => {
 			"Hello\nHello\nHello\nHello\nHello\nHello\nHello\nHello\nHello\nHello\nHello\nHello\nHello\nHello\nHello\nHello\nHello\nHello\nHello\nHello\nHello\nHello\nHello\nHello\nHello\nHello\nHello\nHello\nHello\nHello\nHello\nHello\nHello\nHello\nHello\nHello\nHello\nHello\nHello\nHello\nHello\nHello\nHello\nHello\nHello\nHello\nHello\nHello\nHello\nHello\nHello\nHello\nHello\nHello\nHello\nHello\nHello\nHello\nHello\nHello\nHello\nHello\nHello\nHello\nHello\nHello\nHello\nHello\nHello\nHello\nHello\nHello\nHello\nHello\nHello\nHello\nHello\nHello\nHello\nHello\nHello\nHello\nHello\nHello\nHello\nHello\nHello\nHello\nHello\nHello\nHello\nHello\nHello\nHello\nHello\nHello\nHello\nHello\nHello\nHello\nHello\nHello\nHello\nHello\nHello\nHello\nHello\nHello\nHello\nHello\nHello\nHello\nHello\nHello\nHello\nHello\nHello\nHello\nHello\nHello\n",
 		);
 		await button.click();
-		await (await component.elementHandle())!.waitForElementState("stable");
+		await (await component.elementHandle())?.waitForElementState("stable");
 		const largeItem = await getLastItem(component);
 		expect(largeItem.text).not.toEqual(smallItem.text);
 		expectInRange(largeItem.bottom, { min: 0, max: 1 });
@@ -574,7 +569,7 @@ test.describe("check if scrollToIndex works", () => {
 			await input.fill("700");
 			await button.click();
 
-			await (await component.elementHandle())!.waitForElementState("stable");
+			await (await component.elementHandle())?.waitForElementState("stable");
 
 			// Check if scrolled precisely
 			const firstItem = await getFirstItem(component);
@@ -601,7 +596,7 @@ test.describe("check if scrollToIndex works", () => {
 			await input.fill("500");
 			await button.click();
 
-			await (await component.elementHandle())!.waitForElementState("stable");
+			await (await component.elementHandle())?.waitForElementState("stable");
 
 			expect(await component.innerText()).toContain("500");
 
@@ -609,7 +604,7 @@ test.describe("check if scrollToIndex works", () => {
 			await input.fill("0");
 			await button.click();
 
-			await (await component.elementHandle())!.waitForElementState("stable");
+			await (await component.elementHandle())?.waitForElementState("stable");
 
 			// Check if scrolled precisely
 			const firstItem = await getFirstItem(component);
@@ -635,7 +630,7 @@ test.describe("check if scrollToIndex works", () => {
 			await input.fill("999");
 			await button.click();
 
-			await (await component.elementHandle())!.waitForElementState("stable");
+			await (await component.elementHandle())?.waitForElementState("stable");
 
 			// Check if scrolled precisely
 			const lastItem = await getLastItem(component);
@@ -706,7 +701,7 @@ test.describe("check if scrollToIndex works", () => {
 			await input.fill("700");
 			await button.click();
 
-			await (await component.elementHandle())!.waitForElementState("stable");
+			await (await component.elementHandle())?.waitForElementState("stable");
 
 			// Check if scrolled precisely
 			const lastItem = await getLastItem(component);
@@ -733,7 +728,7 @@ test.describe("check if scrollToIndex works", () => {
 			await input.fill("500");
 			await button.click();
 
-			await (await component.elementHandle())!.waitForElementState("stable");
+			await (await component.elementHandle())?.waitForElementState("stable");
 
 			expect(await component.innerText()).toContain("500");
 
@@ -741,7 +736,7 @@ test.describe("check if scrollToIndex works", () => {
 			await input.fill("0");
 			await button.click();
 
-			await (await component.elementHandle())!.waitForElementState("stable");
+			await (await component.elementHandle())?.waitForElementState("stable");
 
 			// Check if scrolled precisely
 			const firstItem = await getFirstItem(component);
@@ -767,7 +762,7 @@ test.describe("check if scrollToIndex works", () => {
 			await input.fill("999");
 			await button.click();
 
-			await (await component.elementHandle())!.waitForElementState("stable");
+			await (await component.elementHandle())?.waitForElementState("stable");
 
 			// Check if scrolled precisely
 			const lastItem = await getLastItem(component);
@@ -840,7 +835,7 @@ test.describe("check if scrollTo works", () => {
 		await input.fill("5000");
 		await button.click();
 
-		await (await component.elementHandle())!.waitForElementState("stable");
+		await (await component.elementHandle())?.waitForElementState("stable");
 
 		expect(
 			// scrollTo may not scroll to exact position with dynamic sized items
@@ -874,7 +869,7 @@ test.describe("check if scrollBy works", () => {
 			name: "scroll by offset",
 		});
 		const input = await button.evaluateHandle(
-			(el) => el.previousSibling!.previousSibling as HTMLInputElement,
+			(el) => el.previousSibling?.previousSibling as HTMLInputElement,
 		);
 
 		// scroll down
@@ -912,7 +907,7 @@ test.describe("check if item shift compensation works", () => {
 
 		const topItem = await getFirstItem(component);
 		expect(topItem.text).not.toEqual("0");
-		expect(topItem.text.length).toBeLessThanOrEqual(2);
+		expect(topItem.text?.length).toBeLessThanOrEqual(2);
 
 		// add
 		await page.getByRole("radio", { name: "increase" }).click();
@@ -945,7 +940,7 @@ test.describe("check if item shift compensation works", () => {
 
 		const topItem = await getFirstItem(component);
 		expect(topItem.text).not.toEqual("0");
-		expect(topItem.text.length).toBeLessThanOrEqual(2);
+		expect(topItem.text?.length).toBeLessThanOrEqual(2);
 
 		// add
 		await page.getByRole("checkbox", { name: "prepend" }).click();
@@ -973,8 +968,8 @@ test.describe("check if item shift compensation works", () => {
 		]);
 
 		await page.getByRole("checkbox", { name: "prepend" }).click();
-		const decreaseRadio = await page.getByRole("radio", { name: "decrease" });
-		const increaseRadio = await page.getByRole("radio", { name: "increase" });
+		const decreaseRadio = page.getByRole("radio", { name: "decrease" });
+		const increaseRadio = page.getByRole("radio", { name: "increase" });
 		const valueInput = page.getByRole("spinbutton");
 		const updateButton = page.getByRole("button", { name: "update" });
 
@@ -990,7 +985,7 @@ test.describe("check if item shift compensation works", () => {
 			// preprend
 			await increaseRadio.click();
 			await updateButton.click();
-			await (await component.elementHandle())!.waitForElementState("stable");
+			await (await component.elementHandle())?.waitForElementState("stable");
 
 			const [childrenCount, firstItemRectTop] = await container.evaluate(
 				(e) => {
@@ -1021,10 +1016,9 @@ test.describe("check if item shift compensation works", () => {
 					max: 0.1,
 				});
 				break;
-			} else {
-				// Check if top is always visible and on top
-				expect(itemTop).toBe(0);
 			}
+			// Check if top is always visible and on top
+			expect(itemTop).toBe(0);
 
 			// remove
 			await decreaseRadio.click();
@@ -1046,8 +1040,8 @@ test.describe("check if item shift compensation works", () => {
 		await page.getByRole("checkbox", { name: "reverse" }).click();
 
 		await page.getByRole("checkbox", { name: "prepend" }).click();
-		const decreaseRadio = await page.getByRole("radio", { name: "decrease" });
-		const increaseRadio = await page.getByRole("radio", { name: "increase" });
+		const decreaseRadio = page.getByRole("radio", { name: "decrease" });
+		const increaseRadio = page.getByRole("radio", { name: "increase" });
 		const valueInput = page.getByRole("spinbutton");
 		const updateButton = page.getByRole("button", { name: "update" });
 
@@ -1063,7 +1057,7 @@ test.describe("check if item shift compensation works", () => {
 			// preprend
 			await increaseRadio.click();
 			await updateButton.click();
-			await (await component.elementHandle())!.waitForElementState("stable");
+			await (await component.elementHandle())?.waitForElementState("stable");
 
 			const [childrenCount, lastItemRectBottom] = await container.evaluate(
 				(e) => {
@@ -1095,10 +1089,9 @@ test.describe("check if item shift compensation works", () => {
 					max: 0.1,
 				});
 				break;
-			} else {
-				// Check if bottom is always visible and on bottom
-				expectInRange(itemBottom, { min: -0.1, max: 0.1 });
 			}
+			// Check if bottom is always visible and on bottom
+			expectInRange(itemBottom, { min: -0.1, max: 0.1 });
 
 			// remove
 			await decreaseRadio.click();
@@ -1121,8 +1114,8 @@ test.describe("check if item shift compensation works", () => {
 		await page.getByRole("checkbox", { name: "reverse" }).click();
 
 		await page.getByRole("checkbox", { name: "prepend" }).click();
-		const decreaseRadio = await page.getByRole("radio", { name: "decrease" });
-		const increaseRadio = await page.getByRole("radio", { name: "increase" });
+		const decreaseRadio = page.getByRole("radio", { name: "decrease" });
+		const increaseRadio = page.getByRole("radio", { name: "increase" });
 		const valueInput = page.getByRole("spinbutton");
 		const updateButton = page.getByRole("button", { name: "update" });
 
@@ -1167,10 +1160,11 @@ test.describe("check if item shift compensation works", () => {
 
 			if (!isScrollBarVisible) {
 				break;
-			} else {
-				// may have subpixel error so scroll to bottom again
-				await component.evaluate((e) => (e.scrollTop += e.scrollHeight));
 			}
+			// may have subpixel error so scroll to bottom again
+			await component.evaluate((e) => {
+				e.scrollTop += e.scrollHeight;
+			});
 		}
 
 		expect(i).toBeGreaterThanOrEqual(30);

@@ -1,4 +1,4 @@
-import { CacheSnapshot } from "../src/index.ts";
+import type { CacheSnapshot } from "../src/index.ts";
 import { init as vListInit } from "../src/vList.ts";
 
 const createRows = (num: number) => {
@@ -19,7 +19,7 @@ type ResList = {
 };
 
 const restorableList = ({ id }: { id: string }): ResList => {
-	const cacheKey = "list-cache-" + id;
+	const cacheKey = `list-cache-${id}`;
 
 	let offset: number | undefined = undefined;
 	let cache: CacheSnapshot | undefined = undefined;

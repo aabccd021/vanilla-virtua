@@ -1,4 +1,8 @@
-import { CacheSnapshot, init as indexInit, InitResult } from "./index.ts";
+import {
+	type CacheSnapshot,
+	type InitResult,
+	init as indexInit,
+} from "./index.ts";
 
 export function init({
 	cache,

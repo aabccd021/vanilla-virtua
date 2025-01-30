@@ -39,7 +39,8 @@
 				"all": true
 			},
 			"style": {
-				"all": true
+				"all": true,
+				"noNonNullAssertion": "off"
 			}
 		}
 	}

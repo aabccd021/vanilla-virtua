@@ -1,4 +1,9 @@
-import { ElementHandle, Locator, Page, expect } from "@playwright/test";
+import {
+	type ElementHandle,
+	type Locator,
+	type Page,
+	expect,
+} from "@playwright/test";
 
 export const storyUrl = (id: string) => `http://localhost:8000/${id}.html`;
 
@@ -46,7 +51,7 @@ export const getFirstItem = (scrollable: Locator) => {
 		const el = document.elementFromPoint(rect.left + 2, rect.top + 2)!;
 		const elRect = el.getBoundingClientRect();
 		return {
-			text: el.textContent!,
+			text: el.textContent,
 			top: elRect.top - rect.top,
 			left: elRect.left - rect.left,
 		};
@@ -65,7 +70,7 @@ export const getLastItem = (
 		)!;
 		const elRect = el.getBoundingClientRect();
 		return {
-			text: el.textContent!,
+			text: el.textContent,
 			bottom: elRect.bottom - rect.bottom,
 			height: elRect.height,
 		};
@@ -77,7 +82,7 @@ export const getFirstItemRtl = (scrollable: Locator) => {
 		const rect = s.getBoundingClientRect();
 		const el = document.elementFromPoint(rect.right - 2, rect.top + 2)!;
 		return {
-			text: el.textContent!,
+			text: el.textContent,
 			top: el.getBoundingClientRect().top - rect.top,
 			right: el.getBoundingClientRect().right - rect.right,
 		};
@@ -94,7 +99,7 @@ export const getWindowFirstItem = (
 		const el = document.elementFromPoint(left + offsetX, top + offsetY)!;
 		const elRect = el.getBoundingClientRect();
 		return {
-			text: el.textContent!,
+			text: el.textContent,
 			top: elRect.top - top,
 			left: elRect.left - left,
 		};
@@ -111,7 +116,7 @@ export const getWindowLastItem = (
 		const el = document.elementFromPoint(left + offsetX, bottom - offsetY)!;
 		const elRect = el.getBoundingClientRect();
 		return {
-			text: el.textContent!,
+			text: el.textContent,
 			bottom: elRect.bottom - bottom,
 			height: elRect.height,
 		};
