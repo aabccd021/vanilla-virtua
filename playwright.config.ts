@@ -1,18 +1,9 @@
 import { defineConfig, devices } from "@playwright/test";
 
-/**
- * Read environment variables from file.
- * https://github.com/motdotla/dotenv
- */
-// require('dotenv').config();
-
-const _IOS_SPECS = "iOS";
-
-/**
- * See https://playwright.dev/docs/test-configuration.
- */
 export default defineConfig({
   testDir: "./e2e",
+  maxFailures: 1,
+  timeout: 15000,
   projects: [
     {
       name: "chromium",

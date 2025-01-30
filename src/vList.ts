@@ -1,10 +1,12 @@
 import { type CacheSnapshot, type InitResult, init as indexInit } from "./index.ts";
 
 export function init({
+  horizontal,
   cache,
   children,
   style,
 }: {
+  horizontal?: boolean;
   readonly cache?: CacheSnapshot;
   readonly children?: HTMLElement[];
   readonly style?: Partial<CSSStyleDeclaration>;
@@ -23,7 +25,7 @@ export function init({
     Object.assign(root.style, style);
   }
 
-  const initResult = indexInit({ container, cache });
+  const initResult = indexInit({ horizontal, container, cache });
 
   return { ...initResult, root };
 }
