@@ -110,7 +110,7 @@ test.describe("smoke", () => {
 		expect(await component.innerText()).toContain("999");
 	});
 
-	test.skip("scroll restoration", async ({ page }) => {
+	test("scroll restoration", async ({ page }) => {
 		await page.goto(storyUrl("basics-vlist--scroll-restoration"));
 
 		const component = await getScrollable(page);

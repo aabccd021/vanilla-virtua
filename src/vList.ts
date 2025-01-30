@@ -1,16 +1,14 @@
-import { init as indexInit } from "./index.ts";
-
-type InitResult = {
-	readonly root: HTMLElement;
-};
+import { CacheSnapshot, init as indexInit, InitResult } from "./index.ts";
 
 export function init({
+	cache,
 	children,
 	style,
 }: {
+	readonly cache?: CacheSnapshot;
 	readonly children?: HTMLElement[];
 	readonly style?: Partial<CSSStyleDeclaration>;
-}): InitResult {
+}): InitResult & { readonly root: HTMLElement } {
 	const container = document.createElement("div");
 	for (const child of children ?? []) {
 		const item = document.createElement("div");
@@ -25,7 +23,7 @@ export function init({
 		Object.assign(root.style, style);
 	}
 
-	indexInit({ container });
+	const initResult = indexInit({ container, cache });
 
-	return { root };
+	return { ...initResult, root };
 }
