@@ -38,6 +38,7 @@ interface State {
 }
 
 export interface Context {
+  readonly shift?: boolean;
   readonly isHorizontal: boolean;
   readonly container: HTMLElement;
   readonly store: VirtualStore;
@@ -51,7 +52,7 @@ export function appendChildren(context: Context, newChildren: HTMLElement[]): vo
   for (const child of newChildren) {
     context.state.children.push(child);
   }
-  context.store.$update(ACTION_ITEMS_LENGTH_CHANGE, [context.state.children.length, false]);
+  context.store.$update(ACTION_ITEMS_LENGTH_CHANGE, [context.state.children.length, context.shift]);
 }
 
 const once = <V>(fn: () => V): (() => V) => {
@@ -111,6 +112,7 @@ function newChild(
 
 export interface VirtualizerProps {
   readonly container: HTMLElement;
+  readonly shift?: boolean;
   readonly scrollOffset?: number;
   readonly overscan?: number;
   readonly itemSize?: number;
@@ -127,6 +129,7 @@ export interface InitResult {
 }
 
 export function init({
+  shift,
   horizontal,
   container,
   itemSize,
@@ -191,6 +194,7 @@ export function init({
   }
 
   const context: Context = {
+    shift,
     isHorizontal,
     container,
     store,
