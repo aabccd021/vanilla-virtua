@@ -210,7 +210,7 @@ test.describe("check if scroll jump compensation works", () => {
     expect(prev).toBeGreaterThan(initial + min);
   });
 
-  test.skip("horizontal start -> end", async ({ page }) => {
+  test("horizontal start -> end", async ({ page }) => {
     await page.goto(storyUrl("basics-vlist--horizontal"));
     const component = await getScrollable(page);
 
