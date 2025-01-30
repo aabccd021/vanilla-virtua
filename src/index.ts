@@ -71,9 +71,9 @@ function newChild(
 	}
 	item.style.visibility = "visible";
 	item.style.top = top;
-  item.style.position = "absolute";
-  item.style.width = "100%";
-  item.style.left = "0";
+	item.style.position = "absolute";
+	item.style.width = "100%";
+	item.style.left = "0";
 
 	newChildData.push({
 		idx,
@@ -103,7 +103,7 @@ export interface InitResult {
 }
 
 export function init({
-  container,
+	container,
 	itemSize,
 	overscan,
 	cache,
@@ -116,10 +116,10 @@ export function init({
 	container.style.visibility = "hidden";
 	container.style.width = "100%";
 
-  const root = container.parentElement;
-  if (!(root instanceof HTMLElement)) {
-    throw new Error("Root is not an HTMLElement");
-  }
+	const root = container.parentElement;
+	if (!(root instanceof HTMLElement)) {
+		throw new Error("Root is not an HTMLElement");
+	}
 
 	root.style.display = "block";
 	root.style.overflowY = "auto";

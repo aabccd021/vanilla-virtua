@@ -2,7 +2,7 @@ import { appendChildren, init } from "./index.ts";
 
 const heights = [20, 40, 80, 77];
 
-const createRows = () =>
+const createRows = (): HTMLElement[] =>
 	Array.from({ length: 30 }).map((_, i) => {
 		const item = document.createElement("div");
 		const height = heights[i % 4];
@@ -20,7 +20,10 @@ for (const row of initialRows) {
 	container.appendChild(row);
 }
 
-const root = document.getElementById("root")!;
+const root = document.getElementById("root");
+if (root === null) {
+	throw new Error("Root element not found");
+}
 root.style.height = "400px";
 root.appendChild(container);
 

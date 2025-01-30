@@ -1,6 +1,9 @@
-import { init, appendChildren } from "./index.ts";
+import { appendChildren, init } from "./index.ts";
 
-const container = document.getElementById("container")!;
+const container = document.getElementById("container");
+if (container === null) {
+	throw new Error("Container element not found");
+}
 const vlist = init({ container });
 
 const heights = [20, 40, 80, 77];
