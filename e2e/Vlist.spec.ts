@@ -39,7 +39,7 @@ test.describe("smoke", () => {
     expect(await component.innerText()).toContain("999");
   });
 
-  test.skip("horizontally scrollable", async ({ page }) => {
+  test("horizontally scrollable", async ({ page }) => {
     await page.goto(storyUrl("basics-vlist--horizontal"));
 
     const component = await getScrollable(page);

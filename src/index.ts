@@ -133,7 +133,7 @@ export function init({
     throw new Error("Root is not an HTMLElement");
   }
 
-  root.style.display = isHorizontal ? "block" : "inline-block";
+  root.style.display = isHorizontal ? "inline-block" : "block";
   root.style[isHorizontal ? "overflowX" : "overflowY"] = "auto";
   root.style.contain = "strict";
   root.style.width = root.style.width === "" || root.style.width === undefined ? "100%" : root.style.width;

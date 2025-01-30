@@ -4,6 +4,9 @@ export default defineConfig({
   testDir: "./e2e",
   maxFailures: 1,
   timeout: 15000,
+  expect: {
+    timeout: 15000,
+  },
   projects: [
     {
       name: "chromium",
@@ -22,7 +25,7 @@ export default defineConfig({
   ],
 
   webServer: {
-    command: "esbuild stories/*.ts --bundle --outdir=stories --servedir=stories",
+    command: "npm run serve",
     url: "http://127.0.0.1:8000",
     reuseExistingServer: !process.env.CI,
     stderr: "ignore",

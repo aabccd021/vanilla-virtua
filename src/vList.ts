@@ -6,7 +6,7 @@ export function init({
   children,
   style,
 }: {
-  horizontal?: boolean;
+  readonly horizontal?: boolean;
   readonly cache?: CacheSnapshot;
   readonly children?: HTMLElement[];
   readonly style?: Partial<CSSStyleDeclaration>;
