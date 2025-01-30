@@ -69,5 +69,6 @@ export default defineConfig({
     command: "esbuild stories/*.ts --bundle --outdir=stories --servedir=stories",
     url: "http://127.0.0.1:8000",
     reuseExistingServer: !process.env.CI,
+    stderr: "ignore",
   },
 });
