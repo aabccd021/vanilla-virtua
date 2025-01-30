@@ -47,11 +47,11 @@ export default defineConfig({
 			},
 			grepInvert: new RegExp(String.raw`${IOS_SPECS}`),
 		},
-		// {
-		//   name: "firefox",
-		//   use: { ...devices["Desktop Firefox"] },
-		//   grepInvert: new RegExp(String.raw`${IOS_SPECS}`),
-		// },
+		{
+			name: "firefox",
+			use: { ...devices["Desktop Firefox"] },
+			grepInvert: new RegExp(String.raw`${IOS_SPECS}`),
+		},
 		// {
 		//   name: "webkit",
 		//   use: { ...devices["Desktop Safari"] },
