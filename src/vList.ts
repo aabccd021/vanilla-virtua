@@ -47,3 +47,11 @@ export function init({
 
   return { ...initResult, root };
 }
+
+export function appendChildren() {}
+
+export function spliceChildren() {}
+
+export function prependChildren() {}
+
+export function shiftChildren() {}
