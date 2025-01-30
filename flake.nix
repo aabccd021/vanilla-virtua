@@ -16,6 +16,7 @@
         buildInputs = [
           pkgs.nodejs
           pkgs.biome
+          pkgs.esbuild
         ];
       };
     };

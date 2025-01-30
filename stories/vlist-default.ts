@@ -1,6 +1,6 @@
 import { init as vListInit } from "../src/vList.ts";
 
-const createRows = (num) => {
+const createRows = (num: number) => {
 	const heights = [20, 40, 80, 77];
 	return Array.from({ length: num }).map((_, i) => {
 		const div = document.createElement("div");
