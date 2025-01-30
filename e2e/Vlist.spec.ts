@@ -2,7 +2,6 @@ import { expect, test } from "@playwright/test";
 import {
   approxymate,
   clearInput,
-  clearTimer,
   expectInRange,
   getFirstItem,
   getFirstItemRtl,
@@ -19,7 +18,6 @@ import {
   scrollToBottom,
   scrollToLeft,
   scrollToRight,
-  scrollWithTouch,
   storyUrl,
 } from "./utils.ts";
 
