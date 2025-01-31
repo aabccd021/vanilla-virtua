@@ -170,15 +170,10 @@ export function init({
   }
 
   const childData: ChildData[] = [];
-  const tmpCtx = {
-    offsetAttr,
-    children,
-    resizer,
-  };
   for (let i = 0; i < children.length; i++) {
     const offset = `${store.$getItemOffset(i)}px`;
     const hide = store.$isUnmeasuredItem(i);
-    newChild(tmpCtx, i, offset, hide, childData);
+    newChild({ offsetAttr, children, resizer }, i, offset, hide, childData);
   }
 
   const context: Context = {
