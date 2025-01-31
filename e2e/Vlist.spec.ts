@@ -581,7 +581,7 @@ test.describe("check if item shift compensation works", () => {
     await page.goto(storyUrl("basics-vlist--increasing-items"));
   });
 
-  test.skip("keep end at mid when add to/remove from end", async ({ page }) => {
+  test("keep end at mid when add to/remove from end", async ({ page }) => {
     const component = await getScrollable(page);
 
     const updateButton = page.getByRole("button", { name: "update" });
