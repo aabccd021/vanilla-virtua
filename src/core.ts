@@ -35,6 +35,7 @@ interface State {
   childData: ChildData[];
   totalSize?: string;
   jumpCount?: number;
+  isScrolling?: boolean;
 }
 
 export interface Context {
@@ -251,6 +252,13 @@ function render(context: Context): void {
       container.style.height = newTotalSize;
     }
     state.totalSize = newTotalSize;
+  }
+
+  const isScrolling = store.$isScrolling();
+  if (state.isScrolling !== isScrolling) {
+    state.isScrolling = isScrolling;
+    const pointerEvents = isScrolling ? "none" : "";
+    container.style.pointerEvents = pointerEvents;
   }
 
   const [startIdx, endIdx] = store.$getRange();
