@@ -30,10 +30,6 @@ interface ChildData {
   offset: string;
 }
 
-interface State {
-  childData: ChildData[];
-}
-
 export interface Context {
   shift?: boolean;
   readonly totalSizeAttr: "width" | "height";
@@ -44,11 +40,11 @@ export interface Context {
   readonly resizer: Resizer;
   readonly scroller: Scroller;
   readonly itemTag?: keyof HTMLElementTagNameMap;
-  readonly state: State;
   readonly children: HTMLElement[];
   jumpCount?: number;
   totalSize?: string;
   isScrolling?: boolean;
+  childData: ChildData[];
 }
 
 export function appendChildren(context: Context, newChildren: HTMLElement[]): void {
@@ -63,7 +59,7 @@ export function prependChildren(context: Context, newChildren: HTMLElement[]): v
   for (const child of newChildren) {
     context.children.unshift(child);
   }
-  for (const childData of context.state.childData) {
+  for (const childData of context.childData) {
     childData.idx += newChildren.length;
   }
   context.store.$update(ACTION_ITEMS_LENGTH_CHANGE, [context.children.length, context.shift]);
@@ -76,7 +72,7 @@ export function spliceChildren(context: Context, amount: number): void {
 
 export function shiftChildren(context: Context, amount: number): void {
   context.children.splice(0, amount);
-  for (const childData of context.state.childData) {
+  for (const childData of context.childData) {
     childData.idx -= amount;
   }
   context.store.$update(ACTION_ITEMS_LENGTH_CHANGE, [context.children.length, context.shift]);
@@ -196,9 +192,7 @@ export function init({
     scroller,
     itemTag: item,
     children,
-    state: {
-      childData,
-    },
+    childData,
   };
 
   render(context);
@@ -216,7 +210,7 @@ export function init({
     unsubscribeStore();
     resizer.$dispose();
     scroller.$dispose();
-    for (const childData of context.state.childData) {
+    for (const childData of context.childData) {
       childData.unobserve();
     }
   };
@@ -225,7 +219,7 @@ export function init({
 }
 
 function render(context: Context): void {
-  const { store, scroller, state, container } = context;
+  const { store, scroller, container } = context;
   const jumpCount = store.$getJumpCount();
   if (context.jumpCount !== jumpCount) {
     scroller.$fixScrollJump();
@@ -248,7 +242,7 @@ function render(context: Context): void {
   const [startIdx, endIdx] = store.$getRange();
   const newChildData: ChildData[] = [];
   for (let newChildIdx = startIdx; newChildIdx <= endIdx; newChildIdx++) {
-    const oldChildDataMaybe: ChildData | undefined = state.childData[0];
+    const oldChildDataMaybe: ChildData | undefined = context.childData[0];
     const offset = `${store.$getItemOffset(newChildIdx)}px`;
     const hide = store.$isUnmeasuredItem(newChildIdx);
 
@@ -256,7 +250,7 @@ function render(context: Context): void {
       const childEl = newChild(context, newChildIdx, offset, hide, newChildData);
       if (childEl !== undefined) {
         container.appendChild(childEl);
-        state.childData.shift();
+        context.childData.shift();
       }
       continue;
     }
@@ -265,14 +259,14 @@ function render(context: Context): void {
     while (newChildIdx > oldChildData.idx) {
       oldChildData.element.remove();
       oldChildData.unobserve();
-      state.childData.shift();
+      context.childData.shift();
 
-      const nextOldChild = state.childData[0];
+      const nextOldChild = context.childData[0];
       if (nextOldChild === undefined) {
         const childEl = newChild(context, newChildIdx, offset, hide, newChildData);
         if (childEl !== undefined) {
           container.appendChild(childEl);
-          state.childData.shift();
+          context.childData.shift();
         }
         break;
       }
@@ -303,14 +297,14 @@ function render(context: Context): void {
       }
 
       newChildData.push(oldChildData);
-      state.childData.shift();
+      context.childData.shift();
     }
   }
 
-  for (const oldChild of state.childData) {
+  for (const oldChild of context.childData) {
     oldChild.element.remove();
     oldChild.unobserve();
   }
 
-  state.childData = newChildData;
+  context.childData = newChildData;
 }
