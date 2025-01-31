@@ -287,7 +287,7 @@ test.describe("check if scrollToIndex works", () => {
       expect(await component.innerText()).not.toContain("750");
     });
 
-    test.skip("start", async ({ page }) => {
+    test("start", async ({ page }) => {
       const component = await getScrollable(page);
 
       // check if start is displayed
@@ -549,7 +549,7 @@ test.describe("check if scrollBy works", () => {
     await page.goto(storyUrl("basics-vlist--scroll-to"));
   });
 
-  test.skip("down and up", async ({ page }) => {
+  test("down and up", async ({ page }) => {
     const component = await getScrollable(page);
 
     // check if start is displayed
