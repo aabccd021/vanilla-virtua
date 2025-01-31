@@ -34,7 +34,6 @@ interface State {
   readonly children: HTMLElement[];
   childData: ChildData[];
   totalSize?: string;
-  jumpCount?: number;
   isScrolling?: boolean;
 }
 
@@ -49,6 +48,7 @@ export interface Context {
   readonly scroller: Scroller;
   readonly itemTag?: keyof HTMLElementTagNameMap;
   readonly state: State;
+  jumpCount?: number;
 }
 
 export function appendChildren(context: Context, newChildren: HTMLElement[]): void {
@@ -228,16 +228,16 @@ export function init({
 
 function render(context: Context): void {
   const { store, scroller, state, container } = context;
-  const newJumpCount = store.$getJumpCount();
-  if (state.jumpCount !== newJumpCount) {
+  const jumpCount = store.$getJumpCount();
+  if (context.jumpCount !== jumpCount) {
     scroller.$fixScrollJump();
-    state.jumpCount = newJumpCount;
+    context.jumpCount = jumpCount;
   }
 
-  const newTotalSize = `${store.$getTotalSize()}px`;
-  if (state.totalSize !== newTotalSize) {
-    container.style[context.totalSizeAttr] = newTotalSize;
-    state.totalSize = newTotalSize;
+  const totalSize = `${store.$getTotalSize()}px`;
+  if (state.totalSize !== totalSize) {
+    container.style[context.totalSizeAttr] = totalSize;
+    state.totalSize = totalSize;
   }
 
   const isScrolling = store.$isScrolling();
