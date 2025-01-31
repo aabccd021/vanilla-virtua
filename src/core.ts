@@ -40,6 +40,7 @@ interface State {
 
 export interface Context {
   shift?: boolean;
+  readonly totalSizeAttr: "width" | "height";
   readonly isHorizontal: boolean;
   readonly container: HTMLElement;
   readonly store: VirtualStore;
@@ -137,6 +138,7 @@ function newChild(
 }
 
 export interface VirtualizerProps {
+  readonly totalSizeAttr: "width" | "height";
   readonly shift?: boolean;
   readonly container: HTMLElement;
   readonly root: HTMLElement;
@@ -156,6 +158,7 @@ export interface InitResult {
 }
 
 export function init({
+  totalSizeAttr,
   shift,
   horizontal,
   container,
@@ -200,6 +203,7 @@ export function init({
   }
 
   const context: Context = {
+    totalSizeAttr,
     shift,
     isHorizontal,
     container,
@@ -246,11 +250,7 @@ function render(context: Context): void {
 
   const newTotalSize = `${store.$getTotalSize()}px`;
   if (state.totalSize !== newTotalSize) {
-    if (isHorizontal) {
-      container.style.width = newTotalSize;
-    } else {
-      container.style.height = newTotalSize;
-    }
+    container.style[context.totalSizeAttr] = newTotalSize;
     state.totalSize = newTotalSize;
   }
 

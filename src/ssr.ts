@@ -8,7 +8,11 @@ const root = container.parentElement;
 if (root === null) {
   throw new Error("Root element not found");
 }
-const vlist = init({ container, root });
+const vlist = init({
+  container,
+  root,
+  totalSizeAttr: "height",
+});
 
 const heights = [20, 40, 80, 77];
 

@@ -88,6 +88,7 @@ export function init({
   }
 
   const initResult = coreInit({
+    totalSizeAttr: isHorizontal ? "width" : "height",
     horizontal: isHorizontal,
     root,
     container,
