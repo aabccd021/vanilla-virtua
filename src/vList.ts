@@ -1,4 +1,25 @@
-import { type CacheSnapshot, type InitResult, init as coreInit } from "./core.ts";
+import {
+  type CacheSnapshot,
+  type Context,
+  type InitResult,
+  appendChildren as coreAppendChildren,
+  init as coreInit,
+  prependChildren as corePrependChildren,
+  shiftChildren as coreShiftChildren,
+  spliceChildren as coreSpliceChildren,
+} from "./core.ts";
+
+function newItem(child: HTMLElement, isHorizontal: boolean): HTMLElement {
+  const item = document.createElement("div");
+  item.style.position = "absolute";
+  item.style[isHorizontal ? "height" : "width"] = "100%";
+  item.style[isHorizontal ? "top" : "left"] = "0px";
+  if (isHorizontal) {
+    item.style.display = "flex";
+  }
+  item.appendChild(child);
+  return item;
+}
 
 export function init({
   reverse,
@@ -28,15 +49,7 @@ export function init({
   }
 
   for (const child of children ?? []) {
-    const item = document.createElement("div");
-    item.style.position = "absolute";
-    item.style[isHorizontal ? "height" : "width"] = "100%";
-    item.style[isHorizontal ? "top" : "left"] = "0px";
-    if (isHorizontal) {
-      item.style.display = "flex";
-    }
-
-    item.appendChild(child);
+    const item = newItem(child, isHorizontal);
     container.appendChild(item);
   }
 
@@ -77,13 +90,31 @@ export function init({
   return { ...initResult, root };
 }
 
-export function appendChildren() {}
+export function appendChildren(context: Context, newChildren: HTMLElement[]) {
+  const newItems: HTMLElement[] = [];
+  for (const child of newChildren) {
+    const item = newItem(child, context.isHorizontal);
+    newItems.push(item);
+  }
+  return coreAppendChildren(context, newItems);
+}
 
-export function spliceChildren() {}
+export function prependChildren(context: Context, newChildren: HTMLElement[]) {
+  const newItems: HTMLElement[] = [];
+  for (const child of newChildren) {
+    const item = newItem(child, context.isHorizontal);
+    newItems.push(item);
+  }
+  return corePrependChildren(context, newItems);
+}
 
-export function prependChildren() {}
+export function spliceChildren(context: Context, amount: number) {
+  return coreSpliceChildren(context, amount);
+}
 
-export function shiftChildren() {}
+export function shiftChildren(context: Context, amount: number) {
+  return coreShiftChildren(context, amount);
+}
 
 export function setShift() {}
 

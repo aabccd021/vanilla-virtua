@@ -55,6 +55,23 @@ export function appendChildren(context: Context, newChildren: HTMLElement[]): vo
   context.store.$update(ACTION_ITEMS_LENGTH_CHANGE, [context.state.children.length, context.shift]);
 }
 
+export function prependChildren(context: Context, newChildren: HTMLElement[]): void {
+  for (const child of newChildren) {
+    context.state.children.unshift(child);
+  }
+  context.store.$update(ACTION_ITEMS_LENGTH_CHANGE, [context.state.children.length, context.shift]);
+}
+
+export function spliceChildren(context: Context, amount: number): void {
+  context.state.children.splice(-amount);
+  context.store.$update(ACTION_ITEMS_LENGTH_CHANGE, [context.state.children.length, context.shift]);
+}
+
+export function shiftChildren(context: Context, amount: number): void {
+  context.state.children.splice(0, amount);
+  context.store.$update(ACTION_ITEMS_LENGTH_CHANGE, [context.state.children.length, context.shift]);
+}
+
 const once = <V>(fn: () => V): (() => V) => {
   let called: undefined | boolean;
   let cache: V;
