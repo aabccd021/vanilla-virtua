@@ -135,12 +135,6 @@ export function init({
 }: VirtualizerProps): InitResult {
   const isHorizontal = !!horizontal;
 
-  if (isHorizontal) {
-    container.style.height = "100%";
-  } else {
-    container.style.width = "100%";
-  }
-
   const children: HTMLElement[] = [];
   for (const child of Array.from(container.children)) {
     if (!(child instanceof HTMLElement)) {

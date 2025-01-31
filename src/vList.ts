@@ -21,6 +21,11 @@ export function init({
   container.style.flex = "none";
   container.style.position = "relative";
   container.style.visibility = "hidden";
+  if (isHorizontal) {
+    container.style.height = "100%";
+  } else {
+    container.style.width = "100%";
+  }
 
   for (const child of children ?? []) {
     const item = document.createElement("div");
