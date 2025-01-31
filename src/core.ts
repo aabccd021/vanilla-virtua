@@ -112,12 +112,11 @@ function newChild(
     };
     readonly resizer: Resizer;
   },
-  idxx: number,
+  idx: number,
   offset: string,
   hide: boolean,
   childData: ChildData[],
 ): Element | undefined {
-  const idx = childData[idxx]?.idx ?? idxx;
   const item = context.state.children[idx];
   if (item === undefined) {
     return undefined;
