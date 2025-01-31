@@ -24,6 +24,13 @@ export function init({
 
   for (const child of children ?? []) {
     const item = document.createElement("div");
+    item.style.position = "absolute";
+    item.style[isHorizontal ? "height" : "width"] = "100%";
+    item.style[isHorizontal ? "top" : "left"] = "0px";
+    if (isHorizontal) {
+      item.style.display = "flex";
+    }
+
     item.appendChild(child);
     container.appendChild(item);
   }

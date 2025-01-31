@@ -89,14 +89,8 @@ function newChild(
   if (item === undefined) {
     throw new Error(`Absurd: child is undefined at index ${idx}`);
   }
-  item.style.position = "absolute";
-  item.style[context.isHorizontal ? "height" : "width"] = "100%";
-  item.style[context.isHorizontal ? "top" : "left"] = "0px";
   item.style[context.isHorizontal ? (isRtlDocument() ? "right" : "left") : "top"] = offset;
   item.style.visibility = hide ? "hidden" : "visible";
-  if (context.isHorizontal) {
-    item.style.display = "flex";
-  }
 
   newChildData.push({
     idx,
