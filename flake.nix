@@ -2,11 +2,20 @@
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
     treefmt-nix.url = "github:numtide/treefmt-nix";
+    project-utils = {
+      url = "github:aabccd021/project-utils";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
-  outputs = { self, nixpkgs, treefmt-nix }:
+  outputs = { self, nixpkgs, treefmt-nix, project-utils }:
 
     let
+
+      pkgs = nixpkgs.legacyPackages.x86_64-linux;
+      utilLib = project-utils.lib;
+
+      nodeModules = utilLib.buildNodeModules.fromLockJson ./package.json ./package-lock.json;
 
       treefmtEval = treefmt-nix.lib.evalModule pkgs {
         projectRootFile = "flake.nix";
@@ -19,24 +28,65 @@
         settings.global.excludes = [ "LICENSE" "*.ico" ];
       };
 
-      pkgs = nixpkgs.legacyPackages.x86_64-linux;
+      tests = pkgs.runCommandNoCCLocal "tests"
+        {
+          buildInputs = [ pkgs.nodejs ];
+        } ''
+        export XDG_CONFIG_HOME="$(pwd)"
+        export XDG_CACHE_HOME="$(pwd)"
+        export PLAYWRIGHT_BROWSERS_PATH=${pkgs.playwright-driver.browsers}
+        export PATH=./node_modules/esbuild/bin:"$PATH"
+        cp -L ${./package.json} ./package.json
+        cp -L ${./playwright.config.ts} ./playwright.config.ts
+        cp -L ${./tsconfig.json} ./tsconfig.json
+        cp -Lr ${nodeModules} ./node_modules
+        cp -Lr ${./src} ./src
+        cp -Lr ${./e2e} ./e2e
+        cp -Lr ${./stories} ./stories
+        chmod -R 700 ./stories
+        node_modules/playwright/cli.js test
+        touch $out
+      '';
 
-      check = pkgs.writeShellApplication {
-        name = "check";
+      # dist = pkgs.runCommandNoCCLocal "dist" { } ''
+      #   mkdir  $out
+      #   ${pkgs.esbuild}/bin/esbuild ${./freeze-page.ts} \
+      #     --bundle \
+      #     --format=esm \
+      #     --minify \
+      #     --sourcemap \
+      #     --outfile="$out/freeze-page.min.js"
+      #   ${pkgs.esbuild}/bin/esbuild ${./freeze-page.ts} \
+      #     --bundle \
+      #     --format=esm \
+      #     --target=es6 \
+      #     --minify \
+      #     --sourcemap \
+      #     --outfile="$out/freeze-page.es6.min.js"
+      # '';
+
+      publish = pkgs.writeShellApplication {
+        name = "publish";
         text = ''
-          trap 'cd $(pwd)' EXIT
-          repo_root=$(git rev-parse --show-toplevel)
-          cd "$repo_root" || exit
-          npm install
-          # tsc
-          # biome check --fix --error-on-warnings
-          echo "Running playwright tests"
-          npx playwright test
+          nix flake check
+          NPM_TOKEN=''${NPM_TOKEN:-}
+          if [ -n "$NPM_TOKEN" ]; then
+            npm config set //registry.npmjs.org/:_authToken "$NPM_TOKEN"
+          fi
+          result=$(nix build --no-link --print-out-paths .#dist)
+          rm -rf dist
+          mkdir dist
+          cp -Lr "$result"/* dist
+          chmod 400 dist/*
+          npm publish --dry-run
+          npm publish || true
         '';
       };
 
       packages = {
-        check = check;
+        publish = publish;
+        tests = tests;
+        # dist = dist;
         formatting = treefmtEval.config.build.check self;
       };
 
@@ -52,15 +102,7 @@
       checks.x86_64-linux = gcroot;
       formatter.x86_64-linux = treefmtEval.config.build.wrapper;
 
-      apps.x86_64-linux.check = {
-        type = "app";
-        program = "${check}/bin/check";
-      };
-
       devShells.x86_64-linux.default = pkgs.mkShellNoCC {
-        shellHook = ''
-          export PLAYWRIGHT_BROWSERS_PATH=${pkgs.playwright.browsers}
-        '';
         buildInputs = [
           pkgs.nodejs
           pkgs.biome
