@@ -4,7 +4,6 @@ import {
   appendChildren as coreAppendChildren,
   init as coreInit,
   prependChildren as corePrependChildren,
-  setShift as coreSetShift,
   shiftChildren as coreShiftChildren,
   spliceChildren as coreSpliceChildren,
 } from "./core.ts";
@@ -128,10 +127,6 @@ export function spliceChildren(vlist: Vlist, amount: number) {
 
 export function shiftChildren(vlist: Vlist, amount: number) {
   return coreShiftChildren(vlist.context, amount);
-}
-
-export function setShift(vlist: Vlist, shift: boolean) {
-  return coreSetShift(vlist.context, shift);
 }
 
 export function setReverse(vlist: Vlist, reverse: boolean) {

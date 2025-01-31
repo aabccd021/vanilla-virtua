@@ -2,7 +2,6 @@ import {
   appendChildren,
   prependChildren,
   setReverse,
-  setShift,
   shiftChildren,
   spliceChildren,
   init as vListInit,
@@ -70,7 +69,7 @@ prependInput.checked = prepend;
 prependInput.addEventListener("change", () => {
   prepend = !prepend;
   prependInput.checked = prepend;
-  setShift(myList, prepend);
+  myList.context.shift = prepend;
 });
 
 const prependLabel = document.createElement("label");

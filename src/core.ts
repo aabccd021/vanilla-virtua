@@ -78,13 +78,6 @@ export function shiftChildren(context: Context, amount: number): void {
   context.store.$update(ACTION_ITEMS_LENGTH_CHANGE, [context.children.length, context.shift]);
 }
 
-export function setShift(context: Context, shift: boolean): void {
-  if (context.shift === shift) {
-    return;
-  }
-  context.shift = shift;
-}
-
 function newChild(
   context: {
     readonly offsetAttr: "left" | "right" | "top";
