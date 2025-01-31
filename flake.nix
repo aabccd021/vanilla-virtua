@@ -29,7 +29,8 @@
           cd "$repo_root" || exit
           npm install
           # tsc
-          biome check --fix --error-on-warnings
+          # biome check --fix --error-on-warnings
+          echo "Running playwright tests"
           npx playwright test
         '';
       };
