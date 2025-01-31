@@ -20,7 +20,7 @@ export default defineConfig({
   webServer: {
     command: "npm run serve",
     url: "http://127.0.0.1:8000",
-    reuseExistingServer: false,
+    reuseExistingServer: true,
     stderr: "ignore",
   },
 });
