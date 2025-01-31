@@ -31,7 +31,6 @@ interface ChildData {
 }
 
 interface State {
-  readonly children: HTMLElement[];
   childData: ChildData[];
 }
 
@@ -46,6 +45,7 @@ export interface Context {
   readonly scroller: Scroller;
   readonly itemTag?: keyof HTMLElementTagNameMap;
   readonly state: State;
+  readonly children: HTMLElement[];
   jumpCount?: number;
   totalSize?: string;
   isScrolling?: boolean;
@@ -53,33 +53,33 @@ export interface Context {
 
 export function appendChildren(context: Context, newChildren: HTMLElement[]): void {
   for (const child of newChildren) {
-    context.state.children.push(child);
+    context.children.push(child);
   }
-  context.store.$update(ACTION_ITEMS_LENGTH_CHANGE, [context.state.children.length, context.shift]);
+  context.store.$update(ACTION_ITEMS_LENGTH_CHANGE, [context.children.length, context.shift]);
 }
 
 export function prependChildren(context: Context, newChildren: HTMLElement[]): void {
   newChildren.reverse();
   for (const child of newChildren) {
-    context.state.children.unshift(child);
+    context.children.unshift(child);
   }
   for (const childData of context.state.childData) {
     childData.idx += newChildren.length;
   }
-  context.store.$update(ACTION_ITEMS_LENGTH_CHANGE, [context.state.children.length, context.shift]);
+  context.store.$update(ACTION_ITEMS_LENGTH_CHANGE, [context.children.length, context.shift]);
 }
 
 export function spliceChildren(context: Context, amount: number): void {
-  context.state.children.splice(-amount);
-  context.store.$update(ACTION_ITEMS_LENGTH_CHANGE, [context.state.children.length, context.shift]);
+  context.children.splice(-amount);
+  context.store.$update(ACTION_ITEMS_LENGTH_CHANGE, [context.children.length, context.shift]);
 }
 
 export function shiftChildren(context: Context, amount: number): void {
-  context.state.children.splice(0, amount);
+  context.children.splice(0, amount);
   for (const childData of context.state.childData) {
     childData.idx -= amount;
   }
-  context.store.$update(ACTION_ITEMS_LENGTH_CHANGE, [context.state.children.length, context.shift]);
+  context.store.$update(ACTION_ITEMS_LENGTH_CHANGE, [context.children.length, context.shift]);
 }
 
 export function setShift(context: Context, shift: boolean): void {
@@ -92,9 +92,7 @@ export function setShift(context: Context, shift: boolean): void {
 function newChild(
   context: {
     readonly offsetAttr: "left" | "right" | "top";
-    readonly state: {
-      readonly children: HTMLElement[];
-    };
+    readonly children: HTMLElement[];
     readonly resizer: Resizer;
   },
   idx: number,
@@ -102,7 +100,7 @@ function newChild(
   hide: boolean,
   childData: ChildData[],
 ): Element | undefined {
-  const item = context.state.children[idx];
+  const item = context.children[idx];
   if (item === undefined) {
     return undefined;
   }
@@ -178,7 +176,7 @@ export function init({
   const childData: ChildData[] = [];
   const tmpCtx = {
     offsetAttr,
-    state: { children },
+    children,
     resizer,
   };
   for (let i = 0; i < children.length; i++) {
@@ -197,9 +195,9 @@ export function init({
     resizer,
     scroller,
     itemTag: item,
+    children,
     state: {
       childData,
-      children,
     },
   };
 
