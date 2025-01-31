@@ -122,10 +122,9 @@ export interface VirtualizerProps {
   readonly horizontal?: boolean;
 }
 
-export interface InitResult {
+export interface Core {
   readonly context: Context;
   readonly dispose: () => void;
-  readonly container: HTMLElement;
 }
 
 export function init({
@@ -140,7 +139,7 @@ export function init({
   cache,
   item,
   scrollOffset,
-}: VirtualizerProps): InitResult {
+}: VirtualizerProps): Core {
   const isHorizontal = !!horizontal;
 
   const children: HTMLElement[] = [];
@@ -203,7 +202,7 @@ export function init({
     }
   };
 
-  return { context, dispose, container };
+  return { context, dispose };
 }
 
 function render(context: Context): void {

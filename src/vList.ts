@@ -1,6 +1,6 @@
 import {
   type CacheSnapshot,
-  type InitResult,
+  type Core,
   appendChildren as coreAppendChildren,
   init as coreInit,
   prependChildren as corePrependChildren,
@@ -8,7 +8,7 @@ import {
   spliceChildren as coreSpliceChildren,
 } from "./core.ts";
 
-type Vlist = InitResult & {
+type Vlist = Core & {
   readonly root: HTMLElement;
   reverse?: boolean;
   wrapper?: HTMLElement;
@@ -91,7 +91,7 @@ export function init({
     Object.assign(root.style, style);
   }
 
-  const initResult = coreInit({
+  const core = coreInit({
     totalSizeAttr: isHorizontal ? "width" : "height",
     horizontal: isHorizontal,
     offsetAttr: isHorizontal
@@ -105,7 +105,7 @@ export function init({
     shift,
   });
 
-  return { ...initResult, root, wrapper, reverse };
+  return { ...core, root, wrapper, reverse };
 }
 
 export function appendChildren(vlist: Vlist, newChildren: HTMLElement[]) {
