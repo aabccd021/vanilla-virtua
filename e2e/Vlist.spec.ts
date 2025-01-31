@@ -115,7 +115,7 @@ test.describe("smoke", () => {
 });
 
 test.describe("check if it works when children change", () => {
-  test.skip("recovering from 0", async ({ page }) => {
+  test("recovering from 0", async ({ page }) => {
     await page.goto(storyUrl("basics-vlist--increasing-items"));
     const component = await getScrollable(page);
 
