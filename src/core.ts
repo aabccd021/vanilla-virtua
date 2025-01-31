@@ -6,7 +6,7 @@ import {
   createResizer,
   createScroller,
   createVirtualStore,
-} from "virtua/core";
+} from "virtua/unstable_core";
 
 export type {
   VirtualStore,
@@ -16,7 +16,7 @@ export type {
   CacheSnapshot,
   ScrollToIndexOpts,
   ItemsRange,
-} from "virtua/core";
+} from "virtua/unstable_core";
 
 type Scroller = ReturnType<typeof createScroller>;
 
