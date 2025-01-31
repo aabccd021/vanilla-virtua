@@ -612,7 +612,7 @@ test.describe("check if item shift compensation works", () => {
     expect(topItem).toEqual(await getFirstItem(component));
   });
 
-  test.skip("keep start at mid when add to/remove from start", async ({ page }) => {
+  test.only("keep start at mid when add to/remove from start", async ({ page }) => {
     const component = await getScrollable(page);
 
     const updateButton = page.getByRole("button", { name: "update" });
