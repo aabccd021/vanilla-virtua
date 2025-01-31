@@ -343,7 +343,7 @@ test.describe("check if scrollToIndex works", () => {
       expect(await component.innerText()).not.toContain("949");
     });
 
-    test.skip("mid smooth", async ({ page, browserName }) => {
+    test("mid smooth", async ({ page, browserName }) => {
       const component = await getScrollable(page);
 
       // check if start is displayed
@@ -467,7 +467,7 @@ test.describe("check if scrollToIndex works", () => {
       expect(await component.innerText()).not.toContain("949");
     });
 
-    test.skip("mid smooth", async ({ page, browserName }) => {
+    test("mid smooth", async ({ page, browserName }) => {
       const component = await getScrollable(page);
 
       // check if start is displayed

@@ -55,6 +55,7 @@ startInput.addEventListener("change", () => {
 const startLabel = document.createElement("label");
 startLabel.style.marginLeft = "4px";
 startLabel.appendChild(startInput);
+startLabel.appendChild(document.createTextNode("start"));
 
 const centerInput = document.createElement("input");
 centerInput.type = "radio";
@@ -69,6 +70,7 @@ centerInput.addEventListener("change", () => {
 const centerLabel = document.createElement("label");
 centerLabel.style.marginLeft = "4px";
 centerLabel.appendChild(centerInput);
+centerLabel.appendChild(document.createTextNode("center"));
 
 const endInput = document.createElement("input");
 endInput.type = "radio";
@@ -83,6 +85,7 @@ endInput.addEventListener("change", () => {
 const endLabel = document.createElement("label");
 endLabel.style.marginLeft = "4px";
 endLabel.appendChild(endInput);
+endLabel.appendChild(document.createTextNode("end"));
 
 const smoothInput = document.createElement("input");
 smoothInput.type = "checkbox";
@@ -96,6 +99,7 @@ smoothInput.addEventListener("change", () => {
 const smoothLabel = document.createElement("label");
 smoothLabel.style.marginLeft = "4px";
 smoothLabel.appendChild(smoothInput);
+smoothLabel.appendChild(document.createTextNode("smooth"));
 
 const inputsDiv = document.createElement("div");
 inputsDiv.appendChild(scrollIndexInput);
