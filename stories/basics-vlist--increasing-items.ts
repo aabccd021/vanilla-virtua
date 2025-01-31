@@ -43,95 +43,92 @@ const update = () => {
   }
 };
 
-const input1 = document.createElement("input");
-input1.type = "checkbox";
-input1.style.marginLeft = "4px";
-input1.checked = prepend;
-input1.addEventListener("change", () => {
+const prependInput = document.createElement("input");
+prependInput.type = "checkbox";
+prependInput.style.marginLeft = "4px";
+prependInput.checked = prepend;
+prependInput.addEventListener("change", () => {
   prepend = !prepend;
-  input1.checked = prepend;
+  prependInput.checked = prepend;
   setShift();
 });
 
-const label1 = document.createElement("label");
-label1.style.marginRight = "4px";
-label1.appendChild(input1);
-label1.appendChild(document.createTextNode("prepend"));
+const prependLabel = document.createElement("label");
+prependLabel.style.marginRight = "4px";
+prependLabel.appendChild(prependInput);
+prependLabel.appendChild(document.createTextNode("prepend"));
 
-const input2 = document.createElement("input");
-input2.type = "radio";
-input2.style.marginLeft = "4px";
-input2.checked = increase;
-input2.addEventListener("change", () => {
+const increaseInput = document.createElement("input");
+increaseInput.type = "radio";
+increaseInput.style.marginLeft = "4px";
+increaseInput.checked = increase;
+increaseInput.addEventListener("change", () => {
   increase = true;
-  input2.checked = increase;
+  increaseInput.checked = increase;
 });
 
-const label2 = document.createElement("label");
-label2.style.marginRight = "4px";
-label2.appendChild(input2);
-label2.appendChild(document.createTextNode("increase"));
+const increaseLabel = document.createElement("label");
+increaseLabel.style.marginRight = "4px";
+increaseLabel.appendChild(increaseInput);
+increaseLabel.appendChild(document.createTextNode("increase"));
 
-const input3 = document.createElement("input");
-input3.type = "radio";
-input3.style.marginLeft = "4px";
-input3.checked = !increase;
-input3.addEventListener("change", () => {
+const decreaseInput = document.createElement("input");
+decreaseInput.type = "radio";
+decreaseInput.style.marginLeft = "4px";
+decreaseInput.checked = !increase;
+decreaseInput.addEventListener("change", () => {
   increase = false;
-  input3.checked = !increase;
+  decreaseInput.checked = !increase;
 });
 
-const label3 = document.createElement("label");
-label3.style.marginRight = "4px";
-label3.appendChild(input3);
-label3.appendChild(document.createTextNode("decrease"));
+const decreaseLabel = document.createElement("label");
+decreaseLabel.style.marginRight = "4px";
+decreaseLabel.appendChild(decreaseInput);
+decreaseLabel.appendChild(document.createTextNode("decrease"));
 
-const input4 = document.createElement("input");
-input4.style.marginLeft = "4px";
-input4.value = amount.toString();
-input4.type = "number";
-input4.min = "1";
-input4.max = "10000";
-input4.step = "1";
-input4.addEventListener("change", () => {
-  amount = Number(input4.value);
-  input4.value = amount.toString();
+const amountInput = document.createElement("input");
+amountInput.style.marginLeft = "4px";
+amountInput.value = amount.toString();
+amountInput.type = "number";
+amountInput.min = "1";
+amountInput.max = "10000";
+amountInput.step = "1";
+amountInput.addEventListener("change", () => {
+  amount = Number(amountInput.value);
+  amountInput.value = amount.toString();
 });
 
 const inputs = document.createElement("div");
-inputs.appendChild(label1);
-inputs.appendChild(label2);
-inputs.appendChild(label3);
-inputs.appendChild(input4);
+inputs.appendChild(prependLabel);
+inputs.appendChild(increaseLabel);
+inputs.appendChild(decreaseLabel);
+inputs.appendChild(amountInput);
 
-const div4 = document.createElement("div");
-div4.appendChild(input4);
-
-const input5 = document.createElement("input");
-input5.type = "checkbox";
-input5.style.marginLeft = "4px";
-input5.checked = reverse;
-input5.addEventListener("change", () => {
+const reverseInput = document.createElement("input");
+reverseInput.type = "checkbox";
+reverseInput.style.marginLeft = "4px";
+reverseInput.checked = reverse;
+reverseInput.addEventListener("change", () => {
   reverse = !reverse;
-  input5.checked = reverse;
+  reverseInput.checked = reverse;
   setReverse();
 });
 
-const label5 = document.createElement("label");
-label5.style.marginRight = "4px";
-label5.appendChild(input5);
-label5.appendChild(document.createTextNode("reverse"));
+const lreverseLabel = document.createElement("label");
+lreverseLabel.style.marginRight = "4px";
+lreverseLabel.appendChild(reverseInput);
+lreverseLabel.appendChild(document.createTextNode("reverse"));
 
-const div5 = document.createElement("div");
-div5.appendChild(label5);
+const reverseDiv = document.createElement("div");
+reverseDiv.appendChild(lreverseLabel);
 
-const input6 = document.createElement("input");
-input6.type = "checkbox";
-input6.style.marginLeft = "4px";
-input6.checked = auto;
-input6.addEventListener("change", () => {
+const autoInput = document.createElement("input");
+autoInput.type = "checkbox";
+autoInput.style.marginLeft = "4px";
+autoInput.checked = auto;
+autoInput.addEventListener("change", () => {
   auto = !auto;
-  input6.checked = auto;
+  autoInput.checked = auto;
   if (auto) {
     timer = setInterval(update, 500);
   } else if (timer !== undefined) {
@@ -139,20 +136,20 @@ input6.addEventListener("change", () => {
   }
 });
 
-const label6 = document.createElement("label");
-label6.style.marginRight = "16px";
-label6.appendChild(input6);
-label6.appendChild(document.createTextNode("auto"));
+const autoLabel = document.createElement("label");
+autoLabel.style.marginRight = "16px";
+autoLabel.appendChild(autoInput);
+autoLabel.appendChild(document.createTextNode("auto"));
 
-const button6 = document.createElement("button");
-button6.textContent = "update";
-button6.addEventListener("click", () => {
+const updateButton = document.createElement("button");
+updateButton.textContent = "update";
+updateButton.addEventListener("click", () => {
   update();
 });
 
 const div6 = document.createElement("div");
-div6.appendChild(label6);
-div6.appendChild(button6);
+div6.appendChild(autoLabel);
+div6.appendChild(updateButton);
 
 const vList = vListInit({
   style: { flex: "1" },
@@ -166,8 +163,7 @@ div.style.height = "100vh";
 div.style.display = "flex";
 div.style.flexDirection = "column";
 div.appendChild(inputs);
-div.appendChild(div4);
-div.appendChild(div5);
+div.appendChild(reverseDiv);
 div.appendChild(div6);
 div.appendChild(vList.root);
 
