@@ -262,7 +262,7 @@ test.describe("check if scrollToIndex works", () => {
   });
 
   test.describe("align start", () => {
-    test.skip("mid", async ({ page }) => {
+    test("mid", async ({ page }) => {
       const component = await getScrollable(page);
 
       // check if start is displayed
