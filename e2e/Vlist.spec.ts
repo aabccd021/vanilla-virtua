@@ -136,7 +136,7 @@ test.describe("check if it works when children change", () => {
     expect((await page.innerText("body")).toLowerCase().includes("localhost")).toBeFalsy();
   });
 
-  test.skip("recovering when changed a lot after scrolling", async ({ page }) => {
+  test("recovering when changed a lot after scrolling", async ({ page }) => {
     await page.goto(storyUrl("basics-vlist--increasing-items"));
     const component = await getScrollable(page);
 
