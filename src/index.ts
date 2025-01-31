@@ -63,7 +63,6 @@ const once = <V>(fn: () => V): (() => V) => {
     if (!called) {
       called = true;
       cache = fn();
-      console.log("called", cache);
     }
     return cache;
   };
@@ -71,7 +70,7 @@ const once = <V>(fn: () => V): (() => V) => {
 
 const getDocumentElement = () => document.documentElement;
 
-const isRTLDocument = once(() => getComputedStyle(getDocumentElement()).direction === "rtl");
+const isRtlDocument = once(() => getComputedStyle(getDocumentElement()).direction === "rtl");
 
 function newChild(
   context: {
@@ -93,7 +92,7 @@ function newChild(
   item.style.position = "absolute";
   item.style[context.isHorizontal ? "height" : "width"] = "100%";
   item.style[context.isHorizontal ? "top" : "left"] = "0px";
-  item.style[context.isHorizontal ? (isRTLDocument() ? "right" : "left") : "top"] = offset;
+  item.style[context.isHorizontal ? (isRtlDocument() ? "right" : "left") : "top"] = offset;
   item.style.visibility = hide ? "hidden" : "visible";
   if (context.isHorizontal) {
     item.style.display = "flex";

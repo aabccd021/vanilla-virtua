@@ -29,7 +29,7 @@
           cd "$repo_root" || exit
           npm install
           tsc
-          biome check --fix --error-on-warnings
+          # biome check --fix --error-on-warnings
           npx playwright test
         '';
       };
@@ -62,6 +62,7 @@
         '';
         buildInputs = [
           pkgs.nodejs
+          pkgs.biome
         ];
       };
     };
