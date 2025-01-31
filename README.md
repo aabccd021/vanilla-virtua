@@ -2,6 +2,10 @@
 
 [virtua](https://github.com/inokawa/virtua) for vanilla js
 
+# Todo
+
+- scroll pointer
+
 # Try it
 
 ```bash

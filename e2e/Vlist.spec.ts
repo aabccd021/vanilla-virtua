@@ -576,7 +576,7 @@ test.describe("check if scrollBy works", () => {
   });
 });
 
-test.describe.skip("check if item shift compensation works", () => {
+test.describe("check if item shift compensation works", () => {
   test.beforeEach(async ({ page }) => {
     await page.goto(storyUrl("basics-vlist--increasing-items"));
   });
