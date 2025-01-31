@@ -386,7 +386,7 @@ test.describe("check if scrollToIndex works", () => {
       await page.getByRole("radio", { name: "end" }).click();
     });
 
-    test.skip("mid", async ({ page }) => {
+    test("mid", async ({ page }) => {
       const component = await getScrollable(page);
 
       // check if start is displayed
@@ -411,7 +411,7 @@ test.describe("check if scrollToIndex works", () => {
       expect(await component.innerText()).not.toContain("750");
     });
 
-    test.skip("start", async ({ page }) => {
+    test("start", async ({ page }) => {
       const component = await getScrollable(page);
 
       // check if start is displayed
