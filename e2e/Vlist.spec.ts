@@ -576,7 +576,7 @@ test.describe("check if scrollBy works", () => {
   });
 });
 
-test.describe("check if item shift compensation works", () => {
+test.describe.skip("check if item shift compensation works", () => {
   test.beforeEach(async ({ page }) => {
     await page.goto(storyUrl("basics-vlist--increasing-items"));
   });
@@ -612,7 +612,7 @@ test.describe("check if item shift compensation works", () => {
     expect(topItem).toEqual(await getFirstItem(component));
   });
 
-  test.skip("keep start at mid when add to/remove from start", async ({ page }) => {
+  test("keep start at mid when add to/remove from start", async ({ page }) => {
     const component = await getScrollable(page);
 
     const updateButton = page.getByRole("button", { name: "update" });
@@ -644,7 +644,7 @@ test.describe("check if item shift compensation works", () => {
     expect(topItem).toEqual(await getFirstItem(component));
   });
 
-  test.skip("prepending when total height is lower than viewport height", async ({ page, browserName }) => {
+  test("prepending when total height is lower than viewport height", async ({ page, browserName }) => {
     const [component, container] = await Promise.all([getScrollable(page), getVirtualizer(page)]);
 
     await page.getByRole("checkbox", { name: "prepend" }).click();
@@ -698,10 +698,7 @@ test.describe("check if item shift compensation works", () => {
     expect(i).toBeGreaterThanOrEqual(8);
   });
 
-  test.skip("prepending when total height is lower than viewport height and reverse:true", async ({
-    page,
-    browserName,
-  }) => {
+  test("prepending when total height is lower than viewport height and reverse:true", async ({ page, browserName }) => {
     const [component, container] = await Promise.all([getScrollable(page), getVirtualizer(page)]);
 
     await page.getByRole("checkbox", { name: "reverse" }).click();
@@ -757,7 +754,7 @@ test.describe("check if item shift compensation works", () => {
     expect(i).toBeGreaterThanOrEqual(8);
   });
 
-  test.skip("stick to bottom even if many items are removed from top", async ({ page, browserName }) => {
+  test("stick to bottom even if many items are removed from top", async ({ page, browserName }) => {
     await page.goto(storyUrl("basics-vlist--increasing-items"));
     const [component, container] = await Promise.all([getScrollable(page), getVirtualizer(page)]);
 

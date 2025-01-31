@@ -142,6 +142,7 @@ export function setReverse(vlist: Vlist, reverse: boolean) {
     wrapper.style.justifyContent = "flex-end";
     wrapper.style.minHeight = "100%";
     wrapper.appendChild(vlist.context.container);
+    vlist.wrapper = wrapper;
     vlist.root.appendChild(wrapper);
   } else {
     vlist.wrapper?.remove();

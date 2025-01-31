@@ -7,7 +7,7 @@
     "virtua": "github:aabccd021/virtua"
   },
   "scripts": {
-    "serve": "esbuild stories/*.ts --bundle --outdir=stories --servedir=stories"
+    "serve": "esbuild stories/*.ts --bundle --outdir=stories --servedir=stories --watch"
   },
   "devDependencies": {
     "@playwright/test": "1.48.2",

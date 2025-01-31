@@ -85,6 +85,7 @@ increaseInput.checked = increase;
 increaseInput.addEventListener("change", () => {
   increase = true;
   increaseInput.checked = increase;
+  decreaseInput.checked = !increase;
 });
 
 const increaseLabel = document.createElement("label");
@@ -99,6 +100,7 @@ decreaseInput.checked = !increase;
 decreaseInput.addEventListener("change", () => {
   increase = false;
   decreaseInput.checked = !increase;
+  increaseInput.checked = increase;
 });
 
 const decreaseLabel = document.createElement("label");

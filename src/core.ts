@@ -56,6 +56,7 @@ export function appendChildren(context: Context, newChildren: HTMLElement[]): vo
 }
 
 export function prependChildren(context: Context, newChildren: HTMLElement[]): void {
+  newChildren.reverse();
   for (const child of newChildren) {
     context.state.children.unshift(child);
   }
