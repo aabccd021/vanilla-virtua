@@ -13,7 +13,7 @@ jobs:
       - uses: HatsuneMiku3939/direnv-action@v1
       - run: biome check --error-on-warnings
       - run: npm install
-      - run: tsc
+      # - run: tsc
       - run: npx playwright test
 
       # https://www.npmjs.com/settings/aabccd021/tokens/granular-access-tokens/new

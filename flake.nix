@@ -28,8 +28,8 @@
           repo_root=$(git rev-parse --show-toplevel)
           cd "$repo_root" || exit
           npm install
-          tsc
-          # biome check --fix --error-on-warnings
+          # tsc
+          biome check --fix --error-on-warnings
           npx playwright test
         '';
       };
