@@ -26,6 +26,17 @@ function newItem(child: HTMLElement, isHorizontal: boolean): HTMLElement {
   return item;
 }
 
+function createWrapper(container: HTMLElement): HTMLElement {
+  const wrapper = document.createElement("div");
+  wrapper.style.visibility = "hidden";
+  wrapper.style.display = "flex";
+  wrapper.style.flexDirection = "column";
+  wrapper.style.justifyContent = "flex-end";
+  wrapper.style.minHeight = "100%";
+  wrapper.appendChild(container);
+  return wrapper;
+}
+
 export function init({
   reverse,
   shift,
@@ -70,13 +81,7 @@ export function init({
   let wrapper: HTMLElement | undefined;
 
   if (shouldReverse) {
-    wrapper = document.createElement("div");
-    wrapper.style.visibility = "hidden";
-    wrapper.style.display = "flex";
-    wrapper.style.flexDirection = "column";
-    wrapper.style.justifyContent = "flex-end";
-    wrapper.style.minHeight = "100%";
-    wrapper.appendChild(container);
+    const wrapper = createWrapper(container);
     root.appendChild(wrapper);
   } else {
     root.appendChild(container);
@@ -136,13 +141,7 @@ export function setReverse(vlist: Vlist, reverse: boolean) {
   vlist.reverse = reverse;
   const shouldReverse = reverse && !vlist.context.isHorizontal;
   if (shouldReverse) {
-    const wrapper = document.createElement("div");
-    wrapper.style.visibility = "hidden";
-    wrapper.style.display = "flex";
-    wrapper.style.flexDirection = "column";
-    wrapper.style.justifyContent = "flex-end";
-    wrapper.style.minHeight = "100%";
-    wrapper.appendChild(vlist.context.container);
+    const wrapper = createWrapper(vlist.context.container);
     vlist.wrapper = wrapper;
     vlist.root.appendChild(wrapper);
   } else {
