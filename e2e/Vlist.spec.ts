@@ -511,7 +511,7 @@ test.describe("check if scrollTo works", () => {
     await page.goto(storyUrl("basics-vlist--scroll-to"));
   });
 
-  test.skip("down and up", async ({ page }) => {
+  test("down and up", async ({ page }) => {
     const component = await getScrollable(page);
 
     // check if start is displayed
