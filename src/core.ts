@@ -112,19 +112,20 @@ function newChild(
     };
     readonly resizer: Resizer;
   },
-  idx: number,
+  idxx: number,
   offset: string,
   hide: boolean,
-  newChildData: ChildData[],
-): Element {
+  childData: ChildData[],
+): Element | undefined {
+  const idx = childData[idxx]?.idx ?? idxx;
   const item = context.state.children[idx];
   if (item === undefined) {
-    throw new Error(`Absurd: child is undefined at index ${idx}`);
+    return undefined;
   }
   item.style[context.isHorizontal ? (isRtlDocument() ? "right" : "left") : "top"] = offset;
   item.style.visibility = hide ? "hidden" : "visible";
 
-  newChildData.push({
+  childData.push({
     idx,
     hide,
     offset,
@@ -262,8 +263,10 @@ function render(context: Context): void {
 
     if (oldChildDataMaybe === undefined) {
       const childEl = newChild(context, newChildIdx, offset, hide, newChildData);
-      container.appendChild(childEl);
-      state.childData.shift();
+      if (childEl !== undefined) {
+        container.appendChild(childEl);
+        state.childData.shift();
+      }
       continue;
     }
 
@@ -276,8 +279,10 @@ function render(context: Context): void {
       const nextOldChild = state.childData[0];
       if (nextOldChild === undefined) {
         const childEl = newChild(context, newChildIdx, offset, hide, newChildData);
-        container.appendChild(childEl);
-        state.childData.shift();
+        if (childEl !== undefined) {
+          container.appendChild(childEl);
+          state.childData.shift();
+        }
         break;
       }
 
@@ -286,7 +291,9 @@ function render(context: Context): void {
 
     if (newChildIdx < oldChildData.idx) {
       const childEl = newChild(context, newChildIdx, offset, hide, newChildData);
-      container.insertBefore(childEl, oldChildData.element);
+      if (childEl !== undefined) {
+        container.insertBefore(childEl, oldChildData.element);
+      }
       continue;
     }
 
