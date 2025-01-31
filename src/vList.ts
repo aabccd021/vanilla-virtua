@@ -90,6 +90,11 @@ export function init({
   const initResult = coreInit({
     totalSizeAttr: isHorizontal ? "width" : "height",
     horizontal: isHorizontal,
+    offsetAttr: isHorizontal
+      ? getComputedStyle(document.documentElement).direction === "rtl"
+        ? "right"
+        : "left"
+      : "top",
     root,
     container,
     cache,

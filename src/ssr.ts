@@ -12,6 +12,7 @@ const vlist = init({
   container,
   root,
   totalSizeAttr: "height",
+  offsetAttr: "top",
 });
 
 const heights = [20, 40, 80, 77];

@@ -41,6 +41,7 @@ interface State {
 export interface Context {
   shift?: boolean;
   readonly totalSizeAttr: "width" | "height";
+  readonly offsetAttr: "left" | "right" | "top";
   readonly isHorizontal: boolean;
   readonly container: HTMLElement;
   readonly store: VirtualStore;
@@ -86,29 +87,11 @@ export function setShift(context: Context, shift: boolean): void {
     return;
   }
   context.shift = shift;
-  // context.store.$update(ACTION_ITEMS_LENGTH_CHANGE, [context.state.children.length, context.shift]);
 }
-
-const once = <V>(fn: () => V): (() => V) => {
-  let called: undefined | boolean;
-  let cache: V;
-
-  return () => {
-    if (!called) {
-      called = true;
-      cache = fn();
-    }
-    return cache;
-  };
-};
-
-const getDocumentElement = () => document.documentElement;
-
-const isRtlDocument = once(() => getComputedStyle(getDocumentElement()).direction === "rtl");
 
 function newChild(
   context: {
-    readonly isHorizontal: boolean;
+    readonly offsetAttr: "left" | "right" | "top";
     readonly state: {
       readonly children: HTMLElement[];
     };
@@ -123,7 +106,7 @@ function newChild(
   if (item === undefined) {
     return undefined;
   }
-  item.style[context.isHorizontal ? (isRtlDocument() ? "right" : "left") : "top"] = offset;
+  item.style[context.offsetAttr] = offset;
   item.style.visibility = hide ? "hidden" : "visible";
 
   childData.push({
@@ -139,6 +122,7 @@ function newChild(
 
 export interface VirtualizerProps {
   readonly totalSizeAttr: "width" | "height";
+  readonly offsetAttr: "left" | "right" | "top";
   readonly shift?: boolean;
   readonly container: HTMLElement;
   readonly root: HTMLElement;
@@ -158,6 +142,7 @@ export interface InitResult {
 }
 
 export function init({
+  offsetAttr,
   totalSizeAttr,
   shift,
   horizontal,
@@ -192,7 +177,7 @@ export function init({
 
   const childData: ChildData[] = [];
   const tmpCtx = {
-    isHorizontal,
+    offsetAttr,
     state: { children },
     resizer,
   };
@@ -204,6 +189,7 @@ export function init({
 
   const context: Context = {
     totalSizeAttr,
+    offsetAttr,
     shift,
     isHorizontal,
     container,
@@ -241,7 +227,7 @@ export function init({
 }
 
 function render(context: Context): void {
-  const { store, scroller, state, container, isHorizontal } = context;
+  const { store, scroller, state, container } = context;
   const newJumpCount = store.$getJumpCount();
   if (state.jumpCount !== newJumpCount) {
     scroller.$fixScrollJump();
@@ -314,11 +300,7 @@ function render(context: Context): void {
 
       const prevOffset = oldChildData.offset;
       if (offset !== prevOffset) {
-        if (isHorizontal) {
-          oldChildData.element.style.left = offset;
-        } else {
-          oldChildData.element.style.top = offset;
-        }
+        oldChildData.element.style[context.offsetAttr] = offset;
         oldChildData.offset = offset;
       }
 

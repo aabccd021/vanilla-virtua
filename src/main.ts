@@ -31,6 +31,7 @@ const vlist = init({
   root,
   container,
   totalSizeAttr: "height",
+  offsetAttr: "top",
 });
 
 // Append 30 items when button is clicked

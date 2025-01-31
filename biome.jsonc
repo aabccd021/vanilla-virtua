@@ -42,7 +42,8 @@
         "noSecrets": "off",
         "useExplicitType": "off",
         "useImportRestrictions": "off",
-        "noProcessEnv": "off"
+        "noProcessEnv": "off",
+        "noNestedTernary": "off"
       },
       "style": {
         "all": true,
