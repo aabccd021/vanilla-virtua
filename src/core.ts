@@ -23,7 +23,7 @@ type Scroller = ReturnType<typeof createScroller>;
 type Resizer = ReturnType<typeof createResizer>;
 
 interface ChildData {
-  readonly idx: number;
+  idx: number;
   readonly element: HTMLElement;
   readonly unobserve: () => void;
   hide: boolean;
@@ -60,6 +60,9 @@ export function prependChildren(context: Context, newChildren: HTMLElement[]): v
   for (const child of newChildren) {
     context.state.children.unshift(child);
   }
+  for (const childData of context.state.childData) {
+    childData.idx += newChildren.length;
+  }
   context.store.$update(ACTION_ITEMS_LENGTH_CHANGE, [context.state.children.length, context.shift]);
 }
 
@@ -70,6 +73,9 @@ export function spliceChildren(context: Context, amount: number): void {
 
 export function shiftChildren(context: Context, amount: number): void {
   context.state.children.splice(0, amount);
+  for (const childData of context.state.childData) {
+    childData.idx -= amount;
+  }
   context.store.$update(ACTION_ITEMS_LENGTH_CHANGE, [context.state.children.length, context.shift]);
 }
 

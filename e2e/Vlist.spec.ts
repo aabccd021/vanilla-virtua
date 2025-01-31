@@ -628,20 +628,20 @@ test.describe("check if item shift compensation works", () => {
     expect(topItem.text).not.toEqual("0");
     expect(topItem.text?.length).toBeLessThanOrEqual(2);
 
-    // // add
-    // await page.getByRole("checkbox", { name: "prepend" }).click();
-    // await page.getByRole("radio", { name: "increase" }).click();
-    // await updateButton.click();
-    // await page.waitForTimeout(100);
-    // // check if visible item is keeped
-    // expect(topItem).toEqual(await getFirstItem(component));
-    //
-    // // remove
-    // await page.getByRole("radio", { name: "decrease" }).click();
-    // await updateButton.click();
-    // await page.waitForTimeout(100);
-    // // check if visible item is keeped
-    // expect(topItem).toEqual(await getFirstItem(component));
+    // add
+    await page.getByRole("checkbox", { name: "prepend" }).click();
+    await page.getByRole("radio", { name: "increase" }).click();
+    await updateButton.click();
+    await page.waitForTimeout(100);
+    // check if visible item is keeped
+    expect(topItem).toEqual(await getFirstItem(component));
+
+    // remove
+    await page.getByRole("radio", { name: "decrease" }).click();
+    await updateButton.click();
+    await page.waitForTimeout(100);
+    // check if visible item is keeped
+    expect(topItem).toEqual(await getFirstItem(component));
   });
 
   test.skip("prepending when total height is lower than viewport height", async ({ page, browserName }) => {
@@ -757,7 +757,7 @@ test.describe("check if item shift compensation works", () => {
     expect(i).toBeGreaterThanOrEqual(8);
   });
 
-  test.skip("stick to bottom even if many items are removed from top", async ({ page, browserName }) => {
+  test("stick to bottom even if many items are removed from top", async ({ page, browserName }) => {
     await page.goto(storyUrl("basics-vlist--increasing-items"));
     const [component, container] = await Promise.all([getScrollable(page), getVirtualizer(page)]);
 
