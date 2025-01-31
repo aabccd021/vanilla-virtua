@@ -55,3 +55,7 @@ export function spliceChildren() {}
 export function prependChildren() {}
 
 export function shiftChildren() {}
+
+export function setShift() {}
+
+export function setReverse() {}

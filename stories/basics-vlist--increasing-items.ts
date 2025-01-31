@@ -1,4 +1,12 @@
-import { appendChildren, prependChildren, shiftChildren, spliceChildren, init as vListInit } from "../src/vList.ts";
+import {
+  appendChildren,
+  prependChildren,
+  setReverse,
+  setShift,
+  shiftChildren,
+  spliceChildren,
+  init as vListInit,
+} from "../src/vList.ts";
 
 const heights = [20, 40, 80, 77];
 
@@ -19,6 +27,7 @@ let amount = 4;
 let prepend = false;
 let increase = true;
 let reverse = false;
+let timer: ReturnType<typeof setInterval> | undefined;
 
 const update = () => {
   if (increase) {
@@ -41,7 +50,7 @@ input1.checked = prepend;
 input1.addEventListener("change", () => {
   prepend = !prepend;
   input1.checked = prepend;
-  // TODO: vlist.setPrepend
+  setShift();
 });
 
 const label1 = document.createElement("label");
@@ -55,7 +64,7 @@ input2.style.marginLeft = "4px";
 input2.checked = increase;
 input2.addEventListener("change", () => {
   increase = true;
-  // TODO
+  input2.checked = increase;
 });
 
 const label2 = document.createElement("label");
@@ -69,7 +78,7 @@ input3.style.marginLeft = "4px";
 input3.checked = !increase;
 input3.addEventListener("change", () => {
   increase = false;
-  // TODO
+  input3.checked = !increase;
 });
 
 const label3 = document.createElement("label");
@@ -86,7 +95,7 @@ input4.max = "10000";
 input4.step = "1";
 input4.addEventListener("change", () => {
   amount = Number(input4.value);
-  // TODO
+  input4.value = amount.toString();
 });
 
 const inputs = document.createElement("div");
@@ -105,7 +114,7 @@ input5.checked = reverse;
 input5.addEventListener("change", () => {
   reverse = !reverse;
   input5.checked = reverse;
-  // TODO
+  setReverse();
 });
 
 const label5 = document.createElement("label");
@@ -123,7 +132,11 @@ input6.checked = auto;
 input6.addEventListener("change", () => {
   auto = !auto;
   input6.checked = auto;
-  // TODO
+  if (auto) {
+    timer = setInterval(update, 500);
+  } else if (timer !== undefined) {
+    clearInterval(timer);
+  }
 });
 
 const label6 = document.createElement("label");
