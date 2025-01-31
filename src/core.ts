@@ -23,27 +23,26 @@ type Scroller = ReturnType<typeof createScroller>;
 type Resizer = ReturnType<typeof createResizer>;
 
 interface ChildData {
-  idx: number;
   readonly element: HTMLElement;
   readonly unobserve: () => void;
   hide: boolean;
   offset: string;
+  idx: number;
 }
 
 export interface Context {
-  shift?: boolean;
-  readonly totalSizeAttr: "width" | "height";
-  readonly offsetAttr: "left" | "right" | "top";
+  readonly children: HTMLElement[];
   readonly container: HTMLElement;
-  readonly store: VirtualStore;
+  readonly offsetAttr: "left" | "right" | "top";
   readonly resizer: Resizer;
   readonly scroller: Scroller;
-  readonly itemTag?: keyof HTMLElementTagNameMap;
-  readonly children: HTMLElement[];
-  jumpCount?: number;
-  totalSize?: string;
-  isScrolling?: boolean;
+  readonly store: VirtualStore;
+  readonly totalSizeAttr: "width" | "height";
   childData: ChildData[];
+  isScrolling?: boolean;
+  jumpCount?: number;
+  shift?: boolean;
+  totalSize?: string;
 }
 
 export function appendChildren(context: Context, newChildren: HTMLElement[]): void {
@@ -107,18 +106,16 @@ function newChild(
 }
 
 export interface VirtualizerProps {
-  readonly totalSizeAttr: "width" | "height";
-  readonly offsetAttr: "left" | "right" | "top";
-  readonly shift?: boolean;
+  readonly cache?: CacheSnapshot;
   readonly container: HTMLElement;
+  readonly horizontal?: boolean;
+  readonly itemSize?: number;
+  readonly offsetAttr: "left" | "right" | "top";
+  readonly overscan?: number;
   readonly root: HTMLElement;
   readonly scrollOffset?: number;
-  readonly overscan?: number;
-  readonly itemSize?: number;
-  readonly cache?: CacheSnapshot;
-  readonly as?: keyof HTMLElementTagNameMap;
-  readonly item?: keyof HTMLElementTagNameMap;
-  readonly horizontal?: boolean;
+  readonly shift?: boolean;
+  readonly totalSizeAttr: "width" | "height";
 }
 
 export interface Core {
@@ -127,17 +124,16 @@ export interface Core {
 }
 
 export function init({
-  offsetAttr,
-  totalSizeAttr,
-  shift,
-  horizontal,
-  container,
-  root,
-  itemSize,
-  overscan,
   cache,
-  item,
+  container,
+  horizontal,
+  itemSize,
+  offsetAttr,
+  overscan,
+  root,
   scrollOffset,
+  shift,
+  totalSizeAttr,
 }: VirtualizerProps): Core {
   const isHorizontal = !!horizontal;
 
@@ -175,7 +171,6 @@ export function init({
     store,
     resizer,
     scroller,
-    itemTag: item,
     children,
     childData,
   };
