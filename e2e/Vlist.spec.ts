@@ -56,7 +56,7 @@ test.describe("smoke", () => {
     expect(await component.innerText()).toContain("999");
   });
 
-  test.skip("reverse", async ({ page }) => {
+  test("reverse", async ({ page }) => {
     await page.goto(storyUrl("basics-vlist--reverse"));
 
     const component = await getScrollable(page);
@@ -612,7 +612,7 @@ test.describe("check if item shift compensation works", () => {
     expect(topItem).toEqual(await getFirstItem(component));
   });
 
-  test.only("keep start at mid when add to/remove from start", async ({ page }) => {
+  test.skip("keep start at mid when add to/remove from start", async ({ page }) => {
     const component = await getScrollable(page);
 
     const updateButton = page.getByRole("button", { name: "update" });

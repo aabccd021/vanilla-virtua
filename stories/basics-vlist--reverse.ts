@@ -1,0 +1,30 @@
+import { init as vListInit } from "../src/vList.ts";
+
+const createRows = (num: number) => {
+  const heights = [20, 40, 80, 77];
+  return Array.from({ length: num }).map((_, i) => {
+    const div = document.createElement("div");
+    div.style.height = `${heights[i % 4]}px`;
+    div.style.borderBottom = "solid 1px #ccc";
+    div.style.background = "#fff";
+    div.textContent = `${i}`;
+    return div;
+  });
+};
+
+const vList = vListInit({
+  style: { height: "100vh" },
+  reverse: true,
+  children: createRows(1000),
+});
+
+const storyBookRoot = document.getElementById("storybook-root");
+if (storyBookRoot === null) {
+  throw new Error("Root element not found");
+}
+
+storyBookRoot.appendChild(vList.root);
+
+requestIdleCallback(() => {
+  vList.context.scroller.$scrollToIndex(999);
+});
