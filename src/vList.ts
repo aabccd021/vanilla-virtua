@@ -1,4 +1,4 @@
-import { type CacheSnapshot, type InitResult, init as indexInit } from "./index.ts";
+import { type CacheSnapshot, type InitResult, init as coreInit } from "./core.ts";
 
 export function init({
   reverse,
@@ -66,7 +66,7 @@ export function init({
     Object.assign(root.style, style);
   }
 
-  const initResult = indexInit({
+  const initResult = coreInit({
     horizontal: isHorizontal,
     root,
     container,

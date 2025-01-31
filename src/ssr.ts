@@ -1,4 +1,4 @@
-import { appendChildren, init } from "./index.ts";
+import { appendChildren, init } from "./core.ts";
 
 const container = document.getElementById("container");
 if (container === null) {

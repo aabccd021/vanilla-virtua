@@ -14,7 +14,7 @@ npm run dev
 [main.ts](./src/main.ts)
 
 ```ts
-import { appendChildren, init } from "./index.ts";
+import { appendChildren, init } from "./core.ts";
 
 const heights = [20, 40, 80, 77];
 
