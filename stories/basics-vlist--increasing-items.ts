@@ -19,9 +19,10 @@ const createRows = (num: number, offset: number) => {
     row.style.borderBottom = "solid 1px #ccc";
     row.style.background = "#fff";
     row.textContent = index.toString();
-    return row;
+    return { element: row, index };
   });
 };
+
 let auto = false;
 let amount = 4;
 let prepend = false;
@@ -29,17 +30,36 @@ let increase = true;
 let reverse = false;
 let timer: ReturnType<typeof setInterval> | undefined;
 
+let rows = createRows(amount, 0);
+
+const myList = vListInit({
+  style: { flex: "1" },
+  reverse,
+  shift: prepend,
+  children: rows.map((row) => row.element),
+});
+
 const update = () => {
   if (increase) {
     if (prepend) {
-      prependChildren();
+      const newRows = createRows(amount, (rows[0]?.index ?? 0) - amount);
+      rows = newRows.concat(rows);
+      prependChildren(
+        myList,
+        newRows.map((row) => row.element),
+      );
     } else {
-      appendChildren();
+      const newRows = createRows(amount, (rows.at(-1)?.index ?? 0) + 1);
+      rows = rows.concat(newRows);
+      appendChildren(
+        myList,
+        newRows.map((row) => row.element),
+      );
     }
   } else if (prepend) {
-    shiftChildren();
+    shiftChildren(myList, amount);
   } else {
-    spliceChildren();
+    spliceChildren(myList, amount);
   }
 };
 
@@ -50,7 +70,7 @@ prependInput.checked = prepend;
 prependInput.addEventListener("change", () => {
   prepend = !prepend;
   prependInput.checked = prepend;
-  setShift();
+  setShift(myList, prepend);
 });
 
 const prependLabel = document.createElement("label");
@@ -111,7 +131,7 @@ reverseInput.checked = reverse;
 reverseInput.addEventListener("change", () => {
   reverse = !reverse;
   reverseInput.checked = reverse;
-  setReverse();
+  setReverse(myList, reverse);
 });
 
 const lreverseLabel = document.createElement("label");
@@ -151,13 +171,6 @@ const div6 = document.createElement("div");
 div6.appendChild(autoLabel);
 div6.appendChild(updateButton);
 
-const vList = vListInit({
-  style: { flex: "1" },
-  reverse,
-  shift: prepend,
-  children: createRows(amount, 0),
-});
-
 const div = document.createElement("div");
 div.style.height = "100vh";
 div.style.display = "flex";
@@ -165,7 +178,7 @@ div.style.flexDirection = "column";
 div.appendChild(inputs);
 div.appendChild(reverseDiv);
 div.appendChild(div6);
-div.appendChild(vList.root);
+div.appendChild(myList.root);
 
 const storyBookRoot = document.getElementById("storybook-root");
 if (storyBookRoot === null) {

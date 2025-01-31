@@ -38,7 +38,7 @@ interface State {
 }
 
 export interface Context {
-  readonly shift?: boolean;
+  shift?: boolean;
   readonly isHorizontal: boolean;
   readonly container: HTMLElement;
   readonly store: VirtualStore;
@@ -69,6 +69,14 @@ export function spliceChildren(context: Context, amount: number): void {
 
 export function shiftChildren(context: Context, amount: number): void {
   context.state.children.splice(0, amount);
+  context.store.$update(ACTION_ITEMS_LENGTH_CHANGE, [context.state.children.length, context.shift]);
+}
+
+export function setShift(context: Context, shift: boolean): void {
+  if (context.shift === shift) {
+    return;
+  }
+  context.shift = shift;
   context.store.$update(ACTION_ITEMS_LENGTH_CHANGE, [context.state.children.length, context.shift]);
 }
 

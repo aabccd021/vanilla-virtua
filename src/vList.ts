@@ -1,13 +1,19 @@
 import {
   type CacheSnapshot,
-  type Context,
   type InitResult,
   appendChildren as coreAppendChildren,
   init as coreInit,
   prependChildren as corePrependChildren,
+  setShift as coreSetShift,
   shiftChildren as coreShiftChildren,
   spliceChildren as coreSpliceChildren,
 } from "./core.ts";
+
+type Vlist = InitResult & {
+  readonly root: HTMLElement;
+  reverse?: boolean;
+  wrapper?: HTMLElement;
+};
 
 function newItem(child: HTMLElement, isHorizontal: boolean): HTMLElement {
   const item = document.createElement("div");
@@ -35,7 +41,7 @@ export function init({
   readonly cache?: CacheSnapshot;
   readonly children?: HTMLElement[];
   readonly style?: Partial<CSSStyleDeclaration>;
-}): InitResult & { readonly root: HTMLElement } {
+}): Vlist {
   const isHorizontal = !!horizontal;
   const container = document.createElement("div");
   container.style.overflowAnchor = "none";
@@ -62,8 +68,10 @@ export function init({
 
   const shouldReverse = reverse && !isHorizontal;
 
+  let wrapper: HTMLElement | undefined;
+
   if (shouldReverse) {
-    const wrapper = document.createElement("div");
+    wrapper = document.createElement("div");
     wrapper.style.visibility = "hidden";
     wrapper.style.display = "flex";
     wrapper.style.flexDirection = "column";
@@ -87,35 +95,56 @@ export function init({
     shift,
   });
 
-  return { ...initResult, root };
+  return { ...initResult, root, wrapper, reverse };
 }
 
-export function appendChildren(context: Context, newChildren: HTMLElement[]) {
+export function appendChildren(vlist: Vlist, newChildren: HTMLElement[]) {
   const newItems: HTMLElement[] = [];
   for (const child of newChildren) {
-    const item = newItem(child, context.isHorizontal);
+    const item = newItem(child, vlist.context.isHorizontal);
     newItems.push(item);
   }
-  return coreAppendChildren(context, newItems);
+  return coreAppendChildren(vlist.context, newItems);
 }
 
-export function prependChildren(context: Context, newChildren: HTMLElement[]) {
+export function prependChildren(vlist: Vlist, newChildren: HTMLElement[]) {
   const newItems: HTMLElement[] = [];
   for (const child of newChildren) {
-    const item = newItem(child, context.isHorizontal);
+    const item = newItem(child, vlist.context.isHorizontal);
     newItems.push(item);
   }
-  return corePrependChildren(context, newItems);
+  return corePrependChildren(vlist.context, newItems);
 }
 
-export function spliceChildren(context: Context, amount: number) {
-  return coreSpliceChildren(context, amount);
+export function spliceChildren(vlist: Vlist, amount: number) {
+  return coreSpliceChildren(vlist.context, amount);
 }
 
-export function shiftChildren(context: Context, amount: number) {
-  return coreShiftChildren(context, amount);
+export function shiftChildren(vlist: Vlist, amount: number) {
+  return coreShiftChildren(vlist.context, amount);
 }
 
-export function setShift() {}
+export function setShift(vlist: Vlist, shift: boolean) {
+  return coreSetShift(vlist.context, shift);
+}
 
-export function setReverse() {}
+export function setReverse(vlist: Vlist, reverse: boolean) {
+  if (vlist.reverse === reverse) {
+    return;
+  }
+  vlist.reverse = reverse;
+  const shouldReverse = reverse && !vlist.context.isHorizontal;
+  if (shouldReverse) {
+    const wrapper = document.createElement("div");
+    wrapper.style.visibility = "hidden";
+    wrapper.style.display = "flex";
+    wrapper.style.flexDirection = "column";
+    wrapper.style.justifyContent = "flex-end";
+    wrapper.style.minHeight = "100%";
+    wrapper.appendChild(vlist.context.container);
+    vlist.root.appendChild(wrapper);
+  } else {
+    vlist.wrapper?.remove();
+    vlist.root.appendChild(vlist.context.container);
+  }
+}
