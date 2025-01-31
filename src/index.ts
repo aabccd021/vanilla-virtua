@@ -112,6 +112,7 @@ function newChild(
 export interface VirtualizerProps {
   readonly shift?: boolean;
   readonly container: HTMLElement;
+  readonly root: HTMLElement;
   readonly scrollOffset?: number;
   readonly overscan?: number;
   readonly itemSize?: number;
@@ -131,6 +132,7 @@ export function init({
   shift,
   horizontal,
   container,
+  root,
   itemSize,
   overscan,
   cache,
@@ -139,27 +141,11 @@ export function init({
 }: VirtualizerProps): InitResult {
   const isHorizontal = !!horizontal;
 
-  container.style.overflowAnchor = "none";
-  container.style.flex = "none";
-  container.style.position = "relative";
-  container.style.visibility = "hidden";
-
   if (isHorizontal) {
     container.style.height = "100%";
   } else {
     container.style.width = "100%";
   }
-
-  const root = container.parentElement;
-  if (!(root instanceof HTMLElement)) {
-    throw new Error("Root is not an HTMLElement");
-  }
-
-  root.style.display = isHorizontal ? "inline-block" : "block";
-  root.style[isHorizontal ? "overflowX" : "overflowY"] = "auto";
-  root.style.contain = "strict";
-  root.style.width = root.style.width === "" || root.style.width === undefined ? "100%" : root.style.width;
-  root.style.height = root.style.height === "" || root.style.height === undefined ? "100%" : root.style.height;
 
   const children: HTMLElement[] = [];
   for (const child of Array.from(container.children)) {

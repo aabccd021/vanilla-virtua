@@ -4,7 +4,11 @@ const container = document.getElementById("container");
 if (container === null) {
   throw new Error("Container element not found");
 }
-const vlist = init({ container });
+const root = container.parentElement;
+if (root === null) {
+  throw new Error("Root element not found");
+}
+const vlist = init({ container, root });
 
 const heights = [20, 40, 80, 77];
 

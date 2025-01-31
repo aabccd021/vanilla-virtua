@@ -15,7 +15,13 @@ export function init({
   readonly children?: HTMLElement[];
   readonly style?: Partial<CSSStyleDeclaration>;
 }): InitResult & { readonly root: HTMLElement } {
+  const isHorizontal = !!horizontal;
   const container = document.createElement("div");
+  container.style.overflowAnchor = "none";
+  container.style.flex = "none";
+  container.style.position = "relative";
+  container.style.visibility = "hidden";
+
   for (const child of children ?? []) {
     const item = document.createElement("div");
     item.appendChild(child);
@@ -23,8 +29,13 @@ export function init({
   }
 
   const root = document.createElement("div");
+  root.style.display = isHorizontal ? "inline-block" : "block";
+  root.style[isHorizontal ? "overflowX" : "overflowY"] = "auto";
+  root.style.contain = "strict";
+  root.style.width = root.style.width === "" || root.style.width === undefined ? "100%" : root.style.width;
+  root.style.height = root.style.height === "" || root.style.height === undefined ? "100%" : root.style.height;
 
-  const shouldReverse = reverse && !horizontal;
+  const shouldReverse = reverse && !isHorizontal;
 
   if (shouldReverse) {
     const wrapper = document.createElement("div");
@@ -43,7 +54,13 @@ export function init({
     Object.assign(root.style, style);
   }
 
-  const initResult = indexInit({ horizontal, container, cache, shift });
+  const initResult = indexInit({
+    horizontal: isHorizontal,
+    root,
+    container,
+    cache,
+    shift,
+  });
 
   return { ...initResult, root };
 }
