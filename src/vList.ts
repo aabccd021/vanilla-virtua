@@ -12,6 +12,7 @@ type Vlist = Core & {
   readonly root: HTMLElement;
   reverse?: boolean;
   wrapper?: HTMLElement;
+  isHorizontal: boolean;
 };
 
 function newItem(child: HTMLElement, isHorizontal: boolean): HTMLElement {
@@ -105,13 +106,13 @@ export function init({
     shift,
   });
 
-  return { ...core, root, wrapper, reverse };
+  return { ...core, root, wrapper, reverse, isHorizontal };
 }
 
 export function appendChildren(vlist: Vlist, newChildren: HTMLElement[]) {
   const newItems: HTMLElement[] = [];
   for (const child of newChildren) {
-    const item = newItem(child, vlist.context.isHorizontal);
+    const item = newItem(child, vlist.isHorizontal);
     newItems.push(item);
   }
   return coreAppendChildren(vlist.context, newItems);
@@ -120,7 +121,7 @@ export function appendChildren(vlist: Vlist, newChildren: HTMLElement[]) {
 export function prependChildren(vlist: Vlist, newChildren: HTMLElement[]) {
   const newItems: HTMLElement[] = [];
   for (const child of newChildren) {
-    const item = newItem(child, vlist.context.isHorizontal);
+    const item = newItem(child, vlist.isHorizontal);
     newItems.push(item);
   }
   return corePrependChildren(vlist.context, newItems);
@@ -139,7 +140,7 @@ export function setReverse(vlist: Vlist, reverse: boolean) {
     return;
   }
   vlist.reverse = reverse;
-  const shouldReverse = reverse && !vlist.context.isHorizontal;
+  const shouldReverse = reverse && !vlist.isHorizontal;
   if (shouldReverse) {
     const wrapper = createWrapper(vlist.context.container);
     vlist.wrapper = wrapper;

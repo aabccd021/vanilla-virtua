@@ -34,7 +34,6 @@ export interface Context {
   shift?: boolean;
   readonly totalSizeAttr: "width" | "height";
   readonly offsetAttr: "left" | "right" | "top";
-  readonly isHorizontal: boolean;
   readonly container: HTMLElement;
   readonly store: VirtualStore;
   readonly resizer: Resizer;
@@ -172,7 +171,6 @@ export function init({
     totalSizeAttr,
     offsetAttr,
     shift,
-    isHorizontal,
     container,
     store,
     resizer,
