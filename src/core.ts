@@ -39,7 +39,6 @@ interface State {
 
 export interface Context {
   shift?: boolean;
-  offset: number;
   readonly isHorizontal: boolean;
   readonly container: HTMLElement;
   readonly store: VirtualStore;
@@ -61,7 +60,6 @@ export function prependChildren(context: Context, newChildren: HTMLElement[]): v
   for (const child of newChildren) {
     context.state.children.unshift(child);
   }
-  context.offset += newChildren.length;
   context.store.$update(ACTION_ITEMS_LENGTH_CHANGE, [context.state.children.length, context.shift]);
 }
 
@@ -72,7 +70,6 @@ export function spliceChildren(context: Context, amount: number): void {
 
 export function shiftChildren(context: Context, amount: number): void {
   context.state.children.splice(0, amount);
-  context.offset -= amount;
   context.store.$update(ACTION_ITEMS_LENGTH_CHANGE, [context.state.children.length, context.shift]);
 }
 
@@ -81,7 +78,7 @@ export function setShift(context: Context, shift: boolean): void {
     return;
   }
   context.shift = shift;
-  context.store.$update(ACTION_ITEMS_LENGTH_CHANGE, [context.state.children.length, context.shift]);
+  // context.store.$update(ACTION_ITEMS_LENGTH_CHANGE, [context.state.children.length, context.shift]);
 }
 
 const once = <V>(fn: () => V): (() => V) => {
@@ -196,7 +193,6 @@ export function init({
   }
 
   const context: Context = {
-    offset: 0,
     shift,
     isHorizontal,
     container,
@@ -254,7 +250,7 @@ function render(context: Context): void {
   const [startIdx, endIdx] = store.$getRange();
   const newChildData: ChildData[] = [];
   for (let newChildIdx = startIdx; newChildIdx <= endIdx; newChildIdx++) {
-    const oldChildDataMaybe: ChildData | undefined = state.childData.at(context.offset);
+    const oldChildDataMaybe: ChildData | undefined = state.childData[0];
     const offset = `${store.$getItemOffset(newChildIdx)}px`;
     const hide = store.$isUnmeasuredItem(newChildIdx);
 
@@ -266,7 +262,7 @@ function render(context: Context): void {
     }
 
     let oldChildData: ChildData = oldChildDataMaybe;
-    while (newChildIdx > oldChildData.idx - context.offset) {
+    while (newChildIdx > oldChildData.idx) {
       oldChildData.element.remove();
       oldChildData.unobserve();
       state.childData.shift();
@@ -282,13 +278,13 @@ function render(context: Context): void {
       oldChildData = nextOldChild;
     }
 
-    if (newChildIdx < oldChildData.idx - context.offset) {
+    if (newChildIdx < oldChildData.idx) {
       const childEl = newChild(context, newChildIdx, offset, hide, newChildData);
       container.insertBefore(childEl, oldChildData.element);
       continue;
     }
 
-    if (oldChildData.idx === newChildIdx) {
+    if (newChildIdx === oldChildData.idx) {
       const prevHide = oldChildData.hide;
       if (hide !== prevHide) {
         oldChildData.element.style.position = hide ? "" : "absolute";
