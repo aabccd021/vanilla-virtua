@@ -51,16 +51,16 @@ export interface Core {
 }
 
 function renderItem(
-  context: Pick<Context, "offsetStyle" | "items" | "resizer">,
+  context: Pick<Context, "offsetStyle" | "items" | "resizer" | "store">,
   idx: number,
-  offset: string,
-  hide: boolean,
   renderedItems: RenderedItem[],
 ): Element | undefined {
   const item = context.items[idx];
   if (item === undefined) {
     return undefined;
   }
+  const offset = `${context.store.$getItemOffset(idx)}px`;
+  const hide = context.store.$isUnmeasuredItem(idx);
   item.style[context.offsetStyle] = offset;
   item.style.visibility = hide ? "hidden" : "visible";
 
@@ -115,10 +115,8 @@ export function init({
   scroller.$observe(root);
 
   const renderedItems: RenderedItem[] = [];
-  for (let i = 0; i < items.length; i++) {
-    const offset = `${store.$getItemOffset(i)}px`;
-    const hide = store.$isUnmeasuredItem(i);
-    renderItem({ offsetStyle, items, resizer }, i, offset, hide, renderedItems);
+  for (let idx = 0; idx < items.length; idx++) {
+    renderItem({ offsetStyle, items, resizer, store }, idx, renderedItems);
   }
 
   const context: Context = {
@@ -160,32 +158,29 @@ function render(context: Context): void {
   const { store, scroller, container } = context;
   const jumpCount = store.$getJumpCount();
   if (context.jumpCount !== jumpCount) {
-    scroller.$fixScrollJump();
     context.jumpCount = jumpCount;
+    scroller.$fixScrollJump();
   }
 
   const totalSize = `${store.$getTotalSize()}px`;
   if (context.totalSize !== totalSize) {
-    container.style[context.totalSizeStyle] = totalSize;
     context.totalSize = totalSize;
+    container.style[context.totalSizeStyle] = totalSize;
   }
 
   const isScrolling = store.$isScrolling();
   if (context.isScrolling !== isScrolling) {
     context.isScrolling = isScrolling;
-    const pointerEvents = isScrolling ? "none" : "";
-    container.style.pointerEvents = pointerEvents;
+    container.style.pointerEvents = isScrolling ? "none" : "";
   }
 
   const [startIdx, endIdx] = store.$getRange();
   const newRenderedItems: RenderedItem[] = [];
   for (let newItemIdx = startIdx; newItemIdx <= endIdx; newItemIdx++) {
     const renderedItemNullable: RenderedItem | undefined = context.renderedItems[0];
-    const offset = `${store.$getItemOffset(newItemIdx)}px`;
-    const hide = store.$isUnmeasuredItem(newItemIdx);
 
     if (renderedItemNullable === undefined) {
-      const newItem = renderItem(context, newItemIdx, offset, hide, newRenderedItems);
+      const newItem = renderItem(context, newItemIdx, newRenderedItems);
       if (newItem !== undefined) {
         container.appendChild(newItem);
         context.renderedItems.shift();
@@ -201,7 +196,7 @@ function render(context: Context): void {
 
       const nextRenderedItem = context.renderedItems[0];
       if (nextRenderedItem === undefined) {
-        const newItem = renderItem(context, newItemIdx, offset, hide, newRenderedItems);
+        const newItem = renderItem(context, newItemIdx, newRenderedItems);
         if (newItem !== undefined) {
           container.appendChild(newItem);
           context.renderedItems.shift();
@@ -213,7 +208,7 @@ function render(context: Context): void {
     }
 
     if (newItemIdx < renderedItem.idx) {
-      const newItem = renderItem(context, newItemIdx, offset, hide, newRenderedItems);
+      const newItem = renderItem(context, newItemIdx, newRenderedItems);
       if (newItem !== undefined) {
         container.insertBefore(newItem, renderedItem.element);
       }
@@ -222,6 +217,8 @@ function render(context: Context): void {
 
     if (newItemIdx === renderedItem.idx) {
       const prevHide = renderedItem.hide;
+      const offset = `${context.store.$getItemOffset(newItemIdx)}px`;
+      const hide = context.store.$isUnmeasuredItem(newItemIdx);
       if (hide !== prevHide) {
         renderedItem.element.style.position = hide ? "" : "absolute";
         renderedItem.element.style.visibility = hide ? "hidden" : "visible";
