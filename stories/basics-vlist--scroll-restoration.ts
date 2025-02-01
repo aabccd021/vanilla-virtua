@@ -1,4 +1,4 @@
-import type { CacheSnapshot } from "../src/core.ts";
+import type { CacheSnapshot } from "../src/virtualizer.ts";
 import { init as vlistInit } from "../src/vlist.ts";
 
 const createRows = (num: number) => {

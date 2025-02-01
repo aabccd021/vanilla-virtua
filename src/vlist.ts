@@ -7,7 +7,7 @@ import {
   prependItems as virtPrependItems,
   shiftItems as virtShiftItems,
   spliceItems as virtSpliceItems,
-} from "./core.ts";
+} from "./virtualizer.ts";
 
 type Vlist = {
   readonly virtualizer: Virtualizer;

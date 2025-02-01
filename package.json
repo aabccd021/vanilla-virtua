@@ -3,10 +3,10 @@
   "version": "0.0.1",
   "type": "module",
   "exports": {
-    "./core.ts": "./src/core.ts",
+    "./virtualizer.ts": "./src/virtualizer.ts",
     "./vlist.ts": "./src/vlist.ts",
-    "./core": {
-      "import": "./lib/core.js"
+    "./virtualizer": {
+      "import": "./lib/virtualizer.js"
     },
     "./vlist": {
       "import": "./lib/vlist.js"
