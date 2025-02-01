@@ -193,6 +193,14 @@ export function scrollBy(virt: Virtualizer, offset: number): void {
   virt.scroller.$scrollBy(offset);
 }
 
+export function getCacheSnapshot(virt: Virtualizer): CacheSnapshot {
+  return virt.store.$getCacheSnapshot();
+}
+
+export function getScrollOffset(virt: Virtualizer): number {
+  return virt.store.$getScrollOffset();
+}
+
 function render(virt: Virtualizer): void {
   const totalSize = `${virt.store.$getTotalSize()}px`;
   if (virt.totalSize !== totalSize) {

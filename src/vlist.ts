@@ -172,3 +172,11 @@ export function scrollTo(vlist: Vlist, offset: number): void {
 export function scrollBy(vlist: Vlist, offset: number): void {
   virtScrollBy(vlist.virtualizer, offset);
 }
+
+export function getCacheSnapshot(vlist: Vlist): CacheSnapshot {
+  return vlist.virtualizer.store.$getCacheSnapshot();
+}
+
+export function getScrollOffset(vlist: Vlist): number {
+  return vlist.virtualizer.store.$getScrollOffset();
+}
