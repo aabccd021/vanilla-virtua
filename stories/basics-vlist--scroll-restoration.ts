@@ -42,7 +42,7 @@ const restorableList = ({ id }: { id: string }): ResList => {
   const root = vlist.root;
 
   if (offset !== undefined) {
-    vlist.virtualizer.scroller.$scrollTo(offset);
+    vlist.scroller.$scrollTo(offset);
   }
 
   const unsub = () => {

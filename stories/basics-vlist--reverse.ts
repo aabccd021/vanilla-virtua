@@ -26,5 +26,5 @@ if (storyBookRoot === null) {
 storyBookRoot.appendChild(vlist.root);
 
 requestIdleCallback(() => {
-  vlist.virtualizer.scroller.$scrollToIndex(999);
+  vlist.scroller.$scrollToIndex(999);
 });
