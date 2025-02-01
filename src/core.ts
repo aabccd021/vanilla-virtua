@@ -18,9 +18,9 @@ export type {
   ItemsRange,
 } from "virtua/unstable_core";
 
-type Scroller = ReturnType<typeof createScroller>;
+export type Scroller = ReturnType<typeof createScroller>;
 
-type Resizer = ReturnType<typeof createResizer>;
+export type Resizer = ReturnType<typeof createResizer>;
 
 interface Render {
   readonly item: HTMLElement;
