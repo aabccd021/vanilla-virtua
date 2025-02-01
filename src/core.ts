@@ -248,17 +248,13 @@ function render(context: Context): void {
 }
 
 export function appendItems(context: Context, items: HTMLElement[]): void {
-  for (const item of items) {
-    context.items.push(item);
-  }
+  context.items.push(...items);
   context.store.$update(ACTION_ITEMS_LENGTH_CHANGE, [context.items.length, context.shift]);
 }
 
 export function prependItems(context: Context, items: HTMLElement[]): void {
   items.reverse();
-  for (const item of items) {
-    context.items.unshift(item);
-  }
+  context.items.unshift(...items);
   for (const render of context.renders) {
     render.idx += items.length;
   }
