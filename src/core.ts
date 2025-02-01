@@ -251,7 +251,6 @@ export function appendItems(context: Context, items: HTMLElement[]): void {
 }
 
 export function prependItems(context: Context, items: HTMLElement[]): void {
-  items.reverse();
   context.items.unshift(...items);
   for (const render of context.renders) {
     render.idx += items.length;
