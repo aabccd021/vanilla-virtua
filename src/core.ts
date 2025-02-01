@@ -160,6 +160,32 @@ export function init({
   return { context, dispose };
 }
 
+export function appendItems(context: Context, items: HTMLElement[]): void {
+  context.items.push(...items);
+  context.store.$update(ACTION_ITEMS_LENGTH_CHANGE, [context.items.length, context.shift]);
+}
+
+export function prependItems(context: Context, items: HTMLElement[]): void {
+  context.items.unshift(...items);
+  for (const render of context.renders) {
+    render.idx += items.length;
+  }
+  context.store.$update(ACTION_ITEMS_LENGTH_CHANGE, [context.items.length, context.shift]);
+}
+
+export function spliceItems(context: Context, amount: number): void {
+  context.items.splice(-amount);
+  context.store.$update(ACTION_ITEMS_LENGTH_CHANGE, [context.items.length, context.shift]);
+}
+
+export function shiftItems(context: Context, amount: number): void {
+  context.items.splice(0, amount);
+  for (const render of context.renders) {
+    render.idx -= amount;
+  }
+  context.store.$update(ACTION_ITEMS_LENGTH_CHANGE, [context.items.length, context.shift]);
+}
+
 function render(context: Context): void {
   const totalSize = `${context.store.$getTotalSize()}px`;
   if (context.totalSize !== totalSize) {
@@ -246,30 +272,4 @@ function render(context: Context): void {
     context.jumpCount = jumpCount;
     context.scroller.$fixScrollJump();
   }
-}
-
-export function appendItems(context: Context, items: HTMLElement[]): void {
-  context.items.push(...items);
-  context.store.$update(ACTION_ITEMS_LENGTH_CHANGE, [context.items.length, context.shift]);
-}
-
-export function prependItems(context: Context, items: HTMLElement[]): void {
-  context.items.unshift(...items);
-  for (const render of context.renders) {
-    render.idx += items.length;
-  }
-  context.store.$update(ACTION_ITEMS_LENGTH_CHANGE, [context.items.length, context.shift]);
-}
-
-export function spliceItems(context: Context, amount: number): void {
-  context.items.splice(-amount);
-  context.store.$update(ACTION_ITEMS_LENGTH_CHANGE, [context.items.length, context.shift]);
-}
-
-export function shiftItems(context: Context, amount: number): void {
-  context.items.splice(0, amount);
-  for (const render of context.renders) {
-    render.idx -= amount;
-  }
-  context.store.$update(ACTION_ITEMS_LENGTH_CHANGE, [context.items.length, context.shift]);
 }
