@@ -1,10 +1,14 @@
 import {
   type CacheSnapshot,
+  type ScrollToIndexOpts,
   type Virtualizer,
   appendItems as virtAppendItems,
   dispose as virtDispose,
   init as virtInit,
   prependItems as virtPrependItems,
+  scrollBy as virtScrollBy,
+  scrollTo as virtScrollTo,
+  scrollToIndex as virtScrollToIndex,
   shiftItems as virtShiftItems,
   spliceItems as virtSpliceItems,
 } from "./virtualizer.ts";
@@ -155,4 +159,16 @@ export function setReverse(vlist: Vlist, reverse: boolean) {
     vlist.wrapper?.remove();
     vlist.root.appendChild(vlist.virtualizer.container);
   }
+}
+
+export function scrollToIndex(vlist: Vlist, index: number, opts?: ScrollToIndexOpts): void {
+  virtScrollToIndex(vlist.virtualizer, index, opts);
+}
+
+export function scrollTo(vlist: Vlist, offset: number): void {
+  virtScrollTo(vlist.virtualizer, offset);
+}
+
+export function scrollBy(vlist: Vlist, offset: number): void {
+  virtScrollBy(vlist.virtualizer, offset);
 }

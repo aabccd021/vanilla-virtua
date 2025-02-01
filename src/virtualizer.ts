@@ -181,6 +181,18 @@ export function shiftItems(virt: Virtualizer, amount: number): void {
   virt.store.$update(ACTION_ITEMS_LENGTH_CHANGE, [virt.items.length, virt.shift]);
 }
 
+export function scrollToIndex(virt: Virtualizer, index: number, opts?: ScrollToIndexOpts): void {
+  virt.scroller.$scrollToIndex(index, opts);
+}
+
+export function scrollTo(virt: Virtualizer, offset: number): void {
+  virt.scroller.$scrollTo(offset);
+}
+
+export function scrollBy(virt: Virtualizer, offset: number): void {
+  virt.scroller.$scrollBy(offset);
+}
+
 function render(virt: Virtualizer): void {
   const totalSize = `${virt.store.$getTotalSize()}px`;
   if (virt.totalSize !== totalSize) {

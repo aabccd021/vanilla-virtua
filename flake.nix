@@ -93,7 +93,7 @@
       packages = {
         publish = publish;
         tests = tests;
-        biome = biome;
+        # biome = biome;
         dist = dist;
         formatting = treefmtEval.config.build.check self;
       };
