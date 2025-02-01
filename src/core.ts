@@ -23,7 +23,7 @@ type Scroller = ReturnType<typeof createScroller>;
 type Resizer = ReturnType<typeof createResizer>;
 
 interface Render {
-  readonly element: HTMLElement;
+  readonly item: HTMLElement;
   readonly unobserve: () => void;
   hide: boolean;
   offset: string;
@@ -68,7 +68,7 @@ function renderItem(
     idx,
     hide,
     offset,
-    element: item,
+    item,
     unobserve: context.resizer.$observeItem(item, idx),
   });
 
@@ -190,7 +190,7 @@ function render(context: Context): void {
 
     let render: Render = renderNullable;
     while (itemIdx > render.idx) {
-      render.element.remove();
+      render.item.remove();
       render.unobserve();
       context.renders.shift();
 
@@ -210,7 +210,7 @@ function render(context: Context): void {
     if (itemIdx < render.idx) {
       const newRender = renderItem(context, itemIdx, newRenders);
       if (newRender !== undefined) {
-        container.insertBefore(newRender, render.element);
+        container.insertBefore(newRender, render.item);
       }
       continue;
     }
@@ -220,14 +220,14 @@ function render(context: Context): void {
       const offset = `${context.store.$getItemOffset(itemIdx)}px`;
       const hide = context.store.$isUnmeasuredItem(itemIdx);
       if (hide !== prevHide) {
-        render.element.style.position = hide ? "" : "absolute";
-        render.element.style.visibility = hide ? "hidden" : "visible";
+        render.item.style.position = hide ? "" : "absolute";
+        render.item.style.visibility = hide ? "hidden" : "visible";
         render.hide = hide;
       }
 
       const prevOffset = render.offset;
       if (offset !== prevOffset) {
-        render.element.style[context.offsetStyle] = offset;
+        render.item.style[context.offsetStyle] = offset;
         render.offset = offset;
       }
 
@@ -237,7 +237,7 @@ function render(context: Context): void {
   }
 
   for (const render of context.renders) {
-    render.element.remove();
+    render.item.remove();
     render.unobserve();
   }
 
