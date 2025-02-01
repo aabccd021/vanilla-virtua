@@ -1,11 +1,11 @@
 import {
   type CacheSnapshot,
   type Core,
-  appendItems as coreAppendChildren,
+  appendItems as coreAppendItems,
   init as coreInit,
-  prependItems as corePrependChildren,
-  shiftItems as coreShiftChildren,
-  spliceItems as coreSpliceChildren,
+  prependItems as corePrependItems,
+  shiftItems as coreShiftItems,
+  spliceItems as coreSpliceItems,
 } from "./core.ts";
 
 type Vlist = Core & {
@@ -16,7 +16,7 @@ type Vlist = Core & {
   wrapper?: HTMLElement;
 };
 
-function newItem(child: HTMLElement, isHorizontal: boolean, offsetStyle: "left" | "right" | "top"): HTMLElement {
+function createItem(child: HTMLElement, isHorizontal: boolean, offsetStyle: "left" | "right" | "top"): HTMLElement {
   const item = document.createElement("div");
   item.style.position = "absolute";
   item.style[isHorizontal ? "height" : "width"] = "100%";
@@ -71,7 +71,7 @@ export function init({
   container.style[totalSizeStyle] = "100%";
 
   for (const child of children ?? []) {
-    const item = newItem(child, isHorizontal, offsetStyle);
+    const item = createItem(child, isHorizontal, offsetStyle);
     container.appendChild(item);
   }
 
@@ -87,7 +87,7 @@ export function init({
   let wrapper: HTMLElement | undefined;
 
   if (shouldReverse) {
-    const wrapper = createWrapper(container);
+    wrapper = createWrapper(container);
     root.appendChild(wrapper);
   } else {
     root.appendChild(container);
@@ -110,30 +110,22 @@ export function init({
   return { ...core, root, wrapper, reverse, isHorizontal, offsetStyle };
 }
 
-export function appendChildren(vlist: Vlist, newChildren: HTMLElement[]) {
-  const newItems: HTMLElement[] = [];
-  for (const child of newChildren) {
-    const item = newItem(child, vlist.isHorizontal, vlist.offsetStyle);
-    newItems.push(item);
-  }
-  return coreAppendChildren(vlist.context, newItems);
+export function appendItems(vlist: Vlist, newChildren: HTMLElement[]) {
+  const newCoreItems = newChildren.map((child) => createItem(child, vlist.isHorizontal, vlist.offsetStyle));
+  return coreAppendItems(vlist.context, newCoreItems);
 }
 
-export function prependChildren(vlist: Vlist, newChildren: HTMLElement[]) {
-  const newItems: HTMLElement[] = [];
-  for (const child of newChildren) {
-    const item = newItem(child, vlist.isHorizontal, vlist.offsetStyle);
-    newItems.push(item);
-  }
-  return corePrependChildren(vlist.context, newItems);
+export function prependItems(vlist: Vlist, newChildren: HTMLElement[]) {
+  const newCoreItems = newChildren.map((child) => createItem(child, vlist.isHorizontal, vlist.offsetStyle));
+  return corePrependItems(vlist.context, newCoreItems);
 }
 
-export function spliceChildren(vlist: Vlist, amount: number) {
-  return coreSpliceChildren(vlist.context, amount);
+export function spliceItems(vlist: Vlist, amount: number) {
+  return coreSpliceItems(vlist.context, amount);
 }
 
-export function shiftChildren(vlist: Vlist, amount: number) {
-  return coreShiftChildren(vlist.context, amount);
+export function shiftItems(vlist: Vlist, amount: number) {
+  return coreShiftItems(vlist.context, amount);
 }
 
 export function setReverse(vlist: Vlist, reverse: boolean) {

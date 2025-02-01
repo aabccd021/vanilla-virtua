@@ -1,11 +1,4 @@
-import {
-  appendChildren,
-  prependChildren,
-  setReverse,
-  shiftChildren,
-  spliceChildren,
-  init as vListInit,
-} from "../src/vList.ts";
+import { appendItems, prependItems, setReverse, shiftItems, spliceItems, init as vListInit } from "../src/vList.ts";
 
 const heights = [20, 40, 80, 77];
 
@@ -43,22 +36,22 @@ const update = () => {
     if (prepend) {
       const newRows = createRows(amount, (rows[0]?.index ?? 0) - amount);
       rows = newRows.concat(rows);
-      prependChildren(
+      prependItems(
         myList,
         newRows.map((row) => row.element),
       );
     } else {
       const newRows = createRows(amount, (rows.at(-1)?.index ?? 0) + 1);
       rows = rows.concat(newRows);
-      appendChildren(
+      appendItems(
         myList,
         newRows.map((row) => row.element),
       );
     }
   } else if (prepend) {
-    shiftChildren(myList, amount);
+    shiftItems(myList, amount);
   } else {
-    spliceChildren(myList, amount);
+    spliceItems(myList, amount);
   }
 };
 
