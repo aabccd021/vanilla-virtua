@@ -201,6 +201,10 @@ export function getScrollOffset(virt: Virtualizer): number {
   return virt.store.$getScrollOffset();
 }
 
+export function setShift(virt: Virtualizer, shift: boolean): void {
+  virt.shift = shift;
+}
+
 function render(virt: Virtualizer): void {
   const totalSize = `${virt.store.$getTotalSize()}px`;
   if (virt.totalSize !== totalSize) {

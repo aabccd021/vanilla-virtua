@@ -1,4 +1,4 @@
-import { appendItems, init, prependItems, setReverse, shiftItems, spliceItems } from "../src/vlist.ts";
+import { appendItems, init, prependItems, setReverse, setShift, shiftItems, spliceItems } from "../src/vlist.ts";
 
 const heights = [20, 40, 80, 77];
 
@@ -62,7 +62,7 @@ prependInput.checked = prepend;
 prependInput.addEventListener("change", () => {
   prepend = !prepend;
   prependInput.checked = prepend;
-  myList.virtualizer.shift = prepend;
+  setShift(myList, prepend);
 });
 
 const prependLabel = document.createElement("label");

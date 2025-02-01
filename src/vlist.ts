@@ -9,6 +9,7 @@ import {
   scrollBy as virtScrollBy,
   scrollTo as virtScrollTo,
   scrollToIndex as virtScrollToIndex,
+  setShift as virtSetShift,
   shiftItems as virtShiftItems,
   spliceItems as virtSpliceItems,
 } from "./virtualizer.ts";
@@ -179,4 +180,8 @@ export function getCacheSnapshot(vlist: Vlist): CacheSnapshot {
 
 export function getScrollOffset(vlist: Vlist): number {
   return vlist.virtualizer.store.$getScrollOffset();
+}
+
+export function setShift(vlist: Vlist, shift: boolean): void {
+  virtSetShift(vlist.virtualizer, shift);
 }
