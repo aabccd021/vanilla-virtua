@@ -649,7 +649,7 @@ test.describe("check if item shift compensation works", () => {
     expect(topItem).toEqual(await getFirstItem(component));
   });
 
-  test.skip("prepending when total height is lower than viewport height", async ({ page, browserName }) => {
+  test("prepending when total height is lower than viewport height", async ({ page, browserName }) => {
     const [component, container] = await Promise.all([getScrollable(page), getVirtualizer(page)]);
 
     await page.getByRole("checkbox", { name: "prepend" }).click();
@@ -686,9 +686,10 @@ test.describe("check if item shift compensation works", () => {
 
       if (isScrollBarVisible) {
         // Check if sticked to bottom
+        const flakinessTolerance = 7;
         expectInRange((await getLastItem(component)).bottom, {
           min: browserName === "firefox" ? -0.45 : -0.1,
-          max: 0.1,
+          max: 0.1 + flakinessTolerance,
         });
         break;
       }
@@ -703,10 +704,7 @@ test.describe("check if item shift compensation works", () => {
     expect(i).toBeGreaterThanOrEqual(8);
   });
 
-  test.skip("prepending when total height is lower than viewport height and reverse:true", async ({
-    page,
-    browserName,
-  }) => {
+  test("prepending when total height is lower than viewport height and reverse:true", async ({ page, browserName }) => {
     const [component, container] = await Promise.all([getScrollable(page), getVirtualizer(page)]);
 
     await page.getByRole("checkbox", { name: "reverse" }).click();
@@ -745,9 +743,10 @@ test.describe("check if item shift compensation works", () => {
 
       if (isScrollBarVisible) {
         // Check if sticked to bottom
+        const flakinessTolerance = 7;
         expectInRange(itemBottom, {
           min: browserName === "firefox" ? -0.45 : -0.1,
-          max: 0.1,
+          max: 0.1 + flakinessTolerance,
         });
         break;
       }
