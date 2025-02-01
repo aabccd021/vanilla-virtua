@@ -3,6 +3,7 @@ import { defineConfig, devices } from "@playwright/test";
 export default defineConfig({
   testDir: "./e2e",
   // maxFailures: 1,
+  retries: 3,
   fullyParallel: true,
   projects: [
     {
