@@ -1,6 +1,6 @@
+import { type CacheSnapshot, type ScrollToIndexOpts, isRTLDocument } from "virtua/unstable_core";
+
 import {
-  type CacheSnapshot,
-  type ScrollToIndexOpts,
   type Virtualizer,
   appendItems as virtAppendItems,
   dispose as virtDispose,
@@ -65,11 +65,7 @@ export function init({
   const isHorizontal = !!horizontal;
   const container = document.createElement("div");
   const totalSizeStyle = isHorizontal ? "width" : "height";
-  const offsetStyle = isHorizontal
-    ? getComputedStyle(document.documentElement).direction === "rtl"
-      ? "right"
-      : "left"
-    : "top";
+  const offsetStyle = isHorizontal ? (isRTLDocument() ? "right" : "left") : "top";
 
   container.style.overflowAnchor = "none";
   container.style.flex = "none";
