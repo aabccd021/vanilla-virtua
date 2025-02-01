@@ -150,14 +150,19 @@ export function init({
 
   const dispose = (): void => {
     unsubscribeStore();
-    resizer.$dispose();
-    scroller.$dispose();
-    for (const render of context.renders) {
-      render.unobserve();
-    }
   };
 
   return { context, dispose };
+}
+
+export function dispose(core: Core): void {
+  const { context } = core;
+  core.dispose();
+  context.resizer.$dispose();
+  context.scroller.$dispose();
+  for (const render of context.renders) {
+    render.unobserve();
+  }
 }
 
 export function appendItems(context: Context, items: HTMLElement[]): void {
