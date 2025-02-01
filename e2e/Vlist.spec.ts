@@ -337,10 +337,9 @@ test.describe("check if scrollToIndex works", () => {
       // Check if scrolled precisely
       const lastItem = await getLastItem(component);
       expect(lastItem.text).toEqual("999");
-      const flakinessTolerance = 8;
       expectInRange(lastItem.bottom, {
         min: -0.9,
-        max: 1 + flakinessTolerance,
+        max: 1,
       });
 
       // Check if unnecessary items are not rendered
@@ -465,8 +464,7 @@ test.describe("check if scrollToIndex works", () => {
       // Check if scrolled precisely
       const lastItem = await getLastItem(component);
       expect(lastItem.text).toEqual("999");
-      const flakinessTolerance = 8;
-      expectInRange(lastItem.bottom, { min: 0, max: 1 + flakinessTolerance });
+      expectInRange(lastItem.bottom, { min: 0, max: 1 });
 
       // Check if unnecessary items are not rendered
       expect(await component.innerText()).not.toContain("949");
