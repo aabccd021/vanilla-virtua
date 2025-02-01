@@ -60,7 +60,6 @@ let resList: ResList | undefined;
 let selectedId = "1";
 function setSelectedId(id: string) {
   selectedId = id;
-  selectedId = id;
   for (const list of lists) {
     list.input.checked = list.id === selectedId;
   }
