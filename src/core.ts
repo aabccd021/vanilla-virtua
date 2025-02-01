@@ -100,10 +100,11 @@ export function init({
 
   const items: HTMLElement[] = [];
   for (const child of Array.from(container.children)) {
-    if (!(child instanceof HTMLElement)) {
-      throw new Error("Child element must be HTMLElement");
+    if (child instanceof HTMLElement) {
+      items.push(child);
+    } else {
+      console.warn("Child element must be HTMLElement");
     }
-    items.push(child);
   }
 
   const store = createVirtualStore(items.length, itemSize, overscan, undefined, cache, !itemSize);

@@ -32,7 +32,8 @@
       },
       "suspicious": {
         "all": true,
-        "noSkippedTests": "off"
+        "noSkippedTests": "off",
+        "noConsole": "off"
       },
       "correctness": {
         "all": true
