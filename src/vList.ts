@@ -1,26 +1,26 @@
 import {
   type CacheSnapshot,
   type Core,
-  appendChildren as coreAppendChildren,
+  appendItems as coreAppendChildren,
   init as coreInit,
-  prependChildren as corePrependChildren,
-  shiftChildren as coreShiftChildren,
-  spliceChildren as coreSpliceChildren,
+  prependItems as corePrependChildren,
+  shiftItems as coreShiftChildren,
+  spliceItems as coreSpliceChildren,
 } from "./core.ts";
 
 type Vlist = Core & {
   readonly root: HTMLElement;
   readonly isHorizontal: boolean;
-  readonly offsetAttr: "left" | "right" | "top";
+  readonly offsetStyle: "left" | "right" | "top";
   reverse?: boolean;
   wrapper?: HTMLElement;
 };
 
-function newItem(child: HTMLElement, isHorizontal: boolean, offsetAttr: "left" | "right" | "top"): HTMLElement {
+function newItem(child: HTMLElement, isHorizontal: boolean, offsetStyle: "left" | "right" | "top"): HTMLElement {
   const item = document.createElement("div");
   item.style.position = "absolute";
   item.style[isHorizontal ? "height" : "width"] = "100%";
-  item.style[offsetAttr] = "0px";
+  item.style[offsetStyle] = "0px";
 
   if (isHorizontal) {
     item.style.display = "flex";
@@ -57,8 +57,8 @@ export function init({
 }): Vlist {
   const isHorizontal = !!horizontal;
   const container = document.createElement("div");
-  const totalSizeAttr = isHorizontal ? "width" : "height";
-  const offsetAttr = isHorizontal
+  const totalSizeStyle = isHorizontal ? "width" : "height";
+  const offsetStyle = isHorizontal
     ? getComputedStyle(document.documentElement).direction === "rtl"
       ? "right"
       : "left"
@@ -68,10 +68,10 @@ export function init({
   container.style.flex = "none";
   container.style.position = "relative";
   container.style.visibility = "hidden";
-  container.style[totalSizeAttr] = "100%";
+  container.style[totalSizeStyle] = "100%";
 
   for (const child of children ?? []) {
-    const item = newItem(child, isHorizontal, offsetAttr);
+    const item = newItem(child, isHorizontal, offsetStyle);
     container.appendChild(item);
   }
 
@@ -99,21 +99,21 @@ export function init({
 
   const core = coreInit({
     horizontal: isHorizontal,
-    totalSizeAttr,
-    offsetAttr,
+    totalSizeStyle,
+    offsetStyle,
     root,
     container,
     cache,
     shift,
   });
 
-  return { ...core, root, wrapper, reverse, isHorizontal, offsetAttr };
+  return { ...core, root, wrapper, reverse, isHorizontal, offsetStyle };
 }
 
 export function appendChildren(vlist: Vlist, newChildren: HTMLElement[]) {
   const newItems: HTMLElement[] = [];
   for (const child of newChildren) {
-    const item = newItem(child, vlist.isHorizontal, vlist.offsetAttr);
+    const item = newItem(child, vlist.isHorizontal, vlist.offsetStyle);
     newItems.push(item);
   }
   return coreAppendChildren(vlist.context, newItems);
@@ -122,7 +122,7 @@ export function appendChildren(vlist: Vlist, newChildren: HTMLElement[]) {
 export function prependChildren(vlist: Vlist, newChildren: HTMLElement[]) {
   const newItems: HTMLElement[] = [];
   for (const child of newChildren) {
-    const item = newItem(child, vlist.isHorizontal, vlist.offsetAttr);
+    const item = newItem(child, vlist.isHorizontal, vlist.offsetStyle);
     newItems.push(item);
   }
   return corePrependChildren(vlist.context, newItems);

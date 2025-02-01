@@ -22,7 +22,7 @@ type Scroller = ReturnType<typeof createScroller>;
 
 type Resizer = ReturnType<typeof createResizer>;
 
-interface ChildData {
+interface RenderedItem {
   readonly element: HTMLElement;
   readonly unobserve: () => void;
   hide: boolean;
@@ -31,14 +31,14 @@ interface ChildData {
 }
 
 export interface Context {
-  readonly children: HTMLElement[];
+  readonly items: HTMLElement[];
   readonly container: HTMLElement;
-  readonly offsetAttr: "left" | "right" | "top";
+  readonly offsetStyle: "left" | "right" | "top";
   readonly resizer: Resizer;
   readonly scroller: Scroller;
   readonly store: VirtualStore;
-  readonly totalSizeAttr: "width" | "height";
-  childData: ChildData[];
+  readonly totalSizeStyle: "width" | "height";
+  renderedItems: RenderedItem[];
   isScrolling?: boolean;
   jumpCount?: number;
   shift?: boolean;
@@ -50,21 +50,21 @@ export interface Core {
   readonly dispose: () => void;
 }
 
-function newChild(
-  context: Pick<Context, "offsetAttr" | "children" | "resizer">,
+function renderItem(
+  context: Pick<Context, "offsetStyle" | "items" | "resizer">,
   idx: number,
   offset: string,
   hide: boolean,
-  childData: ChildData[],
+  renderedItems: RenderedItem[],
 ): Element | undefined {
-  const item = context.children[idx];
+  const item = context.items[idx];
   if (item === undefined) {
     return undefined;
   }
-  item.style[context.offsetAttr] = offset;
+  item.style[context.offsetStyle] = offset;
   item.style.visibility = hide ? "hidden" : "visible";
 
-  childData.push({
+  renderedItems.push({
     idx,
     hide,
     offset,
@@ -80,62 +80,57 @@ export function init({
   container,
   horizontal,
   itemSize,
-  offsetAttr,
+  offsetStyle,
   overscan,
   root,
-  scrollOffset,
   shift,
-  totalSizeAttr,
+  totalSizeStyle,
 }: {
-  readonly cache?: CacheSnapshot;
+  readonly root: HTMLElement;
   readonly container: HTMLElement;
+  readonly offsetStyle: "left" | "right" | "top";
+  readonly totalSizeStyle: "width" | "height";
+  readonly cache?: CacheSnapshot;
   readonly horizontal?: boolean;
   readonly itemSize?: number;
-  readonly offsetAttr: "left" | "right" | "top";
   readonly overscan?: number;
-  readonly root: HTMLElement;
-  readonly scrollOffset?: number;
   readonly shift?: boolean;
-  readonly totalSizeAttr: "width" | "height";
 }): Core {
   const isHorizontal = !!horizontal;
 
-  const children: HTMLElement[] = [];
+  const items: HTMLElement[] = [];
   for (const child of Array.from(container.children)) {
     if (!(child instanceof HTMLElement)) {
       throw new Error("Child element must be HTMLElement");
     }
-    children.push(child);
+    items.push(child);
   }
 
-  const store = createVirtualStore(children.length, itemSize, overscan, undefined, cache, !itemSize);
+  const store = createVirtualStore(items.length, itemSize, overscan, undefined, cache, !itemSize);
 
   const resizer = createResizer(store, isHorizontal);
   resizer.$observeRoot(root);
 
   const scroller = createScroller(store, isHorizontal);
   scroller.$observe(root);
-  if (scrollOffset !== undefined) {
-    scroller.$scrollTo(scrollOffset ?? 0);
-  }
 
-  const childData: ChildData[] = [];
-  for (let i = 0; i < children.length; i++) {
+  const renderedItems: RenderedItem[] = [];
+  for (let i = 0; i < items.length; i++) {
     const offset = `${store.$getItemOffset(i)}px`;
     const hide = store.$isUnmeasuredItem(i);
-    newChild({ offsetAttr, children, resizer }, i, offset, hide, childData);
+    renderItem({ offsetStyle, items, resizer }, i, offset, hide, renderedItems);
   }
 
   const context: Context = {
-    totalSizeAttr,
-    offsetAttr,
+    totalSizeStyle,
+    offsetStyle,
     shift,
     container,
     store,
     resizer,
     scroller,
-    children,
-    childData,
+    items,
+    renderedItems,
   };
 
   render(context);
@@ -153,8 +148,8 @@ export function init({
     unsubscribeStore();
     resizer.$dispose();
     scroller.$dispose();
-    for (const childData of context.childData) {
-      childData.unobserve();
+    for (const renderedItem of context.renderedItems) {
+      renderedItem.unobserve();
     }
   };
 
@@ -171,7 +166,7 @@ function render(context: Context): void {
 
   const totalSize = `${store.$getTotalSize()}px`;
   if (context.totalSize !== totalSize) {
-    container.style[context.totalSizeAttr] = totalSize;
+    container.style[context.totalSizeStyle] = totalSize;
     context.totalSize = totalSize;
   }
 
@@ -183,102 +178,102 @@ function render(context: Context): void {
   }
 
   const [startIdx, endIdx] = store.$getRange();
-  const newChildData: ChildData[] = [];
-  for (let newChildIdx = startIdx; newChildIdx <= endIdx; newChildIdx++) {
-    const oldChildDataMaybe: ChildData | undefined = context.childData[0];
-    const offset = `${store.$getItemOffset(newChildIdx)}px`;
-    const hide = store.$isUnmeasuredItem(newChildIdx);
+  const newRenderedItems: RenderedItem[] = [];
+  for (let newItemIdx = startIdx; newItemIdx <= endIdx; newItemIdx++) {
+    const renderedItemNullable: RenderedItem | undefined = context.renderedItems[0];
+    const offset = `${store.$getItemOffset(newItemIdx)}px`;
+    const hide = store.$isUnmeasuredItem(newItemIdx);
 
-    if (oldChildDataMaybe === undefined) {
-      const childEl = newChild(context, newChildIdx, offset, hide, newChildData);
-      if (childEl !== undefined) {
-        container.appendChild(childEl);
-        context.childData.shift();
+    if (renderedItemNullable === undefined) {
+      const newItem = renderItem(context, newItemIdx, offset, hide, newRenderedItems);
+      if (newItem !== undefined) {
+        container.appendChild(newItem);
+        context.renderedItems.shift();
       }
       continue;
     }
 
-    let oldChildData: ChildData = oldChildDataMaybe;
-    while (newChildIdx > oldChildData.idx) {
-      oldChildData.element.remove();
-      oldChildData.unobserve();
-      context.childData.shift();
+    let renderedItem: RenderedItem = renderedItemNullable;
+    while (newItemIdx > renderedItem.idx) {
+      renderedItem.element.remove();
+      renderedItem.unobserve();
+      context.renderedItems.shift();
 
-      const nextOldChild = context.childData[0];
-      if (nextOldChild === undefined) {
-        const childEl = newChild(context, newChildIdx, offset, hide, newChildData);
-        if (childEl !== undefined) {
-          container.appendChild(childEl);
-          context.childData.shift();
+      const nextRenderedItem = context.renderedItems[0];
+      if (nextRenderedItem === undefined) {
+        const newItem = renderItem(context, newItemIdx, offset, hide, newRenderedItems);
+        if (newItem !== undefined) {
+          container.appendChild(newItem);
+          context.renderedItems.shift();
         }
         break;
       }
 
-      oldChildData = nextOldChild;
+      renderedItem = nextRenderedItem;
     }
 
-    if (newChildIdx < oldChildData.idx) {
-      const childEl = newChild(context, newChildIdx, offset, hide, newChildData);
-      if (childEl !== undefined) {
-        container.insertBefore(childEl, oldChildData.element);
+    if (newItemIdx < renderedItem.idx) {
+      const newItem = renderItem(context, newItemIdx, offset, hide, newRenderedItems);
+      if (newItem !== undefined) {
+        container.insertBefore(newItem, renderedItem.element);
       }
       continue;
     }
 
-    if (newChildIdx === oldChildData.idx) {
-      const prevHide = oldChildData.hide;
+    if (newItemIdx === renderedItem.idx) {
+      const prevHide = renderedItem.hide;
       if (hide !== prevHide) {
-        oldChildData.element.style.position = hide ? "" : "absolute";
-        oldChildData.element.style.visibility = hide ? "hidden" : "visible";
-        oldChildData.hide = hide;
+        renderedItem.element.style.position = hide ? "" : "absolute";
+        renderedItem.element.style.visibility = hide ? "hidden" : "visible";
+        renderedItem.hide = hide;
       }
 
-      const prevOffset = oldChildData.offset;
+      const prevOffset = renderedItem.offset;
       if (offset !== prevOffset) {
-        oldChildData.element.style[context.offsetAttr] = offset;
-        oldChildData.offset = offset;
+        renderedItem.element.style[context.offsetStyle] = offset;
+        renderedItem.offset = offset;
       }
 
-      newChildData.push(oldChildData);
-      context.childData.shift();
+      newRenderedItems.push(renderedItem);
+      context.renderedItems.shift();
     }
   }
 
-  for (const oldChild of context.childData) {
-    oldChild.element.remove();
-    oldChild.unobserve();
+  for (const renderedItem of context.renderedItems) {
+    renderedItem.element.remove();
+    renderedItem.unobserve();
   }
 
-  context.childData = newChildData;
+  context.renderedItems = newRenderedItems;
 }
 
-export function appendChildren(context: Context, newChildren: HTMLElement[]): void {
-  for (const child of newChildren) {
-    context.children.push(child);
+export function appendItems(context: Context, newItems: HTMLElement[]): void {
+  for (const newItem of newItems) {
+    context.items.push(newItem);
   }
-  context.store.$update(ACTION_ITEMS_LENGTH_CHANGE, [context.children.length, context.shift]);
+  context.store.$update(ACTION_ITEMS_LENGTH_CHANGE, [context.items.length, context.shift]);
 }
 
-export function prependChildren(context: Context, newChildren: HTMLElement[]): void {
-  newChildren.reverse();
-  for (const child of newChildren) {
-    context.children.unshift(child);
+export function prependItems(context: Context, newItems: HTMLElement[]): void {
+  newItems.reverse();
+  for (const newItem of newItems) {
+    context.items.unshift(newItem);
   }
-  for (const childData of context.childData) {
-    childData.idx += newChildren.length;
+  for (const renderedItem of context.renderedItems) {
+    renderedItem.idx += newItems.length;
   }
-  context.store.$update(ACTION_ITEMS_LENGTH_CHANGE, [context.children.length, context.shift]);
+  context.store.$update(ACTION_ITEMS_LENGTH_CHANGE, [context.items.length, context.shift]);
 }
 
-export function spliceChildren(context: Context, amount: number): void {
-  context.children.splice(-amount);
-  context.store.$update(ACTION_ITEMS_LENGTH_CHANGE, [context.children.length, context.shift]);
+export function spliceItems(context: Context, amount: number): void {
+  context.items.splice(-amount);
+  context.store.$update(ACTION_ITEMS_LENGTH_CHANGE, [context.items.length, context.shift]);
 }
 
-export function shiftChildren(context: Context, amount: number): void {
-  context.children.splice(0, amount);
-  for (const childData of context.childData) {
-    childData.idx -= amount;
+export function shiftItems(context: Context, amount: number): void {
+  context.items.splice(0, amount);
+  for (const renderedItem of context.renderedItems) {
+    renderedItem.idx -= amount;
   }
-  context.store.$update(ACTION_ITEMS_LENGTH_CHANGE, [context.children.length, context.shift]);
+  context.store.$update(ACTION_ITEMS_LENGTH_CHANGE, [context.items.length, context.shift]);
 }
