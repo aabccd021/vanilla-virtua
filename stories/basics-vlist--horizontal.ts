@@ -1,4 +1,4 @@
-import { init as vlistInit } from "../src/vlist.ts";
+import { init } from "../src/vlist.ts";
 
 const createColumns = (num: number) => {
   return Array.from({ length: num }).map((_, i) => {
@@ -11,7 +11,7 @@ const createColumns = (num: number) => {
   });
 };
 
-const vlist = vlistInit({
+const vlist = init({
   style: { width: "100%", height: "200px" },
   horizontal: true,
   children: createColumns(1000),

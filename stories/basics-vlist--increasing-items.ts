@@ -1,4 +1,4 @@
-import { appendItems, prependItems, setReverse, shiftItems, spliceItems, init as vlistInit } from "../src/vlist.ts";
+import { appendItems, init, prependItems, setReverse, shiftItems, spliceItems } from "../src/vlist.ts";
 
 const heights = [20, 40, 80, 77];
 
@@ -24,7 +24,7 @@ let timer: ReturnType<typeof setInterval> | undefined;
 
 let rows = createRows(amount, 0);
 
-const myList = vlistInit({
+const myList = init({
   style: { flex: "1" },
   reverse,
   shift: prepend,

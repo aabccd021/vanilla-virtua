@@ -1,4 +1,4 @@
-import { init as vlistInit } from "../src/vlist.ts";
+import { init } from "../src/vlist.ts";
 
 const createRows = (num: number) => {
   const heights = [20, 40, 80, 77];
@@ -12,7 +12,7 @@ const createRows = (num: number) => {
   });
 };
 
-const vlist = vlistInit({
+const vlist = init({
   style: { height: "100vh" },
   children: createRows(1000),
 });
