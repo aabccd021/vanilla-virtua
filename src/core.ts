@@ -157,6 +157,7 @@ export function init({
 
 function render(context: Context): void {
   const { store, scroller, container } = context;
+
   const jumpCount = store.$getJumpCount();
   if (context.jumpCount !== jumpCount) {
     context.jumpCount = jumpCount;
