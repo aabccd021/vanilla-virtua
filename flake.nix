@@ -57,7 +57,7 @@
         cp -Lr ${./src} ./src
         cp -Lr ${./e2e} ./e2e
         cp -Lr ${./stories} ./stories
-        node_modules/playwright/cli.js test
+        ${pkgs.biome}/bin/biome check --error-on-warnings
         touch $out
       '';
 
@@ -100,6 +100,7 @@
       packages = {
         publish = publish;
         tests = tests;
+        biome = biome;
         # dist = dist;
         formatting = treefmtEval.config.build.check self;
       };
