@@ -2,6 +2,7 @@ import {
   type CacheSnapshot,
   type Virtualizer,
   appendItems as virtAppendItems,
+  dispose as virtDispose,
   init as virtInit,
   prependItems as virtPrependItems,
   shiftItems as virtShiftItems,
@@ -116,6 +117,10 @@ export function init({
     isHorizontal,
     offsetStyle,
   };
+}
+
+export function dispose(vlist: Vlist) {
+  virtDispose(vlist.virtualizer);
 }
 
 export function appendItems(vlist: Vlist, newItems: HTMLElement[]) {
