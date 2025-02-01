@@ -158,12 +158,6 @@ export function init({
 function render(context: Context): void {
   const { store, scroller, container } = context;
 
-  const jumpCount = store.$getJumpCount();
-  if (context.jumpCount !== jumpCount) {
-    context.jumpCount = jumpCount;
-    scroller.$fixScrollJump();
-  }
-
   const totalSize = `${store.$getTotalSize()}px`;
   if (context.totalSize !== totalSize) {
     context.totalSize = totalSize;
@@ -243,6 +237,12 @@ function render(context: Context): void {
   }
 
   context.renders = newRenders;
+
+  const jumpCount = store.$getJumpCount();
+  if (context.jumpCount !== jumpCount) {
+    context.jumpCount = jumpCount;
+    scroller.$fixScrollJump();
+  }
 }
 
 export function appendItems(context: Context, items: HTMLElement[]): void {
