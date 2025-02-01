@@ -39,10 +39,10 @@ export interface Context {
   readonly store: VirtualStore;
   readonly totalSizeStyle: "width" | "height";
   renders: Render[];
-  isScrolling?: boolean;
-  jumpCount?: number;
+  isScrolling: boolean;
+  jumpCount: number;
+  totalSize: string;
   shift?: boolean;
-  totalSize?: string;
 }
 
 export interface Core {
@@ -120,19 +120,24 @@ export function init({
     renderItem({ offsetStyle, items, resizer, store }, idx, renders);
   }
 
+  const isScrolling = store.$isScrolling();
+  const jumpCount = store.$getJumpCount();
+  const totalSize = `${store.$getTotalSize()}px`;
+
   const context: Context = {
-    totalSizeStyle,
-    offsetStyle,
-    shift,
     container,
-    store,
+    isScrolling,
+    items,
+    jumpCount,
+    offsetStyle,
+    renders,
     resizer,
     scroller,
-    items,
-    renders,
+    shift,
+    store,
+    totalSize,
+    totalSizeStyle,
   };
-
-  render(context);
 
   const unsubscribeStore = store.$subscribe(UPDATE_VIRTUAL_STATE, (sync) => {
     if (sync) {

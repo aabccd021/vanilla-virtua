@@ -110,13 +110,13 @@ export function init({
   return { ...core, root, wrapper, reverse, isHorizontal, offsetStyle };
 }
 
-export function appendItems(vlist: Vlist, newChildren: HTMLElement[]) {
-  const newCoreItems = newChildren.map((child) => createItem(child, vlist.isHorizontal, vlist.offsetStyle));
+export function appendItems(vlist: Vlist, newItems: HTMLElement[]) {
+  const newCoreItems = newItems.map((child) => createItem(child, vlist.isHorizontal, vlist.offsetStyle));
   return coreAppendItems(vlist.context, newCoreItems);
 }
 
-export function prependItems(vlist: Vlist, newChildren: HTMLElement[]) {
-  const newCoreItems = newChildren.map((child) => createItem(child, vlist.isHorizontal, vlist.offsetStyle));
+export function prependItems(vlist: Vlist, newItems: HTMLElement[]) {
+  const newCoreItems = newItems.map((child) => createItem(child, vlist.isHorizontal, vlist.offsetStyle));
   return corePrependItems(vlist.context, newCoreItems);
 }
 
