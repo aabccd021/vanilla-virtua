@@ -180,9 +180,9 @@ function render(context: Context): void {
     const renderedItemNullable: RenderedItem | undefined = context.renderedItems[0];
 
     if (renderedItemNullable === undefined) {
-      const newItem = renderItem(context, newItemIdx, newRenderedItems);
-      if (newItem !== undefined) {
-        container.appendChild(newItem);
+      const newRenderedItem = renderItem(context, newItemIdx, newRenderedItems);
+      if (newRenderedItem !== undefined) {
+        container.appendChild(newRenderedItem);
         context.renderedItems.shift();
       }
       continue;
@@ -196,9 +196,9 @@ function render(context: Context): void {
 
       const nextRenderedItem = context.renderedItems[0];
       if (nextRenderedItem === undefined) {
-        const newItem = renderItem(context, newItemIdx, newRenderedItems);
-        if (newItem !== undefined) {
-          container.appendChild(newItem);
+        const newRenderedItem = renderItem(context, newItemIdx, newRenderedItems);
+        if (newRenderedItem !== undefined) {
+          container.appendChild(newRenderedItem);
           context.renderedItems.shift();
         }
         break;
@@ -208,9 +208,9 @@ function render(context: Context): void {
     }
 
     if (newItemIdx < renderedItem.idx) {
-      const newItem = renderItem(context, newItemIdx, newRenderedItems);
-      if (newItem !== undefined) {
-        container.insertBefore(newItem, renderedItem.element);
+      const newRenderedItem = renderItem(context, newItemIdx, newRenderedItems);
+      if (newRenderedItem !== undefined) {
+        container.insertBefore(newRenderedItem, renderedItem.element);
       }
       continue;
     }
