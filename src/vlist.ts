@@ -15,7 +15,7 @@ import {
 } from "./virtualizer.ts";
 
 type Vlist = {
-  readonly virtualizer: Virtualizer;
+  readonly virt: Virtualizer;
   readonly root: HTMLElement;
   readonly isHorizontal: boolean;
   readonly offsetStyle: "left" | "right" | "top";
@@ -104,7 +104,7 @@ export function init({
     Object.assign(root.style, style);
   }
 
-  const virtualizer = virtInit({
+  const virt = virtInit({
     horizontal: isHorizontal,
     totalSizeStyle,
     offsetStyle,
@@ -115,7 +115,7 @@ export function init({
   });
 
   return {
-    virtualizer,
+    virt,
     root,
     wrapper,
     reverse,
@@ -125,25 +125,25 @@ export function init({
 }
 
 export function dispose(vlist: Vlist) {
-  virtDispose(vlist.virtualizer);
+  virtDispose(vlist.virt);
 }
 
 export function appendItems(vlist: Vlist, newItems: HTMLElement[]) {
   const newVirtualizerItems = newItems.map((child) => createItem(child, vlist.isHorizontal, vlist.offsetStyle));
-  return virtAppendItems(vlist.virtualizer, newVirtualizerItems);
+  return virtAppendItems(vlist.virt, newVirtualizerItems);
 }
 
 export function prependItems(vlist: Vlist, newItems: HTMLElement[]) {
   const newVirtualizerItems = newItems.map((child) => createItem(child, vlist.isHorizontal, vlist.offsetStyle));
-  return virtPrependItems(vlist.virtualizer, newVirtualizerItems);
+  return virtPrependItems(vlist.virt, newVirtualizerItems);
 }
 
 export function spliceItems(vlist: Vlist, amount: number) {
-  return virtSpliceItems(vlist.virtualizer, amount);
+  return virtSpliceItems(vlist.virt, amount);
 }
 
 export function shiftItems(vlist: Vlist, amount: number) {
-  return virtShiftItems(vlist.virtualizer, amount);
+  return virtShiftItems(vlist.virt, amount);
 }
 
 export function setReverse(vlist: Vlist, reverse: boolean) {
@@ -153,35 +153,35 @@ export function setReverse(vlist: Vlist, reverse: boolean) {
   vlist.reverse = reverse;
   const shouldReverse = reverse && !vlist.isHorizontal;
   if (shouldReverse) {
-    const wrapper = createWrapper(vlist.virtualizer.container);
+    const wrapper = createWrapper(vlist.virt.container);
     vlist.wrapper = wrapper;
     vlist.root.appendChild(wrapper);
   } else {
     vlist.wrapper?.remove();
-    vlist.root.appendChild(vlist.virtualizer.container);
+    vlist.root.appendChild(vlist.virt.container);
   }
 }
 
 export function scrollToIndex(vlist: Vlist, index: number, opts?: ScrollToIndexOpts): void {
-  virtScrollToIndex(vlist.virtualizer, index, opts);
+  virtScrollToIndex(vlist.virt, index, opts);
 }
 
 export function scrollTo(vlist: Vlist, offset: number): void {
-  virtScrollTo(vlist.virtualizer, offset);
+  virtScrollTo(vlist.virt, offset);
 }
 
 export function scrollBy(vlist: Vlist, offset: number): void {
-  virtScrollBy(vlist.virtualizer, offset);
+  virtScrollBy(vlist.virt, offset);
 }
 
 export function getCacheSnapshot(vlist: Vlist): CacheSnapshot {
-  return vlist.virtualizer.store.$getCacheSnapshot();
+  return vlist.virt.store.$getCacheSnapshot();
 }
 
 export function getScrollOffset(vlist: Vlist): number {
-  return vlist.virtualizer.store.$getScrollOffset();
+  return vlist.virt.store.$getScrollOffset();
 }
 
 export function setShift(vlist: Vlist, shift: boolean): void {
-  virtSetShift(vlist.virtualizer, shift);
+  virtSetShift(vlist.virt, shift);
 }
