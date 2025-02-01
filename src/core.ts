@@ -218,7 +218,6 @@ function render(context: Context): void {
 
     if (itemIdx === render.idx) {
       const prevHide = render.hide;
-      const offset = `${context.store.$getItemOffset(itemIdx)}px`;
       const hide = context.store.$isUnmeasuredItem(itemIdx);
       if (hide !== prevHide) {
         render.item.style.position = hide ? "" : "absolute";
@@ -227,6 +226,7 @@ function render(context: Context): void {
       }
 
       const prevOffset = render.offset;
+      const offset = `${context.store.$getItemOffset(itemIdx)}px`;
       if (offset !== prevOffset) {
         render.item.style[context.offsetStyle] = offset;
         render.offset = offset;
