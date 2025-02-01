@@ -10,13 +10,8 @@ jobs:
       - uses: DeterminateSystems/nix-installer-action@main
       - uses: DeterminateSystems/magic-nix-cache-action@main
       - uses: DeterminateSystems/flake-checker-action@main
-      - uses: HatsuneMiku3939/direnv-action@v1
-      # - run: biome check --error-on-warnings
-      - run: npm install
-      # - run: tsc
-      - run: npx playwright test
 
       # https://www.npmjs.com/settings/aabccd021/tokens/granular-access-tokens/new
-      # - run: nix run .#publish
-      #   env:
-      #     NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+      - run: nix run .#publish
+        env:
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
