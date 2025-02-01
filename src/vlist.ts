@@ -14,7 +14,7 @@ type Vlist = {
   readonly root: HTMLElement;
   readonly isHorizontal: boolean;
   readonly offsetStyle: "left" | "right" | "top";
-  readonly scroller?: Scroller;
+  scroller?: Scroller;
   reverse?: boolean;
   wrapper?: HTMLElement;
 };
@@ -117,7 +117,7 @@ export function init({
     reverse,
     isHorizontal,
     offsetStyle,
-    // scroller: virtualizer.scroller,
+    scroller: virtualizer.scroller,
   };
 }
 
