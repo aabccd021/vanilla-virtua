@@ -22,7 +22,7 @@ type Scroller = ReturnType<typeof createScroller>;
 
 type Resizer = ReturnType<typeof createResizer>;
 
-interface RenderedItem {
+interface Render {
   readonly element: HTMLElement;
   readonly unobserve: () => void;
   hide: boolean;
@@ -38,7 +38,7 @@ export interface Context {
   readonly scroller: Scroller;
   readonly store: VirtualStore;
   readonly totalSizeStyle: "width" | "height";
-  renderedItems: RenderedItem[];
+  renders: Render[];
   isScrolling?: boolean;
   jumpCount?: number;
   shift?: boolean;
@@ -53,7 +53,7 @@ export interface Core {
 function renderItem(
   context: Pick<Context, "offsetStyle" | "items" | "resizer" | "store">,
   idx: number,
-  renderedItems: RenderedItem[],
+  renders: Render[],
 ): Element | undefined {
   const item = context.items[idx];
   if (item === undefined) {
@@ -64,7 +64,7 @@ function renderItem(
   item.style[context.offsetStyle] = offset;
   item.style.visibility = hide ? "hidden" : "visible";
 
-  renderedItems.push({
+  renders.push({
     idx,
     hide,
     offset,
@@ -114,9 +114,9 @@ export function init({
   const scroller = createScroller(store, isHorizontal);
   scroller.$observe(root);
 
-  const renderedItems: RenderedItem[] = [];
+  const renders: Render[] = [];
   for (let idx = 0; idx < items.length; idx++) {
-    renderItem({ offsetStyle, items, resizer, store }, idx, renderedItems);
+    renderItem({ offsetStyle, items, resizer, store }, idx, renders);
   }
 
   const context: Context = {
@@ -128,7 +128,7 @@ export function init({
     resizer,
     scroller,
     items,
-    renderedItems,
+    renders,
   };
 
   render(context);
@@ -146,8 +146,8 @@ export function init({
     unsubscribeStore();
     resizer.$dispose();
     scroller.$dispose();
-    for (const renderedItem of context.renderedItems) {
-      renderedItem.unobserve();
+    for (const render of context.renders) {
+      render.unobserve();
     }
   };
 
@@ -175,89 +175,89 @@ function render(context: Context): void {
   }
 
   const [startIdx, endIdx] = store.$getRange();
-  const newRenderedItems: RenderedItem[] = [];
-  for (let newItemIdx = startIdx; newItemIdx <= endIdx; newItemIdx++) {
-    const renderedItemNullable: RenderedItem | undefined = context.renderedItems[0];
+  const newRenders: Render[] = [];
+  for (let itemIdx = startIdx; itemIdx <= endIdx; itemIdx++) {
+    const renderNullable: Render | undefined = context.renders[0];
 
-    if (renderedItemNullable === undefined) {
-      const newRenderedItem = renderItem(context, newItemIdx, newRenderedItems);
-      if (newRenderedItem !== undefined) {
-        container.appendChild(newRenderedItem);
-        context.renderedItems.shift();
+    if (renderNullable === undefined) {
+      const newRender = renderItem(context, itemIdx, newRenders);
+      if (newRender !== undefined) {
+        container.appendChild(newRender);
+        context.renders.shift();
       }
       continue;
     }
 
-    let renderedItem: RenderedItem = renderedItemNullable;
-    while (newItemIdx > renderedItem.idx) {
-      renderedItem.element.remove();
-      renderedItem.unobserve();
-      context.renderedItems.shift();
+    let render: Render = renderNullable;
+    while (itemIdx > render.idx) {
+      render.element.remove();
+      render.unobserve();
+      context.renders.shift();
 
-      const nextRenderedItem = context.renderedItems[0];
-      if (nextRenderedItem === undefined) {
-        const newRenderedItem = renderItem(context, newItemIdx, newRenderedItems);
-        if (newRenderedItem !== undefined) {
-          container.appendChild(newRenderedItem);
-          context.renderedItems.shift();
+      const nextRender = context.renders[0];
+      if (nextRender === undefined) {
+        const newRender = renderItem(context, itemIdx, newRenders);
+        if (newRender !== undefined) {
+          container.appendChild(newRender);
+          context.renders.shift();
         }
         break;
       }
 
-      renderedItem = nextRenderedItem;
+      render = nextRender;
     }
 
-    if (newItemIdx < renderedItem.idx) {
-      const newRenderedItem = renderItem(context, newItemIdx, newRenderedItems);
-      if (newRenderedItem !== undefined) {
-        container.insertBefore(newRenderedItem, renderedItem.element);
+    if (itemIdx < render.idx) {
+      const newRender = renderItem(context, itemIdx, newRenders);
+      if (newRender !== undefined) {
+        container.insertBefore(newRender, render.element);
       }
       continue;
     }
 
-    if (newItemIdx === renderedItem.idx) {
-      const prevHide = renderedItem.hide;
-      const offset = `${context.store.$getItemOffset(newItemIdx)}px`;
-      const hide = context.store.$isUnmeasuredItem(newItemIdx);
+    if (itemIdx === render.idx) {
+      const prevHide = render.hide;
+      const offset = `${context.store.$getItemOffset(itemIdx)}px`;
+      const hide = context.store.$isUnmeasuredItem(itemIdx);
       if (hide !== prevHide) {
-        renderedItem.element.style.position = hide ? "" : "absolute";
-        renderedItem.element.style.visibility = hide ? "hidden" : "visible";
-        renderedItem.hide = hide;
+        render.element.style.position = hide ? "" : "absolute";
+        render.element.style.visibility = hide ? "hidden" : "visible";
+        render.hide = hide;
       }
 
-      const prevOffset = renderedItem.offset;
+      const prevOffset = render.offset;
       if (offset !== prevOffset) {
-        renderedItem.element.style[context.offsetStyle] = offset;
-        renderedItem.offset = offset;
+        render.element.style[context.offsetStyle] = offset;
+        render.offset = offset;
       }
 
-      newRenderedItems.push(renderedItem);
-      context.renderedItems.shift();
+      newRenders.push(render);
+      context.renders.shift();
     }
   }
 
-  for (const renderedItem of context.renderedItems) {
-    renderedItem.element.remove();
-    renderedItem.unobserve();
+  for (const render of context.renders) {
+    render.element.remove();
+    render.unobserve();
   }
 
-  context.renderedItems = newRenderedItems;
+  context.renders = newRenders;
 }
 
-export function appendItems(context: Context, newItems: HTMLElement[]): void {
-  for (const newItem of newItems) {
-    context.items.push(newItem);
+export function appendItems(context: Context, items: HTMLElement[]): void {
+  for (const item of items) {
+    context.items.push(item);
   }
   context.store.$update(ACTION_ITEMS_LENGTH_CHANGE, [context.items.length, context.shift]);
 }
 
-export function prependItems(context: Context, newItems: HTMLElement[]): void {
-  newItems.reverse();
-  for (const newItem of newItems) {
-    context.items.unshift(newItem);
+export function prependItems(context: Context, items: HTMLElement[]): void {
+  items.reverse();
+  for (const item of items) {
+    context.items.unshift(item);
   }
-  for (const renderedItem of context.renderedItems) {
-    renderedItem.idx += newItems.length;
+  for (const render of context.renders) {
+    render.idx += items.length;
   }
   context.store.$update(ACTION_ITEMS_LENGTH_CHANGE, [context.items.length, context.shift]);
 }
@@ -269,8 +269,8 @@ export function spliceItems(context: Context, amount: number): void {
 
 export function shiftItems(context: Context, amount: number): void {
   context.items.splice(0, amount);
-  for (const renderedItem of context.renderedItems) {
-    renderedItem.idx -= amount;
+  for (const render of context.renders) {
+    render.idx -= amount;
   }
   context.store.$update(ACTION_ITEMS_LENGTH_CHANGE, [context.items.length, context.shift]);
 }
