@@ -1,4 +1,4 @@
-import { init as vListInit } from "../src/vList.ts";
+import { init as vlistInit } from "../src/vlist.ts";
 
 const createRows = (num: number) => {
   const heights = [20, 40, 80, 77];
@@ -12,7 +12,7 @@ const createRows = (num: number) => {
   });
 };
 
-const vList = vListInit({
+const vlist = vlistInit({
   style: { height: "100vh" },
   children: createRows(1000),
 });
@@ -22,4 +22,4 @@ if (storyBookRoot === null) {
   throw new Error("Root element not found");
 }
 
-storyBookRoot.appendChild(vList.root);
+storyBookRoot.appendChild(vlist.root);

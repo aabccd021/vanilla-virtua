@@ -1,5 +1,5 @@
 import type { CacheSnapshot } from "../src/core.ts";
-import { init as vListInit } from "../src/vList.ts";
+import { init as vlistInit } from "../src/vlist.ts";
 
 const createRows = (num: number) => {
   const heights = [20, 40, 80, 77];
@@ -33,22 +33,22 @@ const restorableList = ({ id }: { id: string }): ResList => {
     }
   }
 
-  const vList = vListInit({
+  const vlist = vlistInit({
     cache,
     style: { height: "100vh" },
     children: createRows(1000),
   });
 
-  const root = vList.root;
+  const root = vlist.root;
 
   if (offset !== undefined) {
-    vList.context.scroller.$scrollTo(offset);
+    vlist.context.scroller.$scrollTo(offset);
   }
 
   const unsub = () => {
     sessionStorage.setItem(
       cacheKey,
-      JSON.stringify([vList.context.store.$getScrollOffset(), vList.context.store.$getCacheSnapshot()]),
+      JSON.stringify([vlist.context.store.$getScrollOffset(), vlist.context.store.$getCacheSnapshot()]),
     );
   };
 

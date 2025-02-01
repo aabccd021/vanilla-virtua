@@ -3,12 +3,23 @@
   "private": true,
   "version": "0.0.1",
   "type": "module",
-  "dependencies": {
-    "virtua": "^0.40.0"
+  "exports": {
+    "./core.ts": "./src/core.ts",
+    "./vlist.ts": "./src/vlist.ts",
+    "./core": {
+      "import": "./lib/core.js"
+    },
+    "./vlist": {
+      "import": "./lib/vlist.js"
+    }
   },
+  "files": ["dist", "src"],
   "scripts": {
     "serve": "esbuild stories/*.ts --bundle --outdir=stories --servedir=stories",
     "dev": "npm run serve -- --watch"
+  },
+  "dependencies": {
+    "virtua": "^0.40.0"
   },
   "devDependencies": {
     "@playwright/test": "1.48.2",

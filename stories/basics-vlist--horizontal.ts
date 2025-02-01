@@ -1,4 +1,4 @@
-import { init as vListInit } from "../src/vList.ts";
+import { init as vlistInit } from "../src/vlist.ts";
 
 const createColumns = (num: number) => {
   return Array.from({ length: num }).map((_, i) => {
@@ -11,7 +11,7 @@ const createColumns = (num: number) => {
   });
 };
 
-const vList = vListInit({
+const vlist = vlistInit({
   style: { width: "100%", height: "200px" },
   horizontal: true,
   children: createColumns(1000),
@@ -19,7 +19,7 @@ const vList = vListInit({
 
 const div = document.createElement("div");
 div.style.padding = "10px";
-div.appendChild(vList.root);
+div.appendChild(vlist.root);
 
 const storyBookRoot = document.getElementById("storybook-root");
 if (storyBookRoot === null) {

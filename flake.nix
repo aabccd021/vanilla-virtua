@@ -62,22 +62,15 @@
       '';
 
 
-      # dist = pkgs.runCommandNoCCLocal "dist" { } ''
-      #   mkdir  $out
-      #   ${pkgs.esbuild}/bin/esbuild ${./freeze-page.ts} \
-      #     --bundle \
-      #     --format=esm \
-      #     --minify \
-      #     --sourcemap \
-      #     --outfile="$out/freeze-page.min.js"
-      #   ${pkgs.esbuild}/bin/esbuild ${./freeze-page.ts} \
-      #     --bundle \
-      #     --format=esm \
-      #     --target=es6 \
-      #     --minify \
-      #     --sourcemap \
-      #     --outfile="$out/freeze-page.es6.min.js"
-      # '';
+      dist = pkgs.runCommandNoCCLocal "dist" { } ''
+        mkdir  $out
+        cp -L ${./package.json} ./package.json
+        cp -Lr ${./src} ./src
+        ${pkgs.esbuild}/bin/esbuild ./src/* \
+          --format=esm \
+          --sourcemap \
+          --outdir="$out"
+      '';
 
       publish = pkgs.writeShellApplication {
         name = "publish";
@@ -101,7 +94,7 @@
         publish = publish;
         tests = tests;
         biome = biome;
-        # dist = dist;
+        dist = dist;
         formatting = treefmtEval.config.build.check self;
       };
 
