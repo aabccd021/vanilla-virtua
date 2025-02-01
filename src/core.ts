@@ -38,6 +38,7 @@ export interface Context {
   readonly scroller: Scroller;
   readonly store: VirtualStore;
   readonly totalSizeStyle: "width" | "height";
+  unsubscribeStore: () => void;
   renders: Render[];
   isScrolling: boolean;
   jumpCount: number;
@@ -47,7 +48,6 @@ export interface Context {
 
 export interface Core {
   readonly context: Context;
-  readonly dispose: () => void;
 }
 
 function renderItem(
@@ -137,27 +137,21 @@ export function init({
     store,
     totalSize,
     totalSizeStyle,
+    unsubscribeStore: store.$subscribe(UPDATE_VIRTUAL_STATE, (sync) => {
+      if (sync) {
+        render(context);
+      }
+      requestAnimationFrame(() => {
+        render(context);
+      });
+    }),
   };
 
-  const unsubscribeStore = store.$subscribe(UPDATE_VIRTUAL_STATE, (sync) => {
-    if (sync) {
-      render(context);
-    }
-    requestAnimationFrame(() => {
-      render(context);
-    });
-  });
-
-  const dispose = (): void => {
-    unsubscribeStore();
-  };
-
-  return { context, dispose };
+  return { context };
 }
 
-export function dispose(core: Core): void {
-  const { context } = core;
-  core.dispose();
+export function dispose(context: Context): void {
+  context.unsubscribeStore();
   context.resizer.$dispose();
   context.scroller.$dispose();
   for (const render of context.renders) {
