@@ -59,6 +59,7 @@ function renderItem(
   const hide = virt.store.$isUnmeasuredItem(idx);
   item.style[virt.offsetStyle] = offset;
   item.style.visibility = hide ? "hidden" : "visible";
+  item.style.position = hide ? "" : "absolute";
 
   renders.push({
     idx,
