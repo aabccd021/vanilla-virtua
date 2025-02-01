@@ -8,10 +8,6 @@ import {
   spliceChildren as coreSpliceChildren,
 } from "./core.ts";
 
-function setStyle<T extends keyof CSSStyleDeclaration>(element: HTMLElement, key: T, value: CSSStyleDeclaration[T]) {
-  element.style[key] = value;
-}
-
 type Vlist = Core & {
   readonly root: HTMLElement;
   readonly isHorizontal: boolean;
@@ -22,11 +18,12 @@ type Vlist = Core & {
 
 function newItem(child: HTMLElement, isHorizontal: boolean, offsetAttr: "left" | "right" | "top"): HTMLElement {
   const item = document.createElement("div");
-  setStyle(item, "position", "absolute");
-  setStyle(item, isHorizontal ? "height" : "width", "100%");
-  setStyle(item, offsetAttr, "0px");
+  item.style.position = "absolute";
+  item.style[isHorizontal ? "height" : "width"] = "100%";
+  item.style[offsetAttr] = "0px";
+
   if (isHorizontal) {
-    setStyle(item, "display", "flex");
+    item.style.display = "flex";
   }
   item.appendChild(child);
   return item;
@@ -34,11 +31,11 @@ function newItem(child: HTMLElement, isHorizontal: boolean, offsetAttr: "left" |
 
 function createWrapper(container: HTMLElement): HTMLElement {
   const wrapper = document.createElement("div");
-  setStyle(wrapper, "visibility", "hidden");
-  setStyle(wrapper, "display", "flex");
-  setStyle(wrapper, "flexDirection", "column");
-  setStyle(wrapper, "justifyContent", "flex-end");
-  setStyle(wrapper, "minHeight", "100%");
+  wrapper.style.visibility = "hidden";
+  wrapper.style.display = "flex";
+  wrapper.style.flexDirection = "column";
+  wrapper.style.justifyContent = "flex-end";
+  wrapper.style.minHeight = "100%";
   wrapper.appendChild(container);
   return wrapper;
 }
@@ -67,11 +64,11 @@ export function init({
       : "left"
     : "top";
 
-  setStyle(container, "overflowAnchor", "none");
-  setStyle(container, "flex", "none");
-  setStyle(container, "position", "relative");
-  setStyle(container, "visibility", "hidden");
-  setStyle(container, totalSizeAttr, "100%");
+  container.style.overflowAnchor = "none";
+  container.style.flex = "none";
+  container.style.position = "relative";
+  container.style.visibility = "hidden";
+  container.style[totalSizeAttr] = "100%";
 
   for (const child of children ?? []) {
     const item = newItem(child, isHorizontal, offsetAttr);
@@ -79,11 +76,11 @@ export function init({
   }
 
   const root = document.createElement("div");
-  setStyle(root, "display", isHorizontal ? "inline-block" : "block");
-  setStyle(root, isHorizontal ? "overflowX" : "overflowY", "auto");
-  setStyle(root, "contain", "strict");
-  setStyle(root, "width", "100%");
-  setStyle(root, "height", "100%");
+  root.style.display = isHorizontal ? "inline-block" : "block";
+  root.style[isHorizontal ? "overflowX" : "overflowY"] = "auto";
+  root.style.contain = "strict";
+  root.style.width = root.style.width === "" ? "100%" : root.style.width;
+  root.style.height = root.style.height === "" ? "100%" : root.style.height;
 
   const shouldReverse = reverse && !isHorizontal;
 
