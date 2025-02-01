@@ -1,4 +1,4 @@
-import { init as vlistInit } from "../src/vlist.ts";
+import { scrollToIndex, init as vlistInit } from "../src/vlist.ts";
 
 const createRows = (num: number) => {
   const heights = [20, 40, 80, 77];
@@ -26,5 +26,5 @@ if (storyBookRoot === null) {
 storyBookRoot.appendChild(vlist.root);
 
 requestIdleCallback(() => {
-  vlist.virtualizer.scroller.$scrollToIndex(999);
+  scrollToIndex(vlist, 999);
 });

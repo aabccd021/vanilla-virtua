@@ -4,6 +4,7 @@ export default defineConfig({
   testDir: "./e2e",
   maxFailures: 1,
   fullyParallel: true,
+  retries: 3,
   projects: [
     {
       name: "chromium",

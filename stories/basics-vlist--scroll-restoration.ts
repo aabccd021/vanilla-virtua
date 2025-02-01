@@ -1,5 +1,5 @@
 import type { CacheSnapshot } from "../src/virtualizer.ts";
-import { init as vlistInit } from "../src/vlist.ts";
+import { init, scrollTo } from "../src/vlist.ts";
 
 const createRows = (num: number) => {
   const heights = [20, 40, 80, 77];
@@ -33,7 +33,7 @@ const restorableList = ({ id }: { id: string }): ResList => {
     }
   }
 
-  const vlist = vlistInit({
+  const vlist = init({
     cache,
     style: { height: "100vh" },
     children: createRows(1000),
@@ -42,7 +42,7 @@ const restorableList = ({ id }: { id: string }): ResList => {
   const root = vlist.root;
 
   if (offset !== undefined) {
-    vlist.virtualizer.scroller.$scrollTo(offset);
+    scrollTo(vlist, offset);
   }
 
   const unsub = () => {
