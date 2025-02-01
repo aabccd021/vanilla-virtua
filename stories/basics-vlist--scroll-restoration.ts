@@ -56,7 +56,19 @@ const restorableList = ({ id }: { id: string }): ResList => {
 };
 
 let selectedId = "1";
+
 let show = true;
+function setShow() {
+  button.textContent = show ? "hide" : "show";
+  if (show) {
+    resList = restorableList({ id: selectedId });
+    div.appendChild(resList.root);
+  } else {
+    resList?.unsub();
+    resList?.root.remove();
+  }
+}
+
 let resList: ResList | undefined;
 
 const lists = ["1", "2", "3"].map((id) => {
@@ -83,16 +95,8 @@ const lists = ["1", "2", "3"].map((id) => {
 const button = document.createElement("button");
 button.addEventListener("click", () => {
   show = !show;
-  button.textContent = show ? "hide" : "show";
-  if (show) {
-    resList = restorableList({ id: selectedId });
-    div.appendChild(resList.root);
-  } else {
-    resList?.unsub();
-    resList?.root.remove();
-  }
+  setShow();
 });
-button.textContent = "hide";
 
 const div = document.createElement("div");
 div.appendChild(button);
@@ -100,10 +104,7 @@ for (const list of lists) {
   div.appendChild(list.label);
 }
 
-if (show) {
-  resList = restorableList({ id: selectedId });
-  div.appendChild(resList.root);
-}
+setShow();
 
 const storyBookRoot = document.getElementById("storybook-root");
 if (storyBookRoot === null) {
