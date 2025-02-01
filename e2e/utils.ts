@@ -214,7 +214,6 @@ export const scrollToRight = async (scrollable: Locator): Promise<void> => {
 export const scrollToLeft = async (scrollable: Locator) => {
   return scrollable.evaluate((e) => {
     return new Promise<void>((resolve) => {
-      const flakinessTolerance = 1;
       let timer: ReturnType<typeof setTimeout> | null = null;
 
       const onScroll = () => {
@@ -224,7 +223,7 @@ export const scrollToLeft = async (scrollable: Locator) => {
           clearTimeout(timer);
         }
         timer = setTimeout(() => {
-          if (e.scrollLeft - (e as HTMLElement).offsetWidth - flakinessTolerance <= -e.scrollWidth) {
+          if (e.scrollLeft - (e as HTMLElement).offsetWidth <= -e.scrollWidth) {
             e.removeEventListener("scroll", onScroll);
             resolve();
           } else {
