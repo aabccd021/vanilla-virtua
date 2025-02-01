@@ -208,6 +208,7 @@ function render(context: Context): void {
       render = nextRender;
     }
 
+    // item should be rendered before target render.item
     if (itemIdx < render.idx) {
       const newRender = renderItem(context, itemIdx, newRenders);
       if (newRender !== undefined) {
@@ -216,6 +217,7 @@ function render(context: Context): void {
       continue;
     }
 
+    // item already rendered, update styles
     if (itemIdx === render.idx) {
       const prevHide = render.hide;
       const hide = context.store.$isUnmeasuredItem(itemIdx);
