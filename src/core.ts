@@ -179,9 +179,9 @@ function render(context: Context): void {
   const [startIdx, endIdx] = store.$getRange();
   const newRenders: Render[] = [];
   for (let itemIdx = startIdx; itemIdx <= endIdx; itemIdx++) {
-    const renderNullable: Render | undefined = context.renders[0];
+    const firstRender: Render | undefined = context.renders[0];
 
-    if (renderNullable === undefined) {
+    if (firstRender === undefined) {
       const newRender = renderItem(context, itemIdx, newRenders);
       if (newRender !== undefined) {
         container.appendChild(newRender);
@@ -190,7 +190,7 @@ function render(context: Context): void {
       continue;
     }
 
-    let render: Render = renderNullable;
+    let render: Render = firstRender;
     while (itemIdx > render.idx) {
       render.item.remove();
       render.unobserve();
