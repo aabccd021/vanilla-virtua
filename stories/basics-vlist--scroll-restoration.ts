@@ -55,7 +55,20 @@ const restorableList = ({ id }: { id: string }): ResList => {
   return { root, unsub };
 };
 
+let resList: ResList | undefined;
+
 let selectedId = "1";
+function setSelectedId(id: string) {
+  selectedId = id;
+  selectedId = id;
+  for (const list of lists) {
+    list.input.checked = list.id === selectedId;
+  }
+  const newResList = restorableList({ id: selectedId });
+  resList?.unsub();
+  resList?.root.replaceWith(newResList.root);
+  resList = newResList;
+}
 
 let show = true;
 function setShow() {
@@ -69,23 +82,11 @@ function setShow() {
   }
 }
 
-let resList: ResList | undefined;
-
 const lists = ["1", "2", "3"].map((id) => {
   const input = document.createElement("input");
   input.type = "radio";
-  input.checked = id === selectedId;
-  input.addEventListener("change", () => {
-    selectedId = id;
-    for (const list of lists) {
-      list.input.checked = list.id === selectedId;
-    }
-    const newResList = restorableList({ id: selectedId });
-    resList?.unsub();
-    resList?.root.replaceWith(newResList.root);
-    resList = newResList;
-  });
   input.textContent = id;
+  input.addEventListener("change", () => setSelectedId(id));
 
   const label = document.createElement("label");
   label.appendChild(input);
@@ -105,6 +106,7 @@ for (const list of lists) {
 }
 
 setShow();
+setSelectedId(selectedId);
 
 const storyBookRoot = document.getElementById("storybook-root");
 if (storyBookRoot === null) {
