@@ -74,7 +74,7 @@ function renderItem(
 export function init({
   cache,
   container,
-  horizontal,
+  isHorizontal,
   itemSize,
   offsetStyle,
   overscan,
@@ -87,13 +87,11 @@ export function init({
   readonly offsetStyle: "left" | "right" | "top";
   readonly totalSizeStyle: "width" | "height";
   readonly cache?: CacheSnapshot;
-  readonly horizontal?: boolean;
+  readonly isHorizontal?: boolean;
   readonly itemSize?: number;
   readonly overscan?: number;
   readonly shift?: boolean;
 }): Virtualizer {
-  const isHorizontal = !!horizontal;
-
   const items: HTMLElement[] = [];
   for (const child of Array.from(container.children)) {
     if (child instanceof HTMLElement) {

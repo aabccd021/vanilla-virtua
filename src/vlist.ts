@@ -105,7 +105,7 @@ export function init({
   }
 
   const virt = virtInit({
-    horizontal: isHorizontal,
+    isHorizontal,
     totalSizeStyle,
     offsetStyle,
     root,
