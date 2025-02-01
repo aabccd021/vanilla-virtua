@@ -1,5 +1,5 @@
 import type { CacheSnapshot } from "../src/virtualizer.ts";
-import { init, scrollTo } from "../src/vlist.ts";
+import { getCacheSnapshot, getScrollOffset, init, scrollTo } from "../src/vlist.ts";
 
 const createRows = (num: number) => {
   const heights = [20, 40, 80, 77];
@@ -46,10 +46,7 @@ const restorableList = ({ id }: { id: string }): ResList => {
   }
 
   const unsub = () => {
-    sessionStorage.setItem(
-      cacheKey,
-      JSON.stringify([vlist.virtualizer.store.$getScrollOffset(), vlist.virtualizer.store.$getCacheSnapshot()]),
-    );
+    sessionStorage.setItem(cacheKey, JSON.stringify([getScrollOffset(vlist), getCacheSnapshot(vlist)]));
   };
 
   return { root, unsub };
