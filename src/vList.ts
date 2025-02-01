@@ -8,20 +8,25 @@ import {
   spliceChildren as coreSpliceChildren,
 } from "./core.ts";
 
+function setStyle<T extends keyof CSSStyleDeclaration>(element: HTMLElement, key: T, value: CSSStyleDeclaration[T]) {
+  element.style[key] = value;
+}
+
 type Vlist = Core & {
   readonly root: HTMLElement;
+  readonly isHorizontal: boolean;
+  readonly offsetAttr: "left" | "right" | "top";
   reverse?: boolean;
   wrapper?: HTMLElement;
-  isHorizontal: boolean;
 };
 
-function newItem(child: HTMLElement, isHorizontal: boolean): HTMLElement {
+function newItem(child: HTMLElement, isHorizontal: boolean, offsetAttr: "left" | "right" | "top"): HTMLElement {
   const item = document.createElement("div");
-  item.style.position = "absolute";
-  item.style[isHorizontal ? "height" : "width"] = "100%";
-  item.style[isHorizontal ? "top" : "left"] = "0px";
+  setStyle(item, "position", "absolute");
+  setStyle(item, isHorizontal ? "height" : "width", "100%");
+  setStyle(item, offsetAttr, "0px");
   if (isHorizontal) {
-    item.style.display = "flex";
+    setStyle(item, "display", "flex");
   }
   item.appendChild(child);
   return item;
@@ -29,11 +34,11 @@ function newItem(child: HTMLElement, isHorizontal: boolean): HTMLElement {
 
 function createWrapper(container: HTMLElement): HTMLElement {
   const wrapper = document.createElement("div");
-  wrapper.style.visibility = "hidden";
-  wrapper.style.display = "flex";
-  wrapper.style.flexDirection = "column";
-  wrapper.style.justifyContent = "flex-end";
-  wrapper.style.minHeight = "100%";
+  setStyle(wrapper, "visibility", "hidden");
+  setStyle(wrapper, "display", "flex");
+  setStyle(wrapper, "flexDirection", "column");
+  setStyle(wrapper, "justifyContent", "flex-end");
+  setStyle(wrapper, "minHeight", "100%");
   wrapper.appendChild(container);
   return wrapper;
 }
@@ -55,27 +60,30 @@ export function init({
 }): Vlist {
   const isHorizontal = !!horizontal;
   const container = document.createElement("div");
-  container.style.overflowAnchor = "none";
-  container.style.flex = "none";
-  container.style.position = "relative";
-  container.style.visibility = "hidden";
-  if (isHorizontal) {
-    container.style.height = "100%";
-  } else {
-    container.style.width = "100%";
-  }
+  const totalSizeAttr = isHorizontal ? "width" : "height";
+  const offsetAttr = isHorizontal
+    ? getComputedStyle(document.documentElement).direction === "rtl"
+      ? "right"
+      : "left"
+    : "top";
+
+  setStyle(container, "overflowAnchor", "none");
+  setStyle(container, "flex", "none");
+  setStyle(container, "position", "relative");
+  setStyle(container, "visibility", "hidden");
+  setStyle(container, totalSizeAttr, "100%");
 
   for (const child of children ?? []) {
-    const item = newItem(child, isHorizontal);
+    const item = newItem(child, isHorizontal, offsetAttr);
     container.appendChild(item);
   }
 
   const root = document.createElement("div");
-  root.style.display = isHorizontal ? "inline-block" : "block";
-  root.style[isHorizontal ? "overflowX" : "overflowY"] = "auto";
-  root.style.contain = "strict";
-  root.style.width = root.style.width === "" || root.style.width === undefined ? "100%" : root.style.width;
-  root.style.height = root.style.height === "" || root.style.height === undefined ? "100%" : root.style.height;
+  setStyle(root, "display", isHorizontal ? "inline-block" : "block");
+  setStyle(root, isHorizontal ? "overflowX" : "overflowY", "auto");
+  setStyle(root, "contain", "strict");
+  setStyle(root, "width", "100%");
+  setStyle(root, "height", "100%");
 
   const shouldReverse = reverse && !isHorizontal;
 
@@ -93,26 +101,22 @@ export function init({
   }
 
   const core = coreInit({
-    totalSizeAttr: isHorizontal ? "width" : "height",
     horizontal: isHorizontal,
-    offsetAttr: isHorizontal
-      ? getComputedStyle(document.documentElement).direction === "rtl"
-        ? "right"
-        : "left"
-      : "top",
+    totalSizeAttr,
+    offsetAttr,
     root,
     container,
     cache,
     shift,
   });
 
-  return { ...core, root, wrapper, reverse, isHorizontal };
+  return { ...core, root, wrapper, reverse, isHorizontal, offsetAttr };
 }
 
 export function appendChildren(vlist: Vlist, newChildren: HTMLElement[]) {
   const newItems: HTMLElement[] = [];
   for (const child of newChildren) {
-    const item = newItem(child, vlist.isHorizontal);
+    const item = newItem(child, vlist.isHorizontal, vlist.offsetAttr);
     newItems.push(item);
   }
   return coreAppendChildren(vlist.context, newItems);
@@ -121,7 +125,7 @@ export function appendChildren(vlist: Vlist, newChildren: HTMLElement[]) {
 export function prependChildren(vlist: Vlist, newChildren: HTMLElement[]) {
   const newItems: HTMLElement[] = [];
   for (const child of newChildren) {
-    const item = newItem(child, vlist.isHorizontal);
+    const item = newItem(child, vlist.isHorizontal, vlist.offsetAttr);
     newItems.push(item);
   }
   return corePrependChildren(vlist.context, newItems);

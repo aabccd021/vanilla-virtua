@@ -163,6 +163,7 @@ export function init({
     newChild({ offsetAttr, children, resizer }, i, offset, hide, childData);
   }
 
+  // hello
   const context: Context = {
     totalSizeAttr,
     offsetAttr,
