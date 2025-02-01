@@ -1,6 +1,5 @@
 import {
   type CacheSnapshot,
-  type Scroller,
   type Virtualizer,
   appendItems as virtAppendItems,
   init as virtInit,
@@ -14,7 +13,6 @@ type Vlist = {
   readonly root: HTMLElement;
   readonly isHorizontal: boolean;
   readonly offsetStyle: "left" | "right" | "top";
-  scroller?: Scroller;
   reverse?: boolean;
   wrapper?: HTMLElement;
 };
@@ -117,7 +115,6 @@ export function init({
     reverse,
     isHorizontal,
     offsetStyle,
-    scroller: virtualizer.scroller,
   };
 }
 
