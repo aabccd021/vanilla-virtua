@@ -1,4 +1,4 @@
-import { init as vlistInit } from "../src/vlist.ts";
+import { init, scrollBy, scrollTo, scrollToIndex } from "../src/vlist.ts";
 
 const createRows = (num: number) => {
   const heights = [20, 40, 80, 77];
@@ -29,7 +29,7 @@ scrollIndexInput.addEventListener("input", () => {
 const scrollIndexButton = document.createElement("button");
 scrollIndexButton.textContent = "scroll to index";
 scrollIndexButton.addEventListener("click", () => {
-  vlist.virtualizer.scroller.$scrollToIndex(scrollIndex, {
+  scrollToIndex(vlist, scrollIndex, {
     align: scrollIndexAlign,
     smooth,
   });
@@ -121,13 +121,13 @@ scrollOffsetInput.addEventListener("input", () => {
 const scrollOffsetButton = document.createElement("button");
 scrollOffsetButton.textContent = "scroll to offset";
 scrollOffsetButton.addEventListener("click", () => {
-  vlist.virtualizer.scroller.$scrollTo(scrollOffset);
+  scrollTo(vlist, scrollOffset);
 });
 
 const scrollOffsetByButton = document.createElement("button");
 scrollOffsetByButton.textContent = "scroll by offset";
 scrollOffsetByButton.addEventListener("click", () => {
-  vlist.virtualizer.scroller.$scrollBy(scrollOffset);
+  scrollBy(vlist, scrollOffset);
 });
 
 const buttonsDiv = document.createElement("div");
@@ -135,7 +135,7 @@ buttonsDiv.appendChild(scrollOffsetInput);
 buttonsDiv.appendChild(scrollOffsetButton);
 buttonsDiv.appendChild(scrollOffsetByButton);
 
-const vlist = vlistInit({
+const vlist = init({
   style: { flex: "1" },
   children: createRows(LENGTH),
 });
