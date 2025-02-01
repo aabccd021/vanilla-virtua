@@ -156,21 +156,19 @@ export function init({
 }
 
 function render(context: Context): void {
-  const { store, scroller, container } = context;
-
-  const totalSize = `${store.$getTotalSize()}px`;
+  const totalSize = `${context.store.$getTotalSize()}px`;
   if (context.totalSize !== totalSize) {
     context.totalSize = totalSize;
-    container.style[context.totalSizeStyle] = totalSize;
+    context.container.style[context.totalSizeStyle] = totalSize;
   }
 
-  const isScrolling = store.$isScrolling();
+  const isScrolling = context.store.$isScrolling();
   if (context.isScrolling !== isScrolling) {
     context.isScrolling = isScrolling;
-    container.style.pointerEvents = isScrolling ? "none" : "";
+    context.container.style.pointerEvents = isScrolling ? "none" : "";
   }
 
-  const [startIdx, endIdx] = store.$getRange();
+  const [startIdx, endIdx] = context.store.$getRange();
   const newRenders: Render[] = [];
   for (let itemIdx = startIdx; itemIdx <= endIdx; itemIdx++) {
     let render = context.renders[0];
@@ -178,7 +176,7 @@ function render(context: Context): void {
     if (render === undefined) {
       const newRender = renderItem(context, itemIdx, newRenders);
       if (newRender !== undefined) {
-        container.appendChild(newRender);
+        context.container.appendChild(newRender);
         context.renders.shift();
       }
       continue;
@@ -193,7 +191,7 @@ function render(context: Context): void {
       if (nextRender === undefined) {
         const newRender = renderItem(context, itemIdx, newRenders);
         if (newRender !== undefined) {
-          container.appendChild(newRender);
+          context.container.appendChild(newRender);
           context.renders.shift();
         }
         break;
@@ -206,7 +204,7 @@ function render(context: Context): void {
     if (itemIdx < render.idx) {
       const newRender = renderItem(context, itemIdx, newRenders);
       if (newRender !== undefined) {
-        container.insertBefore(newRender, render.item);
+        context.container.insertBefore(newRender, render.item);
       }
       continue;
     }
@@ -238,10 +236,10 @@ function render(context: Context): void {
 
   context.renders = newRenders;
 
-  const jumpCount = store.$getJumpCount();
+  const jumpCount = context.store.$getJumpCount();
   if (context.jumpCount !== jumpCount) {
     context.jumpCount = jumpCount;
-    scroller.$fixScrollJump();
+    context.scroller.$fixScrollJump();
   }
 }
 
