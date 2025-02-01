@@ -64,14 +64,13 @@ export function init({
 }): Vlist {
   const isHorizontal = !!horizontal;
   const container = document.createElement("div");
-  const totalSizeStyle = isHorizontal ? "width" : "height";
   const offsetStyle = isHorizontal ? (isRTLDocument() ? "right" : "left") : "top";
 
   container.style.overflowAnchor = "none";
   container.style.flex = "none";
   container.style.position = "relative";
   container.style.visibility = "hidden";
-  container.style[totalSizeStyle] = "100%";
+  container.style[isHorizontal ? "height" : "width"] = "100%";
 
   for (const child of children ?? []) {
     const item = createItem(child, isHorizontal, offsetStyle);
@@ -100,6 +99,7 @@ export function init({
     Object.assign(root.style, style);
   }
 
+  const totalSizeStyle = isHorizontal ? "width" : "height";
   const virt = virtInit({
     isHorizontal,
     totalSizeStyle,
