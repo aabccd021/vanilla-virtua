@@ -29,7 +29,7 @@ scrollIndexInput.addEventListener("input", () => {
 const scrollIndexButton = document.createElement("button");
 scrollIndexButton.textContent = "scroll to index";
 scrollIndexButton.addEventListener("click", () => {
-  vlist.context.scroller.$scrollToIndex(scrollIndex, {
+  vlist.virtualizer.scroller.$scrollToIndex(scrollIndex, {
     align: scrollIndexAlign,
     smooth,
   });
@@ -121,13 +121,13 @@ scrollOffsetInput.addEventListener("input", () => {
 const scrollOffsetButton = document.createElement("button");
 scrollOffsetButton.textContent = "scroll to offset";
 scrollOffsetButton.addEventListener("click", () => {
-  vlist.context.scroller.$scrollTo(scrollOffset);
+  vlist.virtualizer.scroller.$scrollTo(scrollOffset);
 });
 
 const scrollOffsetByButton = document.createElement("button");
 scrollOffsetByButton.textContent = "scroll by offset";
 scrollOffsetByButton.addEventListener("click", () => {
-  vlist.context.scroller.$scrollBy(scrollOffset);
+  vlist.virtualizer.scroller.$scrollBy(scrollOffset);
 });
 
 const buttonsDiv = document.createElement("div");

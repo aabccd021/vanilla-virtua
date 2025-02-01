@@ -62,7 +62,7 @@ prependInput.checked = prepend;
 prependInput.addEventListener("change", () => {
   prepend = !prepend;
   prependInput.checked = prepend;
-  myList.context.shift = prepend;
+  myList.virtualizer.shift = prepend;
 });
 
 const prependLabel = document.createElement("label");

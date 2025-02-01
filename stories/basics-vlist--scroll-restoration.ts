@@ -42,13 +42,13 @@ const restorableList = ({ id }: { id: string }): ResList => {
   const root = vlist.root;
 
   if (offset !== undefined) {
-    vlist.context.scroller.$scrollTo(offset);
+    vlist.virtualizer.scroller.$scrollTo(offset);
   }
 
   const unsub = () => {
     sessionStorage.setItem(
       cacheKey,
-      JSON.stringify([vlist.context.store.$getScrollOffset(), vlist.context.store.$getCacheSnapshot()]),
+      JSON.stringify([vlist.virtualizer.store.$getScrollOffset(), vlist.virtualizer.store.$getCacheSnapshot()]),
     );
   };
 

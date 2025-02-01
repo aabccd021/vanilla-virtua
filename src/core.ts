@@ -30,7 +30,7 @@ interface Render {
   idx: number;
 }
 
-export interface Context {
+export interface Virtualizer {
   readonly items: HTMLElement[];
   readonly container: HTMLElement;
   readonly offsetStyle: "left" | "right" | "top";
@@ -46,22 +46,18 @@ export interface Context {
   shift?: boolean;
 }
 
-export interface Core {
-  readonly context: Context;
-}
-
 function renderItem(
-  context: Pick<Context, "offsetStyle" | "items" | "resizer" | "store">,
+  virt: Pick<Virtualizer, "offsetStyle" | "items" | "resizer" | "store">,
   idx: number,
   renders: Render[],
 ): Element | undefined {
-  const item = context.items[idx];
+  const item = virt.items[idx];
   if (item === undefined) {
     return undefined;
   }
-  const offset = `${context.store.$getItemOffset(idx)}px`;
-  const hide = context.store.$isUnmeasuredItem(idx);
-  item.style[context.offsetStyle] = offset;
+  const offset = `${virt.store.$getItemOffset(idx)}px`;
+  const hide = virt.store.$isUnmeasuredItem(idx);
+  item.style[virt.offsetStyle] = offset;
   item.style.visibility = hide ? "hidden" : "visible";
 
   renders.push({
@@ -69,7 +65,7 @@ function renderItem(
     hide,
     offset,
     item,
-    unobserve: context.resizer.$observeItem(item, idx),
+    unobserve: virt.resizer.$observeItem(item, idx),
   });
 
   return item;
@@ -95,7 +91,7 @@ export function init({
   readonly itemSize?: number;
   readonly overscan?: number;
   readonly shift?: boolean;
-}): Core {
+}): Virtualizer {
   const isHorizontal = !!horizontal;
 
   const items: HTMLElement[] = [];
@@ -124,7 +120,7 @@ export function init({
   const jumpCount = store.$getJumpCount();
   const totalSize = `${store.$getTotalSize()}px`;
 
-  const context: Context = {
+  const virt: Virtualizer = {
     container,
     isScrolling,
     items,
@@ -139,75 +135,75 @@ export function init({
     totalSizeStyle,
     unsubscribeStore: store.$subscribe(UPDATE_VIRTUAL_STATE, (sync) => {
       if (sync) {
-        render(context);
+        render(virt);
       }
       requestAnimationFrame(() => {
-        render(context);
+        render(virt);
       });
     }),
   };
 
-  return { context };
+  return virt;
 }
 
-export function dispose(context: Context): void {
-  context.unsubscribeStore();
-  context.resizer.$dispose();
-  context.scroller.$dispose();
-  for (const render of context.renders) {
+export function dispose(virt: Virtualizer): void {
+  virt.unsubscribeStore();
+  virt.resizer.$dispose();
+  virt.scroller.$dispose();
+  for (const render of virt.renders) {
     render.unobserve();
   }
 }
 
-export function appendItems(context: Context, items: HTMLElement[]): void {
-  context.items.push(...items);
-  context.store.$update(ACTION_ITEMS_LENGTH_CHANGE, [context.items.length, context.shift]);
+export function appendItems(virt: Virtualizer, items: HTMLElement[]): void {
+  virt.items.push(...items);
+  virt.store.$update(ACTION_ITEMS_LENGTH_CHANGE, [virt.items.length, virt.shift]);
 }
 
-export function prependItems(context: Context, items: HTMLElement[]): void {
-  context.items.unshift(...items);
-  for (const render of context.renders) {
+export function prependItems(virt: Virtualizer, items: HTMLElement[]): void {
+  virt.items.unshift(...items);
+  for (const render of virt.renders) {
     render.idx += items.length;
   }
-  context.store.$update(ACTION_ITEMS_LENGTH_CHANGE, [context.items.length, context.shift]);
+  virt.store.$update(ACTION_ITEMS_LENGTH_CHANGE, [virt.items.length, virt.shift]);
 }
 
-export function spliceItems(context: Context, amount: number): void {
-  context.items.splice(-amount);
-  context.store.$update(ACTION_ITEMS_LENGTH_CHANGE, [context.items.length, context.shift]);
+export function spliceItems(virt: Virtualizer, amount: number): void {
+  virt.items.splice(-amount);
+  virt.store.$update(ACTION_ITEMS_LENGTH_CHANGE, [virt.items.length, virt.shift]);
 }
 
-export function shiftItems(context: Context, amount: number): void {
-  context.items.splice(0, amount);
-  for (const render of context.renders) {
+export function shiftItems(virt: Virtualizer, amount: number): void {
+  virt.items.splice(0, amount);
+  for (const render of virt.renders) {
     render.idx -= amount;
   }
-  context.store.$update(ACTION_ITEMS_LENGTH_CHANGE, [context.items.length, context.shift]);
+  virt.store.$update(ACTION_ITEMS_LENGTH_CHANGE, [virt.items.length, virt.shift]);
 }
 
-function render(context: Context): void {
-  const totalSize = `${context.store.$getTotalSize()}px`;
-  if (context.totalSize !== totalSize) {
-    context.totalSize = totalSize;
-    context.container.style[context.totalSizeStyle] = totalSize;
+function render(virt: Virtualizer): void {
+  const totalSize = `${virt.store.$getTotalSize()}px`;
+  if (virt.totalSize !== totalSize) {
+    virt.totalSize = totalSize;
+    virt.container.style[virt.totalSizeStyle] = totalSize;
   }
 
-  const isScrolling = context.store.$isScrolling();
-  if (context.isScrolling !== isScrolling) {
-    context.isScrolling = isScrolling;
-    context.container.style.pointerEvents = isScrolling ? "none" : "";
+  const isScrolling = virt.store.$isScrolling();
+  if (virt.isScrolling !== isScrolling) {
+    virt.isScrolling = isScrolling;
+    virt.container.style.pointerEvents = isScrolling ? "none" : "";
   }
 
-  const [startIdx, endIdx] = context.store.$getRange();
+  const [startIdx, endIdx] = virt.store.$getRange();
   const newRenders: Render[] = [];
   for (let itemIdx = startIdx; itemIdx <= endIdx; itemIdx++) {
-    let render = context.renders[0];
+    let render = virt.renders[0];
 
     if (render === undefined) {
-      const newRender = renderItem(context, itemIdx, newRenders);
+      const newRender = renderItem(virt, itemIdx, newRenders);
       if (newRender !== undefined) {
-        context.container.appendChild(newRender);
-        context.renders.shift();
+        virt.container.appendChild(newRender);
+        virt.renders.shift();
       }
       continue;
     }
@@ -215,14 +211,14 @@ function render(context: Context): void {
     while (itemIdx > render.idx) {
       render.item.remove();
       render.unobserve();
-      context.renders.shift();
+      virt.renders.shift();
 
-      const nextRender = context.renders[0];
+      const nextRender = virt.renders[0];
       if (nextRender === undefined) {
-        const newRender = renderItem(context, itemIdx, newRenders);
+        const newRender = renderItem(virt, itemIdx, newRenders);
         if (newRender !== undefined) {
-          context.container.appendChild(newRender);
-          context.renders.shift();
+          virt.container.appendChild(newRender);
+          virt.renders.shift();
         }
         break;
       }
@@ -232,43 +228,43 @@ function render(context: Context): void {
 
     // item should be rendered before target render.item
     if (itemIdx < render.idx) {
-      const newRender = renderItem(context, itemIdx, newRenders);
+      const newRender = renderItem(virt, itemIdx, newRenders);
       if (newRender !== undefined) {
-        context.container.insertBefore(newRender, render.item);
+        virt.container.insertBefore(newRender, render.item);
       }
       continue;
     }
 
     // item already rendered, update styles
     if (itemIdx === render.idx) {
-      const hide = context.store.$isUnmeasuredItem(itemIdx);
+      const hide = virt.store.$isUnmeasuredItem(itemIdx);
       if (render.hide !== hide) {
         render.hide = hide;
         render.item.style.position = hide ? "" : "absolute";
         render.item.style.visibility = hide ? "hidden" : "visible";
       }
 
-      const offset = `${context.store.$getItemOffset(itemIdx)}px`;
+      const offset = `${virt.store.$getItemOffset(itemIdx)}px`;
       if (render.offset !== offset) {
         render.offset = offset;
-        render.item.style[context.offsetStyle] = offset;
+        render.item.style[virt.offsetStyle] = offset;
       }
 
       newRenders.push(render);
-      context.renders.shift();
+      virt.renders.shift();
     }
   }
 
-  for (const render of context.renders) {
+  for (const render of virt.renders) {
     render.item.remove();
     render.unobserve();
   }
 
-  context.renders = newRenders;
+  virt.renders = newRenders;
 
-  const jumpCount = context.store.$getJumpCount();
-  if (context.jumpCount !== jumpCount) {
-    context.jumpCount = jumpCount;
-    context.scroller.$fixScrollJump();
+  const jumpCount = virt.store.$getJumpCount();
+  if (virt.jumpCount !== jumpCount) {
+    virt.jumpCount = jumpCount;
+    virt.scroller.$fixScrollJump();
   }
 }

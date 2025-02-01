@@ -1,14 +1,15 @@
 import {
   type CacheSnapshot,
-  type Core,
-  appendItems as coreAppendItems,
-  init as coreInit,
-  prependItems as corePrependItems,
-  shiftItems as coreShiftItems,
-  spliceItems as coreSpliceItems,
+  type Virtualizer,
+  appendItems as virtAppendItems,
+  init as virtInit,
+  prependItems as virtPrependItems,
+  shiftItems as virtShiftItems,
+  spliceItems as virtSpliceItems,
 } from "./core.ts";
 
-type Vlist = Core & {
+type Vlist = {
+  readonly virtualizer: Virtualizer;
   readonly root: HTMLElement;
   readonly isHorizontal: boolean;
   readonly offsetStyle: "left" | "right" | "top";
@@ -97,7 +98,7 @@ export function init({
     Object.assign(root.style, style);
   }
 
-  const core = coreInit({
+  const virtualizer = virtInit({
     horizontal: isHorizontal,
     totalSizeStyle,
     offsetStyle,
@@ -107,25 +108,25 @@ export function init({
     shift,
   });
 
-  return { ...core, root, wrapper, reverse, isHorizontal, offsetStyle };
+  return { virtualizer, root, wrapper, reverse, isHorizontal, offsetStyle };
 }
 
 export function appendItems(vlist: Vlist, newItems: HTMLElement[]) {
-  const newCoreItems = newItems.map((child) => createItem(child, vlist.isHorizontal, vlist.offsetStyle));
-  return coreAppendItems(vlist.context, newCoreItems);
+  const newVirtualizerItems = newItems.map((child) => createItem(child, vlist.isHorizontal, vlist.offsetStyle));
+  return virtAppendItems(vlist.virtualizer, newVirtualizerItems);
 }
 
 export function prependItems(vlist: Vlist, newItems: HTMLElement[]) {
-  const newCoreItems = newItems.map((child) => createItem(child, vlist.isHorizontal, vlist.offsetStyle));
-  return corePrependItems(vlist.context, newCoreItems);
+  const newVirtualizerItems = newItems.map((child) => createItem(child, vlist.isHorizontal, vlist.offsetStyle));
+  return virtPrependItems(vlist.virtualizer, newVirtualizerItems);
 }
 
 export function spliceItems(vlist: Vlist, amount: number) {
-  return coreSpliceItems(vlist.context, amount);
+  return virtSpliceItems(vlist.virtualizer, amount);
 }
 
 export function shiftItems(vlist: Vlist, amount: number) {
-  return coreShiftItems(vlist.context, amount);
+  return virtShiftItems(vlist.virtualizer, amount);
 }
 
 export function setReverse(vlist: Vlist, reverse: boolean) {
@@ -135,11 +136,11 @@ export function setReverse(vlist: Vlist, reverse: boolean) {
   vlist.reverse = reverse;
   const shouldReverse = reverse && !vlist.isHorizontal;
   if (shouldReverse) {
-    const wrapper = createWrapper(vlist.context.container);
+    const wrapper = createWrapper(vlist.virtualizer.container);
     vlist.wrapper = wrapper;
     vlist.root.appendChild(wrapper);
   } else {
     vlist.wrapper?.remove();
-    vlist.root.appendChild(vlist.context.container);
+    vlist.root.appendChild(vlist.virtualizer.container);
   }
 }
