@@ -158,6 +158,12 @@ export function init({
 function render(context: Context): void {
   const { store, scroller, container } = context;
 
+  const totalSize = `${store.$getTotalSize()}px`;
+  if (context.totalSize !== totalSize) {
+    context.totalSize = totalSize;
+    container.style[context.totalSizeStyle] = totalSize;
+  }
+
   const isScrolling = store.$isScrolling();
   if (context.isScrolling !== isScrolling) {
     context.isScrolling = isScrolling;
@@ -231,12 +237,6 @@ function render(context: Context): void {
   }
 
   context.renders = newRenders;
-
-  const totalSize = `${store.$getTotalSize()}px`;
-  if (context.totalSize !== totalSize) {
-    context.totalSize = totalSize;
-    container.style[context.totalSizeStyle] = totalSize;
-  }
 
   const jumpCount = store.$getJumpCount();
   if (context.jumpCount !== jumpCount) {
