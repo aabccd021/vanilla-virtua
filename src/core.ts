@@ -45,43 +45,13 @@ export interface Context {
   totalSize?: string;
 }
 
-export function appendChildren(context: Context, newChildren: HTMLElement[]): void {
-  for (const child of newChildren) {
-    context.children.push(child);
-  }
-  context.store.$update(ACTION_ITEMS_LENGTH_CHANGE, [context.children.length, context.shift]);
-}
-
-export function prependChildren(context: Context, newChildren: HTMLElement[]): void {
-  newChildren.reverse();
-  for (const child of newChildren) {
-    context.children.unshift(child);
-  }
-  for (const childData of context.childData) {
-    childData.idx += newChildren.length;
-  }
-  context.store.$update(ACTION_ITEMS_LENGTH_CHANGE, [context.children.length, context.shift]);
-}
-
-export function spliceChildren(context: Context, amount: number): void {
-  context.children.splice(-amount);
-  context.store.$update(ACTION_ITEMS_LENGTH_CHANGE, [context.children.length, context.shift]);
-}
-
-export function shiftChildren(context: Context, amount: number): void {
-  context.children.splice(0, amount);
-  for (const childData of context.childData) {
-    childData.idx -= amount;
-  }
-  context.store.$update(ACTION_ITEMS_LENGTH_CHANGE, [context.children.length, context.shift]);
+export interface Core {
+  readonly context: Context;
+  readonly dispose: () => void;
 }
 
 function newChild(
-  context: {
-    readonly offsetAttr: "left" | "right" | "top";
-    readonly children: HTMLElement[];
-    readonly resizer: Resizer;
-  },
+  context: Pick<Context, "offsetAttr" | "children" | "resizer">,
   idx: number,
   offset: string,
   hide: boolean,
@@ -105,24 +75,6 @@ function newChild(
   return item;
 }
 
-export interface VirtualizerProps {
-  readonly cache?: CacheSnapshot;
-  readonly container: HTMLElement;
-  readonly horizontal?: boolean;
-  readonly itemSize?: number;
-  readonly offsetAttr: "left" | "right" | "top";
-  readonly overscan?: number;
-  readonly root: HTMLElement;
-  readonly scrollOffset?: number;
-  readonly shift?: boolean;
-  readonly totalSizeAttr: "width" | "height";
-}
-
-export interface Core {
-  readonly context: Context;
-  readonly dispose: () => void;
-}
-
 export function init({
   cache,
   container,
@@ -134,7 +86,18 @@ export function init({
   scrollOffset,
   shift,
   totalSizeAttr,
-}: VirtualizerProps): Core {
+}: {
+  readonly cache?: CacheSnapshot;
+  readonly container: HTMLElement;
+  readonly horizontal?: boolean;
+  readonly itemSize?: number;
+  readonly offsetAttr: "left" | "right" | "top";
+  readonly overscan?: number;
+  readonly root: HTMLElement;
+  readonly scrollOffset?: number;
+  readonly shift?: boolean;
+  readonly totalSizeAttr: "width" | "height";
+}): Core {
   const isHorizontal = !!horizontal;
 
   const children: HTMLElement[] = [];
@@ -163,7 +126,6 @@ export function init({
     newChild({ offsetAttr, children, resizer }, i, offset, hide, childData);
   }
 
-  // hello
   const context: Context = {
     totalSizeAttr,
     offsetAttr,
@@ -288,4 +250,35 @@ function render(context: Context): void {
   }
 
   context.childData = newChildData;
+}
+
+export function appendChildren(context: Context, newChildren: HTMLElement[]): void {
+  for (const child of newChildren) {
+    context.children.push(child);
+  }
+  context.store.$update(ACTION_ITEMS_LENGTH_CHANGE, [context.children.length, context.shift]);
+}
+
+export function prependChildren(context: Context, newChildren: HTMLElement[]): void {
+  newChildren.reverse();
+  for (const child of newChildren) {
+    context.children.unshift(child);
+  }
+  for (const childData of context.childData) {
+    childData.idx += newChildren.length;
+  }
+  context.store.$update(ACTION_ITEMS_LENGTH_CHANGE, [context.children.length, context.shift]);
+}
+
+export function spliceChildren(context: Context, amount: number): void {
+  context.children.splice(-amount);
+  context.store.$update(ACTION_ITEMS_LENGTH_CHANGE, [context.children.length, context.shift]);
+}
+
+export function shiftChildren(context: Context, amount: number): void {
+  context.children.splice(0, amount);
+  for (const childData of context.childData) {
+    childData.idx -= amount;
+  }
+  context.store.$update(ACTION_ITEMS_LENGTH_CHANGE, [context.children.length, context.shift]);
 }
