@@ -219,19 +219,17 @@ function render(context: Context): void {
 
     // item already rendered, update styles
     if (itemIdx === render.idx) {
-      const prevHide = render.hide;
       const hide = context.store.$isUnmeasuredItem(itemIdx);
-      if (hide !== prevHide) {
+      if (render.hide !== hide) {
+        render.hide = hide;
         render.item.style.position = hide ? "" : "absolute";
         render.item.style.visibility = hide ? "hidden" : "visible";
-        render.hide = hide;
       }
 
-      const prevOffset = render.offset;
       const offset = `${context.store.$getItemOffset(itemIdx)}px`;
-      if (offset !== prevOffset) {
-        render.item.style[context.offsetStyle] = offset;
+      if (render.offset !== offset) {
         render.offset = offset;
+        render.item.style[context.offsetStyle] = offset;
       }
 
       newRenders.push(render);
