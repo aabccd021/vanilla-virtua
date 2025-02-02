@@ -25,7 +25,7 @@
         programs.shfmt.enable = true;
         settings.formatter.prettier.priority = 1;
         settings.formatter.biome.priority = 2;
-        settings.global.excludes = [ "LICENSE" "*.ico" ];
+        settings.global.excludes = [ "LICENSE" ];
       };
 
       tests = pkgs.runCommandNoCCLocal "tests"
