@@ -34,7 +34,7 @@
         } ''
         export XDG_CONFIG_HOME="$(pwd)"
         export XDG_CACHE_HOME="$(pwd)"
-        export PLAYWRIGHT_BROWSERS_PATH=${pkgs.playwright-driver.browsers}
+        export PLAYWRIGHT_BROWSERS_PATH=${pkgs.playwright-driver.browsers-chromium}
         export PATH=./node_modules/esbuild/bin:"$PATH"
         cp -L ${./package.json} ./package.json
         cp -L ${./playwright.config.ts} ./playwright.config.ts
@@ -110,6 +110,9 @@
       formatter.x86_64-linux = treefmtEval.config.build.wrapper;
 
       devShells.x86_64-linux.default = pkgs.mkShellNoCC {
+        shellHook = ''
+          export PLAYWRIGHT_BROWSERS_PATH=${pkgs.playwright-driver.browsers-chromium}
+        '';
         buildInputs = [
           pkgs.nodejs
           pkgs.biome
