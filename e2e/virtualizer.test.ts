@@ -64,9 +64,9 @@ test("full scroll", async ({ page }) => {
   const log = initLog(page);
 
   for (let i = 0; i < 3; i++) {
-    await expectRange(page, 0, 0, 3, 7);
+    await expectRange(page, 0, 0, 4, 8);
     await scroll(page, 5400);
-    await expectRange(page, 22, 26, 29, 29);
+    await expectRange(page, 21, 25, 29, 29);
     await scroll(page, -5400);
   }
 
@@ -79,14 +79,14 @@ test("scroll 200", async ({ page }) => {
   const log = initLog(page);
 
   for (let i = 0; i < 3; i++) {
-    await expectRange(page, 0, 0, 3, 7);
-    await scroll(page, 200);
     await expectRange(page, 0, 0, 4, 8);
+    await scroll(page, 200);
+    await expectRange(page, 0, 0, 5, 9);
     await scroll(page, -200);
   }
 
   await scroll(page, 5400);
-  await expectRange(page, 22, 26, 29, 29);
+  await expectRange(page, 21, 25, 29, 29);
 
   expect(log.consoleMessages).toEqual([]);
   expectPageErrorsEmpty(log);
@@ -97,14 +97,14 @@ test("scroll 400", async ({ page }) => {
   const log = initLog(page);
 
   for (let i = 0; i < 3; i++) {
-    await expectRange(page, 0, 0, 3, 7);
+    await expectRange(page, 0, 0, 4, 8);
     await scroll(page, 400);
-    await expectRange(page, 1, 2, 5, 9);
+    await expectRange(page, 1, 2, 6, 10);
     await scroll(page, -400);
   }
 
   await scroll(page, 5400);
-  await expectRange(page, 22, 26, 29, 29);
+  await expectRange(page, 21, 25, 29, 29);
 
   expect(log.consoleMessages).toEqual([]);
   expectPageErrorsEmpty(log);
@@ -115,14 +115,14 @@ test("scroll 800", async ({ page }) => {
   const log = initLog(page);
 
   for (let i = 0; i < 3; i++) {
-    await expectRange(page, 0, 0, 3, 7);
+    await expectRange(page, 0, 0, 4, 8);
     await scroll(page, 800);
-    await expectRange(page, 0, 4, 6, 10);
+    await expectRange(page, 0, 4, 7, 11);
     await scroll(page, -800);
   }
 
   await scroll(page, 5400);
-  await expectRange(page, 22, 26, 29, 29);
+  await expectRange(page, 21, 25, 29, 29);
 
   expect(log.consoleMessages).toEqual([]);
   expectPageErrorsEmpty(log);
@@ -133,14 +133,14 @@ test("scroll 1600", async ({ page }) => {
   const log = initLog(page);
 
   for (let i = 0; i < 3; i++) {
-    await expectRange(page, 0, 0, 3, 7);
+    await expectRange(page, 0, 0, 4, 8);
     await scroll(page, 1600);
-    await expectRange(page, 4, 8, 10, 14);
+    await expectRange(page, 4, 8, 11, 15);
     await scroll(page, -1600);
   }
 
   await scroll(page, 5400);
-  await expectRange(page, 22, 26, 29, 29);
+  await expectRange(page, 21, 25, 29, 29);
 
   expect(log.consoleMessages).toEqual([]);
   expectPageErrorsEmpty(log);
@@ -151,14 +151,14 @@ test("scroll 3200", async ({ page }) => {
   const log = initLog(page);
 
   for (let i = 0; i < 3; i++) {
-    await expectRange(page, 0, 0, 3, 7);
+    await expectRange(page, 0, 0, 4, 8);
     await scroll(page, 3200);
-    await expectRange(page, 11, 15, 18, 22);
+    await expectRange(page, 11, 15, 19, 23);
     await scroll(page, -3200);
   }
 
   await scroll(page, 5400);
-  await expectRange(page, 22, 26, 29, 29);
+  await expectRange(page, 21, 25, 29, 29);
 
   expect(log.consoleMessages).toEqual([]);
   expectPageErrorsEmpty(log);
@@ -169,10 +169,10 @@ test("reload resets", async ({ page }) => {
   const log = initLog(page);
 
   await scroll(page, 5400);
-  await expectRange(page, 22, 26, 29, 29);
+  await expectRange(page, 21, 25, 29, 29);
 
   await page.reload();
-  await expectRange(page, 0, 0, 3, 7);
+  await expectRange(page, 0, 0, 4, 8);
 
   expect(log.consoleMessages).toEqual([]);
   expectPageErrorsEmpty(log);
