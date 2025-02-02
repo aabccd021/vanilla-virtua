@@ -5,6 +5,9 @@ export default defineConfig({
   maxFailures: 1,
   fullyParallel: true,
   retries: 3,
+  use: {
+    baseURL: "http://localhost:8000",
+  },
   projects: [
     {
       name: "chromium",

@@ -1,6 +1,6 @@
 import { type ElementHandle, type Locator, type Page, expect } from "@playwright/test";
 
-export const storyUrl = (id: string) => `http://localhost:8000/${id}.html`;
+export const storyUrl = (id: string) => `/${id}.html`;
 
 export const getScrollable = async (page: Page) => {
   const locator = page.locator(
