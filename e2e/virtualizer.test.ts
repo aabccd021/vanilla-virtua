@@ -65,10 +65,10 @@ test("full scroll", async ({ page }) => {
 
   for (let i = 0; i < 3; i++) {
     await expectRange(page, 0, 0, 3, 7);
-    await scroll(page, 5100);
+    await scroll(page, 5200);
 
     await expectRange(page, 21, 25, 29, 29);
-    await scroll(page, -5100);
+    await scroll(page, -5200);
   }
 
   expect(log.consoleMessages).toEqual([]);
