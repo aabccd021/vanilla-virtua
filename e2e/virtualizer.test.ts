@@ -92,15 +92,69 @@ test("scroll 200", async ({ page }) => {
   expectPageErrorsEmpty(log);
 });
 
-test("scroll 1000", async ({ page }) => {
+test("scroll 400", async ({ page }) => {
   await page.goto("/basic.html");
   const log = initLog(page);
 
   for (let i = 0; i < 3; i++) {
     await expectRange(page, 0, 0, 3, 7);
-    await scroll(page, 1000);
-    await expectRange(page, 1, 5, 8, 12);
-    await scroll(page, -1000);
+    await scroll(page, 400);
+    await expectRange(page, 1, 2, 5, 9);
+    await scroll(page, -400);
+  }
+
+  await scroll(page, 5400);
+  await expectRange(page, 22, 26, 29, 29);
+
+  expect(log.consoleMessages).toEqual([]);
+  expectPageErrorsEmpty(log);
+});
+
+test("scroll 800", async ({ page }) => {
+  await page.goto("/basic.html");
+  const log = initLog(page);
+
+  for (let i = 0; i < 3; i++) {
+    await expectRange(page, 0, 0, 3, 7);
+    await scroll(page, 800);
+    await expectRange(page, 0, 4, 6, 10);
+    await scroll(page, -800);
+  }
+
+  await scroll(page, 5400);
+  await expectRange(page, 22, 26, 29, 29);
+
+  expect(log.consoleMessages).toEqual([]);
+  expectPageErrorsEmpty(log);
+});
+
+test("scroll 1600", async ({ page }) => {
+  await page.goto("/basic.html");
+  const log = initLog(page);
+
+  for (let i = 0; i < 3; i++) {
+    await expectRange(page, 0, 0, 3, 7);
+    await scroll(page, 1600);
+    await expectRange(page, 4, 8, 10, 14);
+    await scroll(page, -1600);
+  }
+
+  await scroll(page, 5400);
+  await expectRange(page, 22, 26, 29, 29);
+
+  expect(log.consoleMessages).toEqual([]);
+  expectPageErrorsEmpty(log);
+});
+
+test("scroll 3200", async ({ page }) => {
+  await page.goto("/basic.html");
+  const log = initLog(page);
+
+  for (let i = 0; i < 3; i++) {
+    await expectRange(page, 0, 0, 3, 7);
+    await scroll(page, 3200);
+    await expectRange(page, 11, 15, 18, 22);
+    await scroll(page, -3200);
   }
 
   await scroll(page, 5400);
