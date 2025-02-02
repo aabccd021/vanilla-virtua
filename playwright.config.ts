@@ -2,9 +2,8 @@ import { defineConfig, devices } from "@playwright/test";
 
 export default defineConfig({
   testDir: "./e2e",
-  maxFailures: 1,
   fullyParallel: true,
-  retries: 3,
+  retries: 2,
   use: {
     baseURL: "http://localhost:8000",
   },

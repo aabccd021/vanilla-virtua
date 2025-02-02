@@ -66,7 +66,6 @@ test("full scroll", async ({ page }) => {
   for (let i = 0; i < 3; i++) {
     await expectRange(page, 0, 0, 3, 7);
     await scroll(page, 5200);
-
     await expectRange(page, 21, 25, 29, 29);
     await scroll(page, -5200);
   }
@@ -79,10 +78,14 @@ test("scroll 200", async ({ page }) => {
   await page.goto("/basic.html");
   const log = initLog(page);
 
-  await scroll(page, 200);
-  await expectRange(page, 0, 0, 4, 8);
+  for (let i = 0; i < 3; i++) {
+    await expectRange(page, 0, 0, 3, 7);
+    await scroll(page, 200);
+    await expectRange(page, 0, 0, 4, 8);
+    await scroll(page, -200);
+  }
 
-  await scroll(page, 5100);
+  await scroll(page, 5400);
   await expectRange(page, 22, 26, 29, 29);
 
   expect(log.consoleMessages).toEqual([]);
@@ -93,10 +96,14 @@ test("scroll 1000", async ({ page }) => {
   await page.goto("/basic.html");
   const log = initLog(page);
 
-  await scroll(page, 1000);
-  await expectRange(page, 1, 5, 8, 12);
+  for (let i = 0; i < 3; i++) {
+    await expectRange(page, 0, 0, 3, 7);
+    await scroll(page, 1000);
+    await expectRange(page, 1, 5, 8, 12);
+    await scroll(page, -1000);
+  }
 
-  await scroll(page, 5100);
+  await scroll(page, 5400);
   await expectRange(page, 22, 26, 29, 29);
 
   expect(log.consoleMessages).toEqual([]);
@@ -107,7 +114,7 @@ test("reload resets", async ({ page }) => {
   await page.goto("/basic.html");
   const log = initLog(page);
 
-  await scroll(page, 5100);
+  await scroll(page, 5200);
   await expectRange(page, 21, 25, 29, 29);
 
   await page.reload();
