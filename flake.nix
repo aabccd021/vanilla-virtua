@@ -38,7 +38,6 @@
         export PATH=./node_modules/esbuild/bin:"$PATH"
         cp -L ${./package.json} ./package.json
         cp -L ${./playwright.config.ts} ./playwright.config.ts
-        cp -L ${./tsconfig.json} ./tsconfig.json
         cp -Lr ${nodeModules} ./node_modules
         cp -Lr ${./src} ./src
         cp -Lr ${./e2e} ./e2e
