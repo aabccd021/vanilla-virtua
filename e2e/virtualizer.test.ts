@@ -65,9 +65,9 @@ test("full scroll", async ({ page }) => {
 
   for (let i = 0; i < 3; i++) {
     await expectRange(page, 0, 0, 3, 7);
-    await scroll(page, 5200);
-    await expectRange(page, 21, 25, 29, 29);
-    await scroll(page, -5200);
+    await scroll(page, 5400);
+    await expectRange(page, 22, 26, 29, 29);
+    await scroll(page, -5400);
   }
 
   expect(log.consoleMessages).toEqual([]);
@@ -114,8 +114,8 @@ test("reload resets", async ({ page }) => {
   await page.goto("/basic.html");
   const log = initLog(page);
 
-  await scroll(page, 5200);
-  await expectRange(page, 21, 25, 29, 29);
+  await scroll(page, 5400);
+  await expectRange(page, 22, 26, 29, 29);
 
   await page.reload();
   await expectRange(page, 0, 0, 3, 7);
