@@ -46,6 +46,15 @@ export interface Virtualizer {
   shift?: boolean;
 }
 
+function setHide(item: HTMLElement, hide: boolean): void {
+  item.style.visibility = hide ? "hidden" : "visible";
+  item.style.position = hide ? "" : "absolute";
+}
+
+function setOffset(item: HTMLElement, offsetStyle: "left" | "right" | "top", offset: string): void {
+  item.style[offsetStyle] = offset;
+}
+
 function renderItem(
   virt: Pick<Virtualizer, "offsetStyle" | "items" | "resizer" | "store">,
   idx: number,
@@ -57,9 +66,8 @@ function renderItem(
   }
   const offset = `${virt.store.$getItemOffset(idx)}px`;
   const hide = virt.store.$isUnmeasuredItem(idx);
-  item.style[virt.offsetStyle] = offset;
-  item.style.visibility = hide ? "hidden" : "visible";
-  item.style.position = hide ? "" : "absolute";
+  setOffset(item, virt.offsetStyle, offset);
+  setHide(item, hide);
 
   renders.push({
     idx,
@@ -263,14 +271,13 @@ function render(virt: Virtualizer): void {
       const hide = virt.store.$isUnmeasuredItem(itemIdx);
       if (render.hide !== hide) {
         render.hide = hide;
-        render.item.style.position = hide ? "" : "absolute";
-        render.item.style.visibility = hide ? "hidden" : "visible";
+        setHide(render.item, hide);
       }
 
       const offset = `${virt.store.$getItemOffset(itemIdx)}px`;
       if (render.offset !== offset) {
         render.offset = offset;
-        render.item.style[virt.offsetStyle] = offset;
+        setOffset(render.item, virt.offsetStyle, offset);
       }
 
       newRenders.push(render);

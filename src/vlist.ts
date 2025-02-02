@@ -25,10 +25,7 @@ type Vlist = {
 
 function createItem(child: HTMLElement, isHorizontal: boolean, offsetStyle: "left" | "right" | "top"): HTMLElement {
   const item = document.createElement("div");
-  item.style.position = "absolute";
   item.style[isHorizontal ? "height" : "width"] = "100%";
-  item.style[offsetStyle] = "0px";
-
   if (isHorizontal) {
     item.style.display = "flex";
   }
