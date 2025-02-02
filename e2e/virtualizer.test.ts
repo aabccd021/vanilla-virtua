@@ -59,21 +59,6 @@ const expectPageErrorsEmpty = (log: Log): void => {
   expect(pageErrors).toEqual([]);
 };
 
-test("full scroll", async ({ page }) => {
-  await page.goto("/basic.html");
-  const log = initLog(page);
-
-  for (let i = 0; i < 3; i++) {
-    await expectRange(page, 0, 0, 4, 8);
-    await scroll(page, 5400);
-    await expectRange(page, 21, 25, 29, 29);
-    await scroll(page, -5400);
-  }
-
-  expect(log.consoleMessages).toEqual([]);
-  expectPageErrorsEmpty(log);
-});
-
 test("scroll 200", async ({ page }) => {
   await page.goto("/basic.html");
   const log = initLog(page);
@@ -159,6 +144,21 @@ test("scroll 3200", async ({ page }) => {
 
   await scroll(page, 5400);
   await expectRange(page, 21, 25, 29, 29);
+
+  expect(log.consoleMessages).toEqual([]);
+  expectPageErrorsEmpty(log);
+});
+
+test("scroll full", async ({ page }) => {
+  await page.goto("/basic.html");
+  const log = initLog(page);
+
+  for (let i = 0; i < 3; i++) {
+    await expectRange(page, 0, 0, 4, 8);
+    await scroll(page, 5400);
+    await expectRange(page, 21, 25, 29, 29);
+    await scroll(page, -5400);
+  }
 
   expect(log.consoleMessages).toEqual([]);
   expectPageErrorsEmpty(log);
