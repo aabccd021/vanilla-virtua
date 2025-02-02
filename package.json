@@ -14,7 +14,7 @@
   },
   "files": ["dist", "src"],
   "scripts": {
-    "serve": "esbuild stories/*.ts --bundle --outdir=stories --servedir=stories",
+    "serve": "esbuild stories/*.ts --sourcemap --bundle --outdir=stories --servedir=stories",
     "dev": "npm run serve -- --watch"
   },
   "dependencies": {
