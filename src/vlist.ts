@@ -60,7 +60,6 @@ export function init({
 }): Vlist {
   const isHorizontal = !!horizontal;
   const container = document.createElement("div");
-  const offsetStyle = isHorizontal ? (isRTLDocument() ? "right" : "left") : "top";
 
   container.style.overflowAnchor = "none";
   container.style.flex = "none";
@@ -96,6 +95,7 @@ export function init({
   }
 
   const totalSizeStyle = isHorizontal ? "width" : "height";
+  const offsetStyle = isHorizontal ? (isRTLDocument() ? "right" : "left") : "top";
   const virt = virtInit({
     isHorizontal,
     totalSizeStyle,
