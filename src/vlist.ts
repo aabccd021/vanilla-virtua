@@ -18,12 +18,11 @@ type Vlist = {
   readonly virt: Virtualizer;
   readonly root: HTMLElement;
   readonly isHorizontal: boolean;
-  readonly offsetStyle: "left" | "right" | "top";
   reverse?: boolean;
   wrapper?: HTMLElement;
 };
 
-function createItem(child: HTMLElement, isHorizontal: boolean, offsetStyle: "left" | "right" | "top"): HTMLElement {
+function createItem(child: HTMLElement, isHorizontal: boolean): HTMLElement {
   const item = document.createElement("div");
   item.style[isHorizontal ? "height" : "width"] = "100%";
   if (isHorizontal) {
@@ -70,7 +69,7 @@ export function init({
   container.style[isHorizontal ? "height" : "width"] = "100%";
 
   for (const child of children ?? []) {
-    const item = createItem(child, isHorizontal, offsetStyle);
+    const item = createItem(child, isHorizontal);
     container.appendChild(item);
   }
 
@@ -113,7 +112,6 @@ export function init({
     wrapper,
     reverse,
     isHorizontal,
-    offsetStyle,
   };
 }
 
@@ -122,12 +120,12 @@ export function dispose(vlist: Vlist) {
 }
 
 export function appendItems(vlist: Vlist, newItems: HTMLElement[]) {
-  const newVirtualizerItems = newItems.map((child) => createItem(child, vlist.isHorizontal, vlist.offsetStyle));
+  const newVirtualizerItems = newItems.map((child) => createItem(child, vlist.isHorizontal));
   return virtAppendItems(vlist.virt, newVirtualizerItems);
 }
 
 export function prependItems(vlist: Vlist, newItems: HTMLElement[]) {
-  const newVirtualizerItems = newItems.map((child) => createItem(child, vlist.isHorizontal, vlist.offsetStyle));
+  const newVirtualizerItems = newItems.map((child) => createItem(child, vlist.isHorizontal));
   return virtPrependItems(vlist.virt, newVirtualizerItems);
 }
 
