@@ -50,6 +50,7 @@
         "all": true,
         "noNonNullAssertion": "off",
         "useFilenamingConvention": "off",
+        "useNamingConvention": "off",
         "noDefaultExport": "off"
       }
     }
