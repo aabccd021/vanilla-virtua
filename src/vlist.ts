@@ -76,8 +76,8 @@ export function init({
   root.style.display = isHorizontal ? "inline-block" : "block";
   root.style[isHorizontal ? "overflowX" : "overflowY"] = "auto";
   root.style.contain = "strict";
-  root.style.width = root.style.width === "" ? "100%" : root.style.width;
-  root.style.height = root.style.height === "" ? "100%" : root.style.height;
+  root.style.width = "100%";
+  root.style.height = "100%";
 
   const shouldReverse = reverse && !isHorizontal;
 
