@@ -2,20 +2,16 @@
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs/nixos-unstable";
     treefmt-nix.url = "github:numtide/treefmt-nix";
-    project-utils = {
-      url = "github:aabccd021/project-utils";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
+    build-node-modules.url = "github:aabccd021/build-node-modules";
   };
 
-  outputs = { self, nixpkgs, treefmt-nix, project-utils }:
+  outputs = { self, nixpkgs, treefmt-nix, build-node-modules }:
 
     let
 
       pkgs = nixpkgs.legacyPackages.x86_64-linux;
-      utilLib = project-utils.lib;
 
-      nodeModules = utilLib.buildNodeModules.fromLockJson ./package.json ./package-lock.json;
+      nodeModules = build-node-modules.lib.buildNodeModules pkgs ./package.json ./package-lock.json;
 
       treefmtEval = treefmt-nix.lib.evalModule pkgs {
         projectRootFile = "flake.nix";
@@ -59,7 +55,6 @@
         ${pkgs.biome}/bin/biome check --error-on-warnings
         touch $out
       '';
-
 
       dist = pkgs.runCommandNoCCLocal "dist" { } ''
         mkdir  $out
